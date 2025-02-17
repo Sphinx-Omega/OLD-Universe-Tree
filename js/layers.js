@@ -16,6 +16,7 @@ addLayer("p", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         if (hasUpgrade('p', 13)) mult = mult.times(upgradeEffect('p', 13))
+        if (hasUpgrade('p', 22)) mult = mult.times(upgradeEffect('p', 22))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -70,7 +71,7 @@ addLayer("p", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.5), player.points.add(1).pow(0.25)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x", format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x"}, // Add formatting to the effect
         },
     },
 })
