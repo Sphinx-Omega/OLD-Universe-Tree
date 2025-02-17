@@ -45,7 +45,7 @@ addLayer("p", {
             cost: new Decimal(15),
 
             effect() {
-                return player.points.add(1).pow(0.15)
+                return player.points.add(2).pow(0.15)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
