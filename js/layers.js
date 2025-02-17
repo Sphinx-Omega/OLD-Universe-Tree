@@ -28,9 +28,15 @@ addLayer("p", {
 
     upgrades: {
         11: {
-            title: "Particle accelerator",
-            description: "Particles split in half, making more particles.",
+            title: "Split",
+            description: "Particles split in half, making twice as many particles.",
             cost: new Decimal(1),
+        },
+
+        12: {
+            title: "Unstable",
+            description: "Split particles split in half again, making twice as many particles.",
+            cost: new Decimal(5),
         },
     },
 })
