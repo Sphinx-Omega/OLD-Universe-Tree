@@ -38,5 +38,16 @@ addLayer("p", {
             description: "Split particles split in half again, making twice as many particles.",
             cost: new Decimal(5),
         },
+
+        13: {
+            title: "Fusion",
+            description: "Some particles clump together into quarks. Quark gain is based on particles.",
+            cost: new Decimal(15),
+
+            effect() {
+                return player.points.add(1).pow(0.15)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
     },
 })
