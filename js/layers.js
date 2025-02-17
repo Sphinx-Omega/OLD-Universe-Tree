@@ -46,7 +46,18 @@ addLayer("p", {
             cost: new Decimal(15),
 
             effect() {
-                return player[this.layer].points.add(1).pow(0.5)
+                return player.points.add(1).pow(0.25)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+
+        21: {
+            title: "Supercharged",
+            description: "Particle gain is increased based on quarks.",
+            cost: new Decimal(100),
+
+            effect() {
+                return player[this.layer].points.add(1).pow(0.75)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
