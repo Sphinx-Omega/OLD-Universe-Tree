@@ -27,16 +27,14 @@ addLayer("p", {
     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: true,
-		points: decimalZero,
-        total: decimalZero,
-        best: decimalZero,
+		points: new Decimal(0),
+        total: new Decimal(0),
+        best: new Decimal(0),
     }},
     color: "#737373",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
     resource: "quarks", // Name of prestige currency
-    resourceSingular: "quark",
     baseResource: "particles", // Name of resource prestige is based on
-    baseResourceSingular: "particle",
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
@@ -104,22 +102,22 @@ addLayer("p", {
     },
 })
 
+
+
 addLayer("e", {
     name: "electrons", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "E", // This appears on the layer's node. Default is the id with the first letter capitalized
     position: 1, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: false,
-		points: decimalZero,
-        total: decimalZero,
-        best: decimalZero,
+		points: new Decimal(0),
+        total: new Decimal(0),
+        best: new Decimal(0),
     }},
     color: "#0066ff",
     requires: new Decimal(1000000), // Can be a function that takes requirement increases into account
     resource: "electrons", // Name of prestige currency
-    resourceSingular: "electron",
     baseResource: "quarks", // Name of resource prestige is based on
-    baseResourceSingular: "quark",
     baseAmount() {return player.p.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
@@ -146,6 +144,8 @@ addLayer("e", {
             keep.push(player.p.best)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
     },
+
+    
 
     effect(){
         let eff = player.e.points.add(1).max(1)
