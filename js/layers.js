@@ -148,6 +148,7 @@ addLayer("e", {
         if (eff.gte(Decimal.pow(10,15))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
+        if (player.e.points.eq(DecimalZero) && player.e.best.gte(DecimalOne)) eff = eff.add(1).div(2)
         return eff
     },
     effectDescription() {
