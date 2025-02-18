@@ -330,37 +330,30 @@ addLayer("e", {
 addLayer("a", {
     startData() { return {
         unlocked: true,
-        points: new Decimal(0),
     }},
     color: "yellow",
-    resource: "Achievement particles", 
     row: "side",
+    layerShown() {return true}, 
     tooltip() { // Optional, tooltip displays when the layer is locked
         return ("Achievements")
     },
-    achievementPopups: true,
     achievements: {
+        rows: 16,
+        cols: 5,
         11: {
-            name: "Get me!",
-            done() {return false}, // This one is a freebie
-        },
-        12: {
-            name: "Impossible!",
-            done() {return false},
-        },
-        13: {
-            name: "EIEIO",
-            done() {return player.e.points.gte(1)},
+            name: "All that progress is gone!",
+            done() { return player.p.points.gt(1000000000) },
+            tooltip: "Perform a Prestige reset.",
         },
     },
-    tabFormat: {
-        "Achievements" :{
-            content: ["main-display",
-            "achievements"]
-        },
-        "Milestones" :{
-            content: ["milestones"]
-        }
-    },
-},
+    tabFormat: [
+        "blank", 
+        ["display-text", function() { return "Achievements: "+player.a.achievements.length+"/"+(Object.keys(tmp.a.achievements).length-2) }], 
+        "blank", "blank",
+        "achievements",
+    ],
+    update(diff) {	// Added this section to call adjustNotificationTime every tick, to reduce notification timers
+        adjustNotificationTime(diff);
+    },	
+}, 
 )
