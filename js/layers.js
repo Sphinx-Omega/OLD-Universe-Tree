@@ -39,7 +39,7 @@ addLayer("p", {
             description: "Particles split in half, making twice as many particles.",
             cost: new Decimal(1),
             unlocked(){
-                return player.p.points.gte(1)
+                return true
             }
         },
 
@@ -48,7 +48,7 @@ addLayer("p", {
             description: "Split particles split in half again, making twice as many particles.",
             cost: new Decimal(5),
             unlocked(){
-                return hasUpgrade('p', 11)
+                return true
             },
         },
 
@@ -57,11 +57,11 @@ addLayer("p", {
             description: "Some particles clump together into quarks. Quark gain is based on particles.",
             cost: new Decimal(15),
             unlocked(){
-                return hasUpgrade('p', 12)
+                return true
             },
 
             effect() {
-                return player.points.add(1).pow(0.5)
+                return true
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
@@ -71,7 +71,7 @@ addLayer("p", {
             description: "Particle gain is increased based on quarks.",
             cost: new Decimal(100),
             unlocked(){
-                return hasUpgrade('p', 13)
+                return true
             },
 
             effect() {
@@ -85,7 +85,7 @@ addLayer("p", {
             description: "Particles split and fuse way faster. Quarks and particles boost each other more.",
             cost: new Decimal(50000),
             unlocked(){
-                return hasUpgrade('p', 21)
+                return true
             },
 
             effect() {
