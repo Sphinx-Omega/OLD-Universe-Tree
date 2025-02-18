@@ -232,7 +232,7 @@ addLayer("a", {
             name: "Cosmic Inflation",
             tooltip: "Create 500,000,000 quarks.\nNext achievement: 1.000e15 particles",
             done() {
-                return player.e.total.gte(1)
+                return player.p.total.gte(5e8)
             },
             onComplete() {
                 addPoints("a",1)
