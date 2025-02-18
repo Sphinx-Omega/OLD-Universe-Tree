@@ -185,15 +185,16 @@ addLayer("a", {
       return "Achievements"
     },
     color: "#FFFF00",
-    // nodeStyle() {return {
-    //     "background": "radial-gradient(#FFFF00, #d5ad83)" ,
-    // }},
+    nodeStyle() {return {
+        "background": "radial-gradient(#FFFF00, #d5ad83)" ,
+    }},
     requires: decimalZero, // Can be a function that takes requirement increases into account
     resource: "Achievement Particles",
     type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
     row: "side", // Row the layer is in on the tree (0 is the first row)
     layerShown() { return true },
+    achievementPopups: true,
     achievements: {
         11: {
             name: "Beginning",
@@ -246,6 +247,35 @@ addLayer("a", {
             }
         },
     },
+    midsection: ["grid", "blank"],
+    grid: {
+        maxRows: 3,
+        rows: 2,
+        cols: 2,
+        getStartData(id) {
+            return id
+        },
+        getUnlocked(id) { // Default
+            return true
+        },
+        getCanClick(data, id) {
+            return player.points.eq(10)
+        },
+        getStyle(data, id) {
+            return {'background-color': '#'+ (data*1234%999999)}
+        },
+        onClick(data, id) { // Don't forget onHold
+            player[this.layer].grid[id]++
+        },
+        getTitle(data, id) {
+            return "Gridable #" + id
+        },
+        getDisplay(data, id) {
+            return data
+        },
+    },
+
+
     effect() {
         let eff = player.a.points
         eff = Decimal.pow(1.025, eff)
