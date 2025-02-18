@@ -35,21 +35,18 @@ addLayer("p", {
             title: "Split",
             description: "Particles split in half, making twice as many particles.",
             cost: new Decimal(1),
-            unlocked() {return true},
         },
 
         12: {
             title: "Unstable",
             description: "Split particles split in half again, making twice as many particles.",
             cost: new Decimal(5),
-            unlocked() {return true},
         },
 
         13: {
             title: "Fusion",
             description: "Some particles clump together into quarks. Quark gain is based on particles.",
             cost: new Decimal(15),
-            unlocked() {return true},
 
             effect() {
                 return player.points.add(1).pow(0.5)
@@ -61,7 +58,6 @@ addLayer("p", {
             title: "Supercharged",
             description: "Particle gain is increased based on quarks.",
             cost: new Decimal(100),
-            unlocked() {return true},
 
             effect() {
                 return player[this.layer].points.add(1).pow(0.75)
@@ -73,7 +69,6 @@ addLayer("p", {
             title: "Overdrive",
             description: "Particles split and fuse way faster. Quarks and particles boost each other more.",
             cost: new Decimal(50000),
-            unlocked() {return true},
 
             effect() {
                 return player[this.layer].points.add(0.5).pow(0.05),
@@ -162,127 +157,127 @@ addLayer("e", {
     },
 })
 
-addLayer("a", {
-    name: "Achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
-    symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 2, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
-    startData() { return {
-        unlocked: true,
-        points: decimalZero,
-    }},
-    tooltip() {
-      return "Achievements"
-    },
-    color: "#FFFF00",
-    nodeStyle() {return {
-        "background": "radial-gradient(#FFFF00, #d5ad83)" ,
-    }},
-    requires: decimalZero, // Can be a function that takes requirement increases into account
-    resource: "Achievement Points",
-    resourceSingular: "Achievement Point", 
-    type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.5, // Prestige currency exponent
-    row: "side", // Row the layer is in on the tree (0 is the first row)
-    layerShown() { return true },
-    achievements: {
-        11: {
-            name: "Beginning",
-            tooltip: "Create the first quark",
-            done() {
-                return player.p.points.gte(1)
-            },
-            onComplete() {
-                addPoints("a",1)
-            }
-        },
-        12: {
-            name: "Expansion",
-            tooltip: "Create 500 quarks",
-            done() {
-                return player.p.total.gte(500)
-            },
-            onComplete() {
-                addPoints("a",1)
-            }
-        },
-        13: {
-            name: "Theory of Negativity",
-            tooltip: "Create an electron",
-            done() {
-                return player.e.total.gte(1)
-            },
-            onComplete() {
-                addPoints("a",1)
-            }
-        },
-        14: {
-            name: "Cosmic Inflation",
-            tooltip: "Create 500,000,000 quarks",
-            done() {
-                return player.e.total.gte(1)
-            },
-            onComplete() {
-                addPoints("a",1)
-            }
-        },
-        15: {
-            name: "Look at all these particle effects!",
-            tooltip: "Have 1.000e15 particles",
-            done() {
-                return player.points.gte(1.000e15)
-            },
-            onComplete() {
-                addPoints("a",1)
-            }
-        },
-    },
-    effect() {
-        let eff = player.a.points
-        eff = Decimal.pow(1.025, eff)
-        return eff
-    },
-    effectDescription() {
-        return ",speeding up particle division by " + format(tmp.a.effect)
-    },
-    tabFormat: {
-        "Achievements" :{
-            content: ["main-display",
-            "achievements"]
-        },
-        "Milestones" :{
-            content: ["milestones"]
-        }
-    },
-    milestones: {
-        0: {
-            requirementDescription: "5 achievements",
-            effectDescription: "Keep quarks and their upgrades",
-            done() { return player.a.points.gte(5) }
-        },
-        1: {
-            requirementDescription: "10 achievements",
-            effectDescription: "Keep electrons and atoms (and their upgrades and milestones)",
-            done() { return player.a.points.gte(10) }
-        },
-        2: {
-            requirementDescription: "20 achievements",
-            effectDescription: "Keep molecules and cells (and their upgrades and milestones) and keep molecular challenge completions",
-            done() { return player.a.points.gte(20) }
-        },
-        3: {
-            requirementDescription: "30 achievements",
-            effectDescription: "Keep organisms (and their upgrades and milestones) and keep cellular and organic challenge completions",
-            done() { return player.a.points.gte(30) }
-        },
-        4: {
-            requirementDescription: "40 achievements",
-            effectDescription: "Keep stardust and dark matter (and their upgrades and milestones)",
-            done() { return player.a.points.gte(40) }
-        },
-        5: {
-            requirementDescription: "50 achievements",
-            effectDescription: "Keep sols and nebulae (and their upgrades and milestones) and keep nonexistent challenge completions",
-            done() { return player.a.points.gte(50) }
-        }
-    },
-})
+// addLayer("a", {
+//     name: "Achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
+//     symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
+//     position: 2, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+//     startData() { return {
+//         unlocked: true,
+//         points: decimalZero,
+//     }},
+//     tooltip() {
+//       return "Achievements"
+//     },
+//     color: "#FFFF00",
+//     nodeStyle() {return {
+//         "background": "radial-gradient(#FFFF00, #d5ad83)" ,
+//     }},
+//     requires: decimalZero, // Can be a function that takes requirement increases into account
+//     resource: "Achievement Points",
+//     resourceSingular: "Achievement Point", 
+//     type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+//     exponent: 0.5, // Prestige currency exponent
+//     row: "side", // Row the layer is in on the tree (0 is the first row)
+//     layerShown() { return true },
+//     achievements: {
+//         11: {
+//             name: "Beginning",
+//             tooltip: "Create the first quark",
+//             done() {
+//                 return player.p.points.gte(1)
+//             },
+//             onComplete() {
+//                 addPoints("a",1)
+//             }
+//         },
+//         12: {
+//             name: "Expansion",
+//             tooltip: "Create 500 quarks",
+//             done() {
+//                 return player.p.total.gte(500)
+//             },
+//             onComplete() {
+//                 addPoints("a",1)
+//             }
+//         },
+//         13: {
+//             name: "Theory of Negativity",
+//             tooltip: "Create an electron",
+//             done() {
+//                 return player.e.total.gte(1)
+//             },
+//             onComplete() {
+//                 addPoints("a",1)
+//             }
+//         },
+//         14: {
+//             name: "Cosmic Inflation",
+//             tooltip: "Create 500,000,000 quarks",
+//             done() {
+//                 return player.e.total.gte(1)
+//             },
+//             onComplete() {
+//                 addPoints("a",1)
+//             }
+//         },
+//         15: {
+//             name: "Look at all these particle effects!",
+//             tooltip: "Have 1.000e15 particles",
+//             done() {
+//                 return player.points.gte(1.000e15)
+//             },
+//             onComplete() {
+//                 addPoints("a",1)
+//             }
+//         },
+//     },
+//     effect() {
+//         let eff = player.a.points
+//         eff = Decimal.pow(1.025, eff)
+//         return eff
+//     },
+//     effectDescription() {
+//         return ",speeding up particle division by " + format(tmp.a.effect)
+//     },
+//     tabFormat: {
+//         "Achievements" :{
+//             content: ["main-display",
+//             "achievements"]
+//         },
+//         "Milestones" :{
+//             content: ["milestones"]
+//         }
+//     },
+//     milestones: {
+//         0: {
+//             requirementDescription: "5 achievements",
+//             effectDescription: "Keep quarks and their upgrades",
+//             done() { return player.a.points.gte(5) }
+//         },
+//         1: {
+//             requirementDescription: "10 achievements",
+//             effectDescription: "Keep electrons and atoms (and their upgrades and milestones)",
+//             done() { return player.a.points.gte(10) }
+//         },
+//         2: {
+//             requirementDescription: "20 achievements",
+//             effectDescription: "Keep molecules and cells (and their upgrades and milestones) and keep molecular challenge completions",
+//             done() { return player.a.points.gte(20) }
+//         },
+//         3: {
+//             requirementDescription: "30 achievements",
+//             effectDescription: "Keep organisms (and their upgrades and milestones) and keep cellular and organic challenge completions",
+//             done() { return player.a.points.gte(30) }
+//         },
+//         4: {
+//             requirementDescription: "40 achievements",
+//             effectDescription: "Keep stardust and dark matter (and their upgrades and milestones)",
+//             done() { return player.a.points.gte(40) }
+//         },
+//         5: {
+//             requirementDescription: "50 achievements",
+//             effectDescription: "Keep sols and nebulae (and their upgrades and milestones) and keep nonexistent challenge completions",
+//             done() { return player.a.points.gte(50) }
+//         }
+//     },
+// })
