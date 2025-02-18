@@ -204,7 +204,8 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            unlocked() {return true}
         },
         12: {
             name: "Expansion",
@@ -214,7 +215,8 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            unlocked() {return true}
         },
         13: {
             name: "Theory of Negativity",
@@ -224,7 +226,8 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            unlocked() {return true}
         },
         14: {
             name: "Cosmic Inflation",
@@ -234,7 +237,8 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            unlocked() {return true}
         },
         15: {
             name: "Look at all these particle effects!",
@@ -244,7 +248,8 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            unlocked() {return true}
         },
     },
     effect() {
