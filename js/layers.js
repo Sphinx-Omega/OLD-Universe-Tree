@@ -252,7 +252,7 @@ addLayer("a", {
             }
         },
         15: {
-            name: "\"Look at all these particle effects!\"",
+            name: "Look at all these particle effects!",
             tooltip: "Have 1.000e15 particles",
             done() {
                 return player.points.gte(1.000e15)
