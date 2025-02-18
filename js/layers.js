@@ -34,12 +34,10 @@ addLayer("p", {
     color: "#737373",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
     resource: "quarks", // Name of prestige currency
-    resourceSingular: "quark",
     baseResource: "particles", // Name of resource prestige is based on
-    baseSingular: "particle",
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.4, // Prestige currency exponent
+    exponent: 0.5, // Prestige currency exponent
     softcap: new Decimal(Decimal.pow(10,2e4)),
     softcapPower: 0.5,
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -63,13 +61,11 @@ addLayer("p", {
             description: "Particles split in half, making twice as many particles.",
             cost: new Decimal(1),
         },
-
         12: {
             title: "Unstable",
             description: "Split particles split in half again, making twice as many particles.",
             cost: new Decimal(5),
         },
-
         13: {
             title: "Fusion",
             description: "Some particles clump together into quarks. Quark gain is based on particles.",
@@ -80,7 +76,6 @@ addLayer("p", {
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
-
         21: {
             title: "Supercharged",
             description: "Particle gain is increased based on quarks.",
@@ -91,7 +86,6 @@ addLayer("p", {
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
-
         22: {
             title: "Overdrive",
             description: "Particles split and fuse way faster. Quarks and particles boost each other more.",
