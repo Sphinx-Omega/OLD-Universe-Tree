@@ -209,8 +209,6 @@ addLayer("a", {
     row: "side", // Row the layer is in on the tree (0 is the first row)
     layerShown() { return true },
     achievements: {
-        rows: 1,
-        cols: 5,
         11: {
             name: "Beginning",
             tooltip: "Create the first quark",
