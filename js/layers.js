@@ -136,6 +136,10 @@ addLayer("e", {
         unlocked() {return player.e.points.gte(1)}}
     ],
     layerShown(){return player.p.best.gte(100000)},
+    doReset(e){
+        if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
+        layerDataReset(this.layer, p.best)
+    },
 
     
 
