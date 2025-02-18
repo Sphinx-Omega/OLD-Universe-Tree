@@ -126,7 +126,10 @@ addLayer("e", {
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "e", description: "E: Electron reset", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "e",
+        description: "E: Electron reset",
+        onPress(){if (canReset(this.layer)) doReset(this.layer)},
+        unlocked() {return player.e.points.gte(1)}}
     ],
     layerShown(){return player.p.points.gte(100000)},
 
