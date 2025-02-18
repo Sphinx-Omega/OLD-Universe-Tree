@@ -124,19 +124,19 @@ addLayer("e", {
 
     
 
-    effect(){
-        let eff = player.e.points.add(1).max(1)
-        eff = eff.pow(2)
-        if (eff.gte(Decimal.pow(10,1e16))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,1e16)).log10().pow(0.88)).mul(Decimal.pow(10,1e16))
-        if (eff.gte(Decimal.pow(10,1e32))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,1e32)).log10().pow(0.85)).mul(Decimal.pow(10,1e32))
-        if (eff.gte(Decimal.pow(10,1e63))) eff = eff.log10().div(1e13).pow(2e61)
-        return eff
-    },
-    effectDescription() {
-        let dis = "which boosts particle splitting by "+layerText("h2", "e", format(tmp.e.effect))
-        if (tmp.e.effect.gte(Decimal.pow(10,1e16))) dis += " (softcapped)"
-        return dis
-    },
+    // effect(){
+    //     let eff = player.e.points.add(1).max(1)
+    //     eff = eff.pow(2)
+    //     if (eff.gte(Decimal.pow(10,1e16))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,1e16)).log10().pow(0.88)).mul(Decimal.pow(10,1e16))
+    //     if (eff.gte(Decimal.pow(10,1e32))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,1e32)).log10().pow(0.85)).mul(Decimal.pow(10,1e32))
+    //     if (eff.gte(Decimal.pow(10,1e63))) eff = eff.log10().div(1e13).pow(2e61)
+    //     return eff
+    // },
+    // effectDescription() {
+    //     let dis = "which boosts particle splitting by "+layerText("h2", "e", format(tmp.e.effect))
+    //     if (tmp.e.effect.gte(Decimal.pow(10,1e16))) dis += " (softcapped)"
+    //     return dis
+    // },
     layerShown() {
         let shown = player.p.total.gte(decimalOne)
         if(player.e.unlocked) shown = true
