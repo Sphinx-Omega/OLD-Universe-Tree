@@ -69,9 +69,10 @@ addLayer("p", {
             cost: new Decimal(50000),
 
             effect() {
-                return player[this.layer].points.add(1).pow(0.1), player.points.add(1).pow(0.05)
+                return player[this.layer].points.add(0.5).pow(0.05),
+                player.points.add(0.5).pow(0.025)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x", format(upgradeEffect(this.layer, this.id))+"x"}, // Add formatting to the effect
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x"}, // Add formatting to the effect
         },
     },
 })
