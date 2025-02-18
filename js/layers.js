@@ -237,7 +237,7 @@ addLayer("a", {
         return eff
     },
     effectDescription() {
-        return "which "+pluralize(player.a.points,'speeds up','speed up')+" particle division by " + format(tmp.a.effect)
+        return ",speeding up particle division by " + format(tmp.a.effect)
     },
     tabFormat: {
         "Achievements" :{
