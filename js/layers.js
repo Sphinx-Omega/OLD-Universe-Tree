@@ -152,7 +152,7 @@ addLayer("e", {
         return eff
     },
     effectDescription() {
-        let dis = "which boosts particle splitting by "+layerText("h2", "e", format(tmp.e.effect))
+        let dis = "which boosts particle splitting by " + format(tmp.e.effect)
         if (tmp.e.effect.gte(Decimal.pow(10,15))) dis += " (softcapped)"
         return dis
     },
