@@ -185,12 +185,11 @@ addLayer("a", {
       return "Achievements"
     },
     color: "#FFFF00",
-    nodeStyle() {return {
-        "background": "radial-gradient(#FFFF00, #d5ad83)" ,
-    }},
+    // nodeStyle() {return {
+    //     "background": "radial-gradient(#FFFF00, #d5ad83)" ,
+    // }},
     requires: decimalZero, // Can be a function that takes requirement increases into account
-    resource: "Achievement Points",
-    resourceSingular: "Achievement Point", 
+    resource: "Achievement Particles",
     type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
     row: "side", // Row the layer is in on the tree (0 is the first row)
@@ -204,8 +203,7 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            },
-            unlocked() {return true}
+            }
         },
         12: {
             name: "Expansion",
@@ -215,8 +213,7 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            },
-            unlocked() {return true}
+            }
         },
         13: {
             name: "Theory of Negativity",
@@ -226,8 +223,7 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            },
-            unlocked() {return true}
+            }
         },
         14: {
             name: "Cosmic Inflation",
@@ -237,8 +233,7 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            },
-            unlocked() {return true}
+            }
         },
         15: {
             name: "Look at all these particle effects!",
@@ -248,8 +243,7 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",1)
-            },
-            unlocked() {return true}
+            }
         },
     },
     effect() {
