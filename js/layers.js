@@ -133,8 +133,8 @@ addLayer("e", {
     doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
-        if(player.e.best>0)
-            keep.push(player.p.best)
+        if (hasMilestone("a", 1) && resettingLayer=="e") keep.push("upgrades")
+        if(player.e.best>0) keep.push(player.p.best)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
     },
 
@@ -269,7 +269,7 @@ addLayer("a", {
 
     effect() {
         let eff = player.a.points
-        eff = Decimal.pow(1.025, eff)
+        eff = Decimal.pow(1.2, eff)
         return eff
     },
     effectDescription() {
