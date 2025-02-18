@@ -338,22 +338,11 @@ addLayer("a", {
         return ("Achievements")
     },
     achievements: {
-        rows: 16,
-        cols: 5,
         11: {
             name: "All that progress is gone!",
             done() { return player.p.points.gt(1000000000) },
             tooltip: "Perform a Prestige reset.",
         },
     },
-    tabFormat: [
-        "blank", 
-        ["display-text", function() { return "Achievements: "+player.a.achievements.length+"/"+(Object.keys(tmp.a.achievements).length-2) }], 
-        "blank", "blank",
-        "achievements",
-    ],
-    update(diff) {	// Added this section to call adjustNotificationTime every tick, to reduce notification timers
-        adjustNotificationTime(diff);
-    },	
 }, 
 )
