@@ -342,7 +342,7 @@ addLayer("a", {
     achievements: {
         11: {
             name: "Get me!",
-            done() {return true}, // This one is a freebie
+            done() {return false}, // This one is a freebie
         },
         12: {
             name: "Impossible!",
