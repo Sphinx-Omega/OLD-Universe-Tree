@@ -1,24 +1,24 @@
-addLayer("a", {
-    name: "achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
-    symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
-    startData() { return {
-        unlocked: true,
-		points: new Decimal(0),
-    }},
-    color: "#ffff00",
-    requires: new Decimal(0), // Can be a function that takes requirement increases into account
-    row: side, // Row the layer is in on the tree (0 is the first row)
-    layerShown(){return true},
+// addLayer("a", {
+//     name: "achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
+//     symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
+//     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+//     startData() { return {
+//         unlocked: true,
+// 		points: new Decimal(0),
+//     }},
+//     color: "#ffff00",
+//     requires: new Decimal(0), // Can be a function that takes requirement increases into account
+//     row: side, // Row the layer is in on the tree (0 is the first row)
+//     layerShown(){return true},
 
-    achievements: {
-        11: {
-            name: "Beginning",
-            tooltip: "Create your first quark.",
-            done() { return player.p.points.gte(1) }
-        }
-    }
-})
+//     achievements: {
+//         11: {
+//             name: "Beginning",
+//             tooltip: "Create your first quark.",
+//             done() { return player.p.points.gte(1) }
+//         }
+//     }
+// })
 
 
 addLayer("p", {
@@ -107,7 +107,7 @@ addLayer("e", {
     symbol: "E", // This appears on the layer's node. Default is the id with the first letter capitalized
     position: 1, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
-        unlocked: true,
+        unlocked: false,
 		points: new Decimal(0),
     }},
     color: "#0066ff",
@@ -128,7 +128,7 @@ addLayer("e", {
     hotkeys: [
         {key: "e", description: "E: Electron reset", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown(){return true},
+    layerShown(){return player.p.points.gte(100000)},
 
     upgrades: {
         
