@@ -95,7 +95,7 @@ addLayer("p", {
 
             effect() {
                 return player[this.layer].points.add(0.5).pow(0.05),
-                player.points.add(0.5).pow(0.025)
+                player.points.add(0.5).pow(0.02)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x"}, // Add formatting to the effect
         },
