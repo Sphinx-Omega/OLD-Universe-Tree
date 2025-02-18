@@ -114,7 +114,7 @@ addLayer("e", {
         unlocked() {return player.e.points.gte(1)}}
     ],
     layerShown(){return player.p.best.gte(100000)},
-    doReset(e){
+    doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
         if(player.e.best>0)
