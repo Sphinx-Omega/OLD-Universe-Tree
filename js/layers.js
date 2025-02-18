@@ -198,7 +198,7 @@ addLayer("a", {
     achievements: {
         11: {
             name: "Beginning",
-            tooltip: "Create the first quark",
+            tooltip: "Create the first quark.\nNext achievement: 500 quarks",
             done() {
                 return player.p.points.gte(1)
             },
@@ -208,7 +208,7 @@ addLayer("a", {
         },
         12: {
             name: "Expansion",
-            tooltip: "Create 500 quarks",
+            tooltip: "Create 500 quarks.\nNext achievement: 1 electron",
             done() {
                 return player.p.total.gte(500)
             },
@@ -218,7 +218,7 @@ addLayer("a", {
         },
         13: {
             name: "Theory of Negativity",
-            tooltip: "Create an electron",
+            tooltip: "Create an electron.\nNext achievement: 5.000e8 quarks",
             done() {
                 return player.e.total.gte(1)
             },
@@ -228,7 +228,7 @@ addLayer("a", {
         },
         14: {
             name: "Cosmic Inflation",
-            tooltip: "Create 500,000,000 quarks",
+            tooltip: "Create 500,000,000 quarks.\nNext achievement: 1.000e15 particles",
             done() {
                 return player.e.total.gte(1)
             },
@@ -269,7 +269,7 @@ addLayer("a", {
 
     effect() {
         let eff = player.a.points
-        eff = Decimal.pow(1.2, eff)
+        eff = Decimal.pow(1.02, eff)
         return eff
     },
     effectDescription() {
