@@ -28,6 +28,8 @@ addLayer("p", {
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
+        total: new Decimal(0),
+        best: new Decimal(0),
     }},
     color: "#737373",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
@@ -109,6 +111,8 @@ addLayer("e", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        total: new Decimal(0),
+        best: new Decimal(0),
     }},
     color: "#0066ff",
     requires: new Decimal(1000000), // Can be a function that takes requirement increases into account
@@ -131,7 +135,7 @@ addLayer("e", {
         onPress(){if (canReset(this.layer)) doReset(this.layer)},
         unlocked() {return player.e.points.gte(1)}}
     ],
-    layerShown(){return player.p.points.gte(100000)},
+    layerShown(){return player.p.best.gte(100000)},
 
     
 
@@ -142,7 +146,7 @@ addLayer("e", {
             cost: new Decimal(1),
 
             effect() {
-                return player[this.layer.total].points.add(1).pow(0.15)
+                return player[this.layer].points.add(1).pow(0.15)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
