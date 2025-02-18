@@ -353,23 +353,14 @@ addLayer("a", {
             done() {return player.e.points.gte(1)},
         },
     },
-    midsection: ["grid", "blank"],
-    grid: {
-        maxRows: 3,
-        rows: 2,
-        cols: 2,
-        getStartData(id) {
-            return id
+    tabFormat: {
+        "Achievements" :{
+            content: ["main-display",
+            "achievements"]
         },
-        getUnlocked(id) { // Default
-            return true
-        },
-        getTitle(data, id) {
-            return "Gridable #" + id
-        },
-        getDisplay(data, id) {
-            return data
-        },
+        "Milestones" :{
+            content: ["milestones"]
+        }
     },
 },
 )
