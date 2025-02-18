@@ -138,7 +138,10 @@ addLayer("e", {
     layerShown(){return player.p.best.gte(100000)},
     doReset(e){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
-        layerDataReset(this.layer, player.p.best)
+        let keep = []
+        if(player.e.points>0)
+            keep.push(player.p.best)
+        layerDataReset(this.layer, keep)
     },
 
     
