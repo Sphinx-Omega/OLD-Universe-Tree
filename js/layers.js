@@ -340,7 +340,7 @@ addLayer("a", {
     achievements: {
         11: {
             name: "All that progress is gone!",
-            done() { return player.p.points.gt(1000000000) },
+            done() { return player.points.gt(1000000000) },
             tooltip: "Perform a Prestige reset.",
         },
     },
