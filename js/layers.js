@@ -31,7 +31,14 @@ addLayer("p", {
     layerShown(){return true},
 
     upgrades: {
+
         11: {
+            title: "test",
+            description: "testing",
+            cost: new Decimal(0),
+        },
+        
+        12: {
             title: "Split",
             description: "Particles split in half, making twice as many particles.",
             cost: new Decimal(1),
@@ -40,7 +47,7 @@ addLayer("p", {
             }
         },
 
-        12: {
+        13: {
             title: "Unstable",
             description: "Split particles split in half again, making twice as many particles.",
             cost: new Decimal(5),
@@ -49,7 +56,7 @@ addLayer("p", {
             },
         },
 
-        13: {
+        21: {
             title: "Fusion",
             description: "Some particles clump together into quarks. Quark gain is based on particles.",
             cost: new Decimal(15),
@@ -63,7 +70,7 @@ addLayer("p", {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
 
-        21: {
+        22: {
             title: "Supercharged",
             description: "Particle gain is increased based on quarks.",
             cost: new Decimal(100),
@@ -77,7 +84,7 @@ addLayer("p", {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
 
-        22: {
+        23: {
             title: "Overdrive",
             description: "Particles split and fuse way faster. Quarks and particles boost each other more.",
             cost: new Decimal(50000),
