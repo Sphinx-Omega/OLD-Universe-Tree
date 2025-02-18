@@ -147,7 +147,7 @@ addLayer("e", {
         11: {
             title: "Charge",
             description: "Negative charge of electrons causes faster particle division.",
-            cost: new Decimal(1),
+            cost: new Decimal(10),
 
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
