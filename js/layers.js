@@ -77,34 +77,34 @@ addLayer("p", {
 })
 
 
-addLayer("a", {
-    name: "achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
-    symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
-    startData() { return {
-        unlocked: true,
-		points: new Decimal(0),
-    }},
-    color: "#ffff00",
-    requires: new Decimal(0), // Can be a function that takes requirement increases into account
-    row: side, // Row the layer is in on the tree (0 is the first row)
-    layerShown(){return true},
+// addLayer("a", {
+//     name: "achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
+//     symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
+//     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+//     startData() { return {
+//         unlocked: true,
+// 		points: new Decimal(0),
+//     }},
+//     color: "#ffff00",
+//     requires: new Decimal(0), // Can be a function that takes requirement increases into account
+//     row: side, // Row the layer is in on the tree (0 is the first row)
+//     layerShown(){return true},
 
-    achievements: {
-        11: {
-            name: "Beginning",
-            tooltip: "Create your first quark.",
-            done() { return player.p.points.gte(1) }
-        }
-    }
-})
+//     achievements: {
+//         11: {
+//             name: "Beginning",
+//             tooltip: "Create your first quark.",
+//             done() { return player.p.points.gte(1) }
+//         }
+//     }
+// })
 
 
 
 addLayer("e", {
     name: "electrons", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "E", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    position: 1, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
@@ -130,49 +130,6 @@ addLayer("e", {
     layerShown(){return true},
 
     upgrades: {
-        11: {
-            title: "Split",
-            description: "Particles split in half, making twice as many particles.",
-            cost: new Decimal(1),
-        },
-
-        12: {
-            title: "Unstable",
-            description: "Split particles split in half again, making twice as many particles.",
-            cost: new Decimal(5),
-        },
-
-        13: {
-            title: "Fusion",
-            description: "Some particles clump together into quarks. Quark gain is based on particles.",
-            cost: new Decimal(15),
-
-            effect() {
-                return player.points.add(1).pow(0.5)
-            },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
-        },
-
-        21: {
-            title: "Supercharged",
-            description: "Particle gain is increased based on quarks.",
-            cost: new Decimal(100),
-
-            effect() {
-                return player[this.layer].points.add(1).pow(0.75)
-            },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
-        },
-
-        22: {
-            title: "Overdrive",
-            description: "Particles split and fuse way faster. Quarks and particles boost each other more.",
-            cost: new Decimal(50000),
-
-            effect() {
-                return player[this.layer].points.add(1).pow(0.1), player.points.add(1).pow(0.05)
-            },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x", format(upgradeEffect(this.layer, this.id))+"x"}, // Add formatting to the effect
-        },
+        
     },
 })
