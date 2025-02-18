@@ -16,7 +16,7 @@ addLayer("p", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         if (hasUpgrade('p', 13)) mult = mult.times(upgradeEffect('p', 13))
-        if (hasUpgrade('p', 22)) mult = mult.times(upgradeEffect('p', 22))
+        if (hasUpgrade('p', 22)) mult = mult.times(upgradeEffect('p', 22)/1.5)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -80,7 +80,7 @@ addLayer("p", {
 addLayer("a", {
     name: "achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    position: side, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
