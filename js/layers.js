@@ -140,7 +140,7 @@ addLayer("e", {
     layerShown() {
         let shown = player.p.total.gte(decimalOne)
         if(player.e.unlocked) shown = true
-        return shown && player.uv.tree == "normal"
+        return shown
     },
 
     upgrades: {
