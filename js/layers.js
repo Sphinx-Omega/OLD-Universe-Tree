@@ -220,7 +220,7 @@ addLayer("e", {
             unlocked() {return true},
 
             effect() {
-                return player[this.layer].points.add(1).pow(0.2)
+                return player[this.layer].points.add(1).pow(1.2)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
