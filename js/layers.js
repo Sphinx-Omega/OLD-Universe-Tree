@@ -185,7 +185,7 @@ addLayer("e", {
         let eff = player.e.points.add(1).max(1)
         eff = eff.pow(2)
         if (eff.gte(Decimal.pow(10,16)) && !hasUpgrade("t",11)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
-        if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
+        if (eff.gte(Decimal.pow(10,1000))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (hasUpgrade("t", 11)){
             if (eff.gte(Decimal.pow(10,16).times(upgradeEffect('t', 11)))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))}
