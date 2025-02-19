@@ -369,7 +369,7 @@ addLayer("t", {
             unlocked() {return true},
 
             effect() {
-                return player[this.layer].points.add(1).log10().div(25).add(1)
+                return player[this.layer].points.add(1).log10().add(1)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
