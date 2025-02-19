@@ -153,7 +153,7 @@ addLayer("e", {
     branches: ["p"],
     gainMult() { // Calculate the multiplier for main currency from bonuses
         emult = new Decimal(1)
-        emult = emult.mul(tmp.t.effect).mul(tmp.t.effect)
+        emult = emult.mul(tmp.t.effect).mul(tmp.t.effect).pow(1)
         if (hasUpgrade('e', 13)) emult = emult.times(upgradeEffect('e', 13))
         if (hasUpgrade('e', 23)) emult = emult.times(upgradeEffect('e', 23))
         return emult
