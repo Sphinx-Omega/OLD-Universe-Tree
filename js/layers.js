@@ -302,7 +302,7 @@ addLayer("a", {
         },
         21: {
             name: "Negative Aura",
-            tooltip: "Create 50,000,000 electrons.<br>Reward: AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles",
+            tooltip() {return "Create 50,000,000 electrons.<br>Reward: AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles"},
             done() {
                 return player.e.total.gte(50000000)
             },
