@@ -217,7 +217,7 @@ addLayer("e", {
                 eff = eff.pow(0.15)
 
                 if (hasUpgrade("t", 11)){
-                    eff = eff.mul(upgradeEffect('t',11).add(1).log10())}
+                    eff = eff.mul(upgradeEffect('t',11))}
                 return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
