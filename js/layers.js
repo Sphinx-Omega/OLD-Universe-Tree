@@ -271,7 +271,7 @@ addLayer("e", {
             unlocked() {return true},
 
             effect() {
-                return player[this.layer].points.add(1).pow(1).div(3)
+                return player[this.layer].points.add(1).pow(0.33)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
