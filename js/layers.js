@@ -20,7 +20,7 @@ addLayer("p", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         pmult = new Decimal(1)
         if (hasUpgrade('p', 13)) pmult = pmult.times(upgradeEffect('p', 13))
-        if (hasUpgrade('p', 22)) pmult = pmult.times(upgradeEffect('p', 22).div(1.5))
+        if (hasUpgrade('p', 22)) pmult = pmult.times(upgradeEffect('p', 22))
         if (hasUpgrade('e', 12)) pmult = pmult.times(upgradeEffect('e', 12))
         if (hasAchievement("a", 21)) pmult = pmult.mul(tmp.a.effect)
         return pmult
