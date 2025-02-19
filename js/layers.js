@@ -154,6 +154,7 @@ addLayer("e", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         emult = new Decimal(1)
         if (hasUpgrade('e', 13)) emult = emult.times(upgradeEffect('e', 13))
+        if (hasUpgrade('e', 23)) emult = emult.times(upgradeEffect('e', 23))
         return emult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -251,6 +252,17 @@ addLayer("e", {
 
             effect() {
                 return player[this.layer].points.add(1).pow(0.75)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+        23: {
+            title: "Preservation",
+            description: "Electrons emit particles without exploding. Boosts electron gain",
+            cost: new Decimal(1e50),
+            unlocked() {return true},
+
+            effect() {
+                return player[this.layer].points.add(1).pow(0.25)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
