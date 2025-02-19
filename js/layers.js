@@ -91,8 +91,7 @@ addLayer("p", {
             },
 
             effect() {
-                return player[this.layer].points.add(0.5).pow(0.05),
-                player.points.add(0.5).pow(0.02)
+                return player[this.layer].points.add(0.5).pow(0.05)
             },
             effectDisplay() { return format(tmp.p.upgrades[22].effect)+"x to particles base, "+format(tmp.p.upgrades[22].effect)+"x to quarks base."}, // Add formatting to the effect
         },
