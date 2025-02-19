@@ -171,11 +171,10 @@ addLayer("e", {
     doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
-        let keepmiles = []
         if(player.e.best>0) keep.push(player.p.best)
-        if (hasMilestone("a", 1) && resettingLayer=="t") keepmiles.push(0)
+        if (hasMilestone("a", 1) && resettingLayer=="t") keep.push("milestones")
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
-        player[this.layer].milestones = keepmiles
+
     },
 
     
@@ -531,7 +530,7 @@ addLayer("a", {
         },
         1: {
             requirementDescription: "10 achievement particles",
-            effectDescription: "Keep first electron milestone",
+            effectDescription: "Keep electron milestones",
             done() { return player.a.points.gte(10) }
         },
         2: {
