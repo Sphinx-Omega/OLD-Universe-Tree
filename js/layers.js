@@ -307,7 +307,7 @@ addLayer("a", {
                 return player.e.total.gte(50000000)
             },
             effect() {
-                let eff = player.a.points
+                let eff = player.a.points.add(2)
                 return eff
             },
             onComplete() {
