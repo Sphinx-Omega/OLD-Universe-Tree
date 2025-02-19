@@ -187,7 +187,7 @@ addLayer("e", {
         if (eff.gte(Decimal.pow(10,1000))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (hasUpgrade("t", 11)){
-            eff = eff.mul(upgradeEffect('t',11)).pow(10,200).log10().pow(0.45)}
+            eff = eff.mul(upgradeEffect('t',11)).pow(10,200).log10().pow(2.45)}
         if (player.e.points.lt(1) && player.e.best.gte(1)) eff = eff.add(1)
         return eff
     },
