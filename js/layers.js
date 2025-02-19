@@ -136,7 +136,7 @@ addLayer("e", {
         {key: "e",
         description: "E: Electron reset",
         onPress(){if (canReset(this.layer)) doReset(this.layer)},
-        unlocked() {return player.e.points.gte(1)}}
+        unlocked() {return player.e.best.gte(1)}}
     ],
     layerShown(){return player.p.best.gte(100000)},
     doReset(resettingLayer){
