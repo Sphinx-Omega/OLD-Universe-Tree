@@ -20,7 +20,7 @@ addLayer("p", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         pmult = new Decimal(1)
         if (hasUpgrade('p', 13)) pmult = pmult.times(upgradeEffect('p', 13))
-        if (hasUpgrade('p', 22)) pmult = pmult.times(upgradeEffect('p', 22))
+        if (hasUpgrade('p', 22)) pmult = pmult.times(upgradeEffect('p', 22).div(1.5))
         if (hasUpgrade('e', 12)) pmult = pmult.times(upgradeEffect('e', 12))
         if (hasAchievement("a", 21)) pmult = pmult.mul(tmp.a.effect)
         return pmult
@@ -65,7 +65,7 @@ addLayer("p", {
             effect() {
                 return player.points.add(1).pow(0.5)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
 
         21: {
@@ -79,7 +79,7 @@ addLayer("p", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.75)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
 
         22: {
@@ -93,11 +93,11 @@ addLayer("p", {
             effect() {
                 let u22 = player.points.add(1).max(1)
                 let u22b = player.p.points.add(1).max(1)
-                u22 = u22.pow(1.2)
-                u22b = u22b.pow(1.1)
-                return {p:u22, q:u22b}
+                u22 = u22.pow(2.2)
+                u22b = u22b.pow(0.63)
+                return player[this.layer].points.add(0.5).pow(0.05), player.points.add(0.5).pow(0.02)
             },
-            effectDisplay() { return format(tmp.p.upgrades[22].effect.p)+"x to particles base, "+format(tmp.p.upgrades[22].effect.q)+"x to quarks base."}, // Add formatting to the effect
+            effectDisplay() { return "Currently: "+format(tmp.p.upgrades[22].effect.u22)+"x to particles base, "+format(tmp.p.upgrades[22].effect.u22b)+"x to quarks base."}, // Add formatting to the effect
         },
     },
 
@@ -191,7 +191,7 @@ addLayer("e", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
         },
 
         12: {
@@ -203,7 +203,7 @@ addLayer("e", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
         },
 
        13: {
@@ -215,7 +215,7 @@ addLayer("e", {
             effect() {
                 return player[this.layer].points.add(2).pow(0.5)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
         }, 
         21: {
             title: "Burst",
@@ -226,7 +226,7 @@ addLayer("e", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.2)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
         },
     },
 
