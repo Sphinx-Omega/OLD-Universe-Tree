@@ -97,6 +97,12 @@ addLayer("p", {
         },
     },
 
+    passiveGeneration(){
+        let passive = new Decimal(0)
+        if (hasMilestone('e', 0)) passive = passive.add(1) //100% Prestige Points depending on Reset
+        return passive
+        },
+
     doReset(resettingLayer) {
         let keep = [];
         if (hasMilestone("a", 0) && resettingLayer=="e") keep.push("upgrades")
@@ -191,6 +197,19 @@ addLayer("e", {
                 return player[this.layer].points.add(1).pow(0.15)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+    },
+
+    milestones: {
+        0: {
+            requirementDescription: "2,500,000 total electrons",
+            effectDescription: "Gain 100% of quarks per second",
+            done() { return player.e.total.gte(2.5e6) }
+        },
+        1: {
+            requirementDescription: "1e15 total electrons",
+            effectDescription: "Unlock a quark upgrade",
+            done() { return player.e.total.gte(1e15) }
         },
     },
 })
@@ -309,32 +328,32 @@ addLayer("a", {
     milestones: {
         0: {
             requirementDescription: "5 achievements",
-            effectDescription: "Keep quarks and their upgrades",
+            effectDescription: "Keep quark upgrades",
             done() { return player.a.points.gte(5) }
         },
         1: {
             requirementDescription: "10 achievements",
-            effectDescription: "Keep electrons and atoms (and their upgrades and milestones)",
+            effectDescription: "Keep electron and atom upgrades and milestones",
             done() { return player.a.points.gte(10) }
         },
         2: {
             requirementDescription: "20 achievements",
-            effectDescription: "Keep molecules and cells (and their upgrades and milestones) and keep molecular challenge completions",
+            effectDescription: "Keep molecule and cell upgrades and milestones",
             done() { return player.a.points.gte(20) }
         },
         3: {
             requirementDescription: "30 achievements",
-            effectDescription: "Keep organisms (and their upgrades and milestones) and keep cellular and organic challenge completions",
+            effectDescription: "Keep organism upgrades and milestones",
             done() { return player.a.points.gte(30) }
         },
         4: {
             requirementDescription: "40 achievements",
-            effectDescription: "Keep stardust and dark matter (and their upgrades and milestones)",
+            effectDescription: "Keep stardust and dark matter upgrades and milestones",
             done() { return player.a.points.gte(40) }
         },
         5: {
             requirementDescription: "50 achievements",
-            effectDescription: "Keep sols and nebulae (and their upgrades and milestones) and keep nonexistent challenge completions",
+            effectDescription: "Keep sol and nebula upgrades and milestones",
             done() { return player.a.points.gte(50) }
         }
     },
