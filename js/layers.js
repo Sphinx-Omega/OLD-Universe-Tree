@@ -526,62 +526,62 @@ addLayer("a", {
         0: {
             requirementDescription: "5 achievement particles",
             effectDescription: "Keep quark upgrades",
-            done() { return player.a.points.gte(5) }
+            done: player.a.points.gte(5) 
         },
         1: {
             requirementDescription: "10 achievement particles",
             effectDescription: "Keep electron milestones",
-            done() { return player.a.points.gte(10) }
+            done: player.a.points.gte(10) 
         },
         2: {
             requirementDescription: "25 achievement particles",
             effectDescription: "Keep atom milestones",
-            done() { return player.a.points.gte(25) }
+            done: player.a.points.gte(25) 
         },
         3: {
             requirementDescription: "33 achievement particles",
             effectDescription: "Keep molecule milestones",
-            done() { return player.a.points.gte(33) }
+            done: player.a.points.gte(33) 
         },
         4: {
             requirementDescription: "50 achievement particles",
             effectDescription: "Keep cell milestones",
-            done() { return player.a.points.gte(50) }
+            done: player.a.points.gte(50) 
         },
         5: {
             requirementDescription: "75 achievement particles",
             effectDescription: "Keep organism milestones",
-            done() { return player.a.points.gte(75) }
+            done: player.a.points.gte(75) 
         },
         6: {
             requirementDescription: "100 achievement particles",
             effectDescription: "Keep stardust milestones",
-            done() { return player.a.points.gte(100) }
+            done: player.a.points.gte(100) 
         },
         7: {
             requirementDescription: "150 achievement particles",
             effectDescription: "Keep dark matter milestones",
-            done() { return player.a.points.gte(150) }
+            done: player.a.points.gte(150) 
         },
         8: {
             requirementDescription: "225 achievement particles",
             effectDescription: "Keep sol milestones",
-            done() { return player.a.points.gte(225) }
+            done: player.a.points.gte(225) 
         },
         9: {
             requirementDescription: "500 achievement particles",
             effectDescription: "Keep nebula milestones",
-            done() { return player.a.points.gte(500) }
+            done: player.a.points.gte(500)
         },
         10: {
             requirementDescription: "1000 achievement particles",
             effectDescription: "Keep galaxy milestones",
-            done() { return player.a.points.gte(1000) }
+            done: player.a.points.gte(1000)
         },
         11: {
             requirementDescription: "2025 achievement particles",
             effectDescription: "Discover a parallel universe...",
-            done() { return player.a.points.gte(2025) }
+            done: player.a.points.gte(2025)
         }
     },
 })
