@@ -479,7 +479,7 @@ addLayer("a", {
         },
         22: {
             name: "Ultra HD",
-            tooltip: "Have 1.000e100 particles.<br>Reward: 2 AP<br>Next achievement: 1.000e308 particles",
+            tooltip: "Have 1.000e100 particles.<br>Reward: 2 AP<br>Next achievement: 1.798e308 particles",
             done() {
                 return player.points.gte(1.000e100)
             },
