@@ -171,11 +171,10 @@ addLayer("e", {
     doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
-        let keepmiles = []
         if(player.e.best>0) keep.push(player.p.best)
-        if (hasMilestone("a", 1) && resettingLayer=="t") keepmiles.push(0)
+        if (hasMilestone("a", 1) && resettingLayer=="t") keep.push(0)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
-        player[this.layer].milestones = keepmiles
+        player[this.layer].milestones = keep
     },
 
     
