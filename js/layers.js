@@ -96,6 +96,19 @@ addLayer("p", {
             },
             effectDisplay() { return format(tmp.p.upgrades[22].effect)+"x to particles base, "+format(tmp.p.upgrades[22].effect)+"x to quarks base."}, // Add formatting to the effect
         },
+        23: {
+            title: "Limit Breaker",
+            description: "Quarks defy the known laws of physics to split impossibly fast!",
+            cost: new Decimal(1e60),
+            unlocked(){
+                return (hasMilestone('e',1))
+            },
+
+            effect() {
+                return player[this.layer].softcapPower.add(0.2)
+            },
+            effectDisplay() { return format(tmp.p.upgrades[23].effect)+"x"}, // Add formatting to the effect
+        },
     },
 
     passiveGeneration(){
