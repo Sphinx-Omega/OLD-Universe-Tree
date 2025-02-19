@@ -15,7 +15,12 @@ addLayer("p", {
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
-    softcap: Decimal.pow(10,4),
+    softcap() {
+        if(!hasUpgrade('p',23))
+        return Decimal.pow(10,4)
+        if(hasUpgrade('p',23))
+        return Decimal.pow(10,8)
+    },
     softcapPower: 0.6,
     gainMult() { // Calculate the multiplier for main currency from bonuses
         pmult = new Decimal(1)
@@ -105,7 +110,7 @@ addLayer("p", {
             },
 
             effect() {
-                return player[this.layer].softcapPower.mul(3/2)
+                return player[this.layer].points.add(1).pow(0.05)
             },
             effectDisplay() { return format(tmp.p.upgrades[23].effect)+"x"}, // Add formatting to the effect
         },
