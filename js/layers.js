@@ -174,7 +174,7 @@ addLayer("e", {
         let keep = []
         let keepmile = player.e.milestones.filter(n=>(n==1))
         if (player.e.best>0) keep.push(player.p.best)
-        if (layers[resettingLayer].row >= this.row && !layers[this.layer]) layerDataReset(this.layer, keep)
+        if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
         if (hasMilestone("a",1)) player.e.milestones = keepmile
     },
 
