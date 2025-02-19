@@ -195,8 +195,8 @@ addLayer("e", {
         let dis = "which boosts particle splitting by " + format(tmp.e.effect)
         if (!hasUpgrade("t",11)) {
         if (tmp.e.effect.gte(Decimal.pow(10,16))) dis += " (softcapped)"}
-        if (hasUpgrade("t",11)) {
-        if (tmp.e.effect.gte(Decimal.pow(10,16).times(upgradeEffect('t',11)))) dis += " (softcapped)"}
+        //if (hasUpgrade("t",11)) {
+        //if (tmp.e.effect.gte(Decimal.pow(10,16).times(upgradeEffect('t',11)))) dis += " (softcapped)"}
         return dis
     },
     layerShown() {
