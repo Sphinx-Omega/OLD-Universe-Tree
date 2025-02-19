@@ -22,6 +22,7 @@ addLayer("p", {
         if (hasUpgrade('p', 13)) pmult = pmult.times(upgradeEffect('p', 13))
         if (hasUpgrade('p', 22)) pmult = pmult.times(upgradeEffect('p', 22).div(1.5))
         if (hasUpgrade('e', 12)) pmult = pmult.times(upgradeEffect('e', 12))
+        if (hasUpgrade('e', 22)) pmult = pmult.times(upgradeEffect('e', 22))
         if (hasAchievement("a", 21)) pmult = pmult.mul(tmp.a.effect)
         return pmult
     },
@@ -221,6 +222,17 @@ addLayer("e", {
 
             effect() {
                 return player[this.layer].points.add(1).pow(0.25)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+        22: {
+            title: "HyperQuark",
+            description: "Exploding electrons throw particle into other particles, creating significantly more quarks",
+            cost: new Decimal(2.5e10),
+            unlocked() {return true},
+
+            effect() {
+                return player[this.layer].points.add(1).pow(0.75)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
