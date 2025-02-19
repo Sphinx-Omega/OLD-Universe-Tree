@@ -313,7 +313,7 @@ addLayer("t", {
     exponent: 0.5, // Prestige currency exponent
     softcap: Decimal.pow(10,4),
     softcapPower: 0.4,
-    branches: ["p"],
+    branches: ["p","e"],
     gainMult() { // Calculate the multiplier for main currency from bonuses
         tmult = new Decimal(1)
         return tmult
