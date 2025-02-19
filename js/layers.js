@@ -91,13 +91,9 @@ addLayer("p", {
             },
 
             effect() {
-                let u22 = player.points.add(1).max(1)
-                let u22b = player.p.points.add(1).max(1)
-                u22 = u22.pow(2.2)
-                u22b = u22b.pow(0.63)
                 return player[this.layer].points.add(0.5).pow(0.05), player.points.add(0.5).pow(0.02)
             },
-            effectDisplay() { return "Currently: "+format(tmp.p.upgrades[22].effect.u22)+"x to particles base, "+format(tmp.p.upgrades[22].effect.u22b)+"x to quarks base."}, // Add formatting to the effect
+            effectDisplay() { return "Currently: "+format(tmp.p.upgrades[22].effect.points)+"x to particles base, "+format(tmp.p.upgrades[22].effect.p.points)+"x to quarks base."}, // Add formatting to the effect
         },
     },
 
