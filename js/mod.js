@@ -12,15 +12,20 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.1",
-	name: "Singularity",
+	num: "0.2",
+	name: "Big Bang",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
 	<h3>v0.1</h3><br>
 		- Universe begins.<br>
 		- Added particles.<br>
-		- Added quarks`
+		- Added quarks.<br>
+		- Added electrons.<br>
+		<br><h3>v0.2</h3><br>
+		- Universe expanding.<br>
+		- Added atoms<br>
+		- Added achievement milestones`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 

@@ -171,8 +171,11 @@ addLayer("e", {
     doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
+        let keepmiles = []
         if(player.e.best>0) keep.push(player.p.best)
+        if (hasMilestone("a", 1) && resettingLayer=="t") keepmiles.push(0)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
+        player[this.layer].milestones = keepmiles
     },
 
     
@@ -188,11 +191,11 @@ addLayer("e", {
     },
     effectDescription() {
         let dis = "which boosts particle splitting by " + format(tmp.e.effect)
-        if (tmp.e.effect.gte(Decimal.pow(10,15))) dis += " (softcapped)"
+        if (tmp.e.effect.gte(Decimal.pow(10,16))) dis += " (softcapped)"
         return dis
     },
     layerShown() {
-        let shown = player.p.total.gte(decimalOne)
+        let shown = player.p.total.gte(500)
         if(player.e.unlocked) shown = true
         return shown
     },
@@ -282,6 +285,99 @@ addLayer("e", {
     },
 })
 
+
+
+addLayer("t", {
+    name: "atoms", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 2, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+        total: new Decimal(0),
+        best: new Decimal(0),
+    }},
+    color: "#99ff33",
+    requires: new Decimal(1e100), // Can be a function that takes requirement increases into account
+    resource: "atoms", // Name of prestige currency
+    baseResource: "electrons", // Name of resource prestige is based on
+    baseAmount() {return player.e.points}, // Get the current amount of baseResource
+    type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent: 0.5, // Prestige currency exponent
+    softcap: Decimal.pow(10,4),
+    softcapPower: 0.4,
+    branches: ["p"],
+    gainMult() { // Calculate the multiplier for main currency from bonuses
+        tmult = new Decimal(1)
+        return tmult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        return new Decimal(1)
+    },
+    row: 1, // Row the layer is in on the tree (0 is the first row)
+    hotkeys: [
+        {key: "a",
+        description: "A: Atom reset",
+        onPress(){if (canReset(this.layer)) doReset(this.layer)},
+        unlocked() {return player.t.best.gte(1)}}
+    ],
+    layerShown(){return player.e.best.gte(1e15)},
+    doReset(resettingLayer){
+        if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
+        let keep = []
+        if(player.t.best>0) keep.push(player.e.best)
+        if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
+    },
+
+    effect(){
+        let eff = player.t.points.add(1).max(1)
+        eff = eff.pow(2)
+        if (eff.gte(Decimal.pow(10,15))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
+        if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
+        if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
+        if (player.t.points.lt(1) && player.t.best.gte(1)) eff = eff.add(1)
+        return eff
+    },
+    effectDescription() {
+        let dis = "which boosts electron vibration by " + format(tmp.t.effect)
+        if (tmp.t.effect.gte(Decimal.pow(10,16))) dis += " (softcapped)"
+        return dis
+    },
+    layerShown() {
+        let shown = player.e.total.gte(1e15)
+        if(player.t.unlocked) shown = true
+        return shown
+    },
+
+    upgrades: {
+        11: {
+            // title: "Charge",
+            // description: "Negative charge of electrons causes faster particle division.",
+            // cost: new Decimal(1),
+            // unlocked() {return true},
+
+            // effect() {
+            //     return player[this.layer].points.add(1).pow(0.15)
+            // },
+            // effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+    },
+
+    milestones: {
+        0: {
+            // requirementDescription: "2,500,000 total electrons",
+            // effectDescription: "Gain 100% of quarks per second",
+            // done() { return player.e.total.gte(2.5e6) }
+        },
+        1: {
+            // requirementDescription: "1e15 total electrons",
+            // effectDescription: "Unlock a quark upgrade",
+            // done() { return player.e.total.gte(1e15) }
+        },
+    },
+})
+
+
 addLayer("a", {
     name: "Achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
@@ -366,12 +462,22 @@ addLayer("a", {
                 return eff
             },
             onComplete() {
-                addPoints("a",2)
+                addPoints("a",1)
             }
         },
         22: {
             name: "Ultra HD",
-            tooltip: "Have 1.000e100 particles.<br>Reward: 2 AP<br>Next achievement: 1 atom",
+            tooltip: "Have 1.000e100 particles.<br>Reward: 2 AP<br>Next achievement: 1.000e308 particles",
+            done() {
+                return player.points.gte(1.000e100)
+            },
+            onComplete() {
+                addPoints("a",2)
+            }
+        },
+        23: {
+            name: "Boundless Particles",
+            tooltip: "Have 1.000e308 particles.<br>Reward: 2 AP<br>Next achievement: 1 atom",
             done() {
                 return player.points.gte(1.000e100)
             },
@@ -425,7 +531,7 @@ addLayer("a", {
         },
         1: {
             requirementDescription: "10 achievement particles",
-            effectDescription: "Keep electron milestones",
+            effectDescription: "Keep first electron milestone",
             done() { return player.a.points.gte(10) }
         },
         2: {
