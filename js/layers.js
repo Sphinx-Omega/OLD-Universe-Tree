@@ -65,7 +65,7 @@ addLayer("p", {
             effect() {
                 return player.points.add(1).pow(0.5)
             },
-            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
 
         21: {
@@ -79,7 +79,7 @@ addLayer("p", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.75)
             },
-            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
 
         22: {
@@ -91,9 +91,10 @@ addLayer("p", {
             },
 
             effect() {
-                return player[this.layer].points.add(0.5).pow(0.05), player.points.add(0.5).pow(0.02)
+                return player[this.layer].points.add(0.5).pow(0.05),
+                player.points.add(0.5).pow(0.02)
             },
-            effectDisplay() { return "Currently: "+format(tmp.p.upgrades[22].effect.points)+"x to particles base, "+format(tmp.p.upgrades[22].effect.p.points)+"x to quarks base."}, // Add formatting to the effect
+            effectDisplay() { return format(tmp.p.upgrades[22].effect)+"x to particles base, "+format(tmp.p.upgrades[22].effect)+"x to quarks base."}, // Add formatting to the effect
         },
     },
 
@@ -187,7 +188,7 @@ addLayer("e", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
             },
-            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
 
         12: {
@@ -199,7 +200,7 @@ addLayer("e", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
             },
-            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
 
        13: {
@@ -211,7 +212,7 @@ addLayer("e", {
             effect() {
                 return player[this.layer].points.add(2).pow(0.5)
             },
-            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         }, 
         21: {
             title: "Burst",
@@ -222,7 +223,7 @@ addLayer("e", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.2)
             },
-            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
     },
 
