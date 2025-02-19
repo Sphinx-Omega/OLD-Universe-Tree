@@ -196,7 +196,7 @@ addLayer("e", {
         if (!hasUpgrade("t",11)) {
         if (tmp.e.effect.gte(Decimal.pow(10,16))) dis += " (softcapped)"}
         if (hasUpgrade("t",11)) {
-        if (tmp.e.effect.gte(Decimal.pow(10,16).mul(upgradeEffect('t',11)))) dis += " (softcapped)"}
+        if (tmp.e.effect.gte(Decimal.pow(10,16).mul(upgradeEffect('t',11)).add(1).log10())) dis += " (softcapped)"}
         return dis
     },
     layerShown() {
