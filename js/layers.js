@@ -285,9 +285,10 @@ addLayer("e", {
         },
     },
     milestonePopups(resettingLayer) {
-        if(hasMilestone("a",1) && resettingLayer=='e')
+        if(hasMilestone("a",1) && resettingLayer=='q','e','t')
             return false
-        else return true
+        else if(!hasMilestone("a",1))
+            return true
     },
 })
 
