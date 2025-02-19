@@ -170,13 +170,12 @@ addLayer("e", {
     ],
     layerShown(){return player.p.best.gte(100000)},
     doReset(resettingLayer){
-        if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
+        if (layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
-        let keepmile = []
-        if(player.e.best>0) keep.push(player.p.best)
-        if (hasMilestone("a", 1) && resettingLayer=="t") keepmile.push(0) 
+        let keepmile = player.e.milestones.filter(n=>(n==1))
+        if (player.e.best>0) keep.push(player.p.best)
         if (layers[resettingLayer].row >= this.row && !layers[this.layer]) layerDataReset(this.layer, keep)
-        player[this.layer].milestones = keepmile
+        if (hasMilestone("a",1)) player.e.milestones = keepmile
     },
 
     
