@@ -93,8 +93,8 @@ addLayer("p", {
             effect() {
                 let u22 = player.points.add(1).max(1)
                 let u22b = player.p.points.add(1).max(1)
-                u22 = u22.pow(2.2)
-                u22b = u22b.pow(0.63)
+                u22 = u22.pow(1.2)
+                u22b = u22b.pow(1.1)
                 return {p:u22, q:u22b}
             },
             effectDisplay() { return format(tmp.p.upgrades[22].effect.p)+"x to particles base, "+format(tmp.p.upgrades[22].effect.q)+"x to quarks base."}, // Add formatting to the effect
