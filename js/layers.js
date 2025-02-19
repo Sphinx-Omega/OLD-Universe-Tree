@@ -499,7 +499,7 @@ addLayer("a", {
         },
         24: {
             name: "Atom and Eve",
-            tooltip: "Gain 1 atom.<br>Reward: 2 AP<br>Next achievement: 50 atoms and 1.00e500 particles",
+            tooltip: "Gain 1 atom.<br>Reward: 2 AP<br>Next achievement: 50 atoms and 1.00e1000 particles",
             done() {
                 return player.t.points.gte(1)
             },
