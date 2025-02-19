@@ -153,7 +153,7 @@ addLayer("e", {
     branches: ["p"],
     gainMult() { // Calculate the multiplier for main currency from bonuses
         emult = new Decimal(1)
-        emult = emult.mul(tmp.t.effect).mul(tmp.t.effect).pow(1)
+        emult = emult.mul(tmp.t.effect).mul(tmp.t.effect)
         if (hasUpgrade('e', 13)) emult = emult.times(upgradeEffect('e', 13))
         if (hasUpgrade('e', 23)) emult = emult.times(upgradeEffect('e', 23))
         return emult
@@ -343,7 +343,7 @@ addLayer("t", {
 
     effect(){
         let eff = player.t.points.add(1).max(1)
-        eff = eff.pow(2)
+        eff = eff.pow(3)
         if (eff.gte(Decimal.pow(10,15))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
@@ -369,7 +369,7 @@ addLayer("t", {
             unlocked() {return true},
 
             effect() {
-                return player[this.layer].points.add(1).pow(0.1)
+                return player[this.layer].points.add(1).pow(0.15)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
