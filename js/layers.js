@@ -18,11 +18,12 @@ addLayer("p", {
     softcap: Decimal.pow(10,4),
     softcapPower: 0.6,
     gainMult() { // Calculate the multiplier for main currency from bonuses
-        mult = new Decimal(1)
-        if (hasUpgrade('p', 13)) mult = mult.times(upgradeEffect('p', 13))
-        if (hasUpgrade('p', 22)) mult = mult.times(upgradeEffect('p', 22).div(1.5))
-        if (hasUpgrade('e', 12)) mult = mult.times(upgradeEffect('e', 12))
-        return mult
+        pmult = new Decimal(1)
+        if (hasUpgrade('p', 13)) pmult = pmult.times(upgradeEffect('p', 13))
+        if (hasUpgrade('p', 22)) pmult = pmult.times(upgradeEffect('p', 22).div(1.5))
+        if (hasUpgrade('e', 12)) pmult = pmult.times(upgradeEffect('e', 12))
+        if (hasAchievement("a", 21)) pmult = pmult.mul(tmp.a.effect)
+        return pmult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
@@ -133,9 +134,9 @@ addLayer("e", {
     softcapPower: 0.4,
     branches: ["p"],
     gainMult() { // Calculate the multiplier for main currency from bonuses
-        mult = new Decimal(1)
-        if (hasUpgrade('e', 13)) mult = mult.times(upgradeEffect('e', 13))
-        return mult
+        emult = new Decimal(1)
+        if (hasUpgrade('e', 13)) emult = emult.times(upgradeEffect('e', 13))
+        return emult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
@@ -291,9 +292,19 @@ addLayer("a", {
         },
         15: {
             name: "Look at all these particle effects!",
-            tooltip: "Have 1.000e15 particles",
+            tooltip: "Have 1.000e15 particles.\nNext achievement: 50,000,000 electrons",
             done() {
                 return player.points.gte(1.000e15)
+            },
+            onComplete() {
+                addPoints("a",1)
+            }
+        },
+        21: {
+            name: "Negative Aura",
+            tooltip: "Create 50,000,000 electrons.\nReward: AP boosts quark gain.\nNext achievement: 1.000e100 particles",
+            done() {
+                return player.e.total.gte(50000000)
             },
             onComplete() {
                 addPoints("a",1)
