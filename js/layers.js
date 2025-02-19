@@ -489,7 +489,7 @@ addLayer("a", {
         },
         23: {
             name: "Boundless Particles",
-            tooltip: "Have 1.000308 particles.<br>Reward: 2 AP<br>Next achievement: 1 atom",
+            tooltip: "Have 1.000e308 particles.<br>Reward: 2 AP<br>Next achievement: 1 atom",
             done() {
                 return player.points.gte(1e308)
             },
