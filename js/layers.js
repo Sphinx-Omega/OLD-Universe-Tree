@@ -184,7 +184,7 @@ addLayer("e", {
     effect(){
         let eff = player.e.points.add(1).max(1)
         eff = eff.pow(2)
-        if (eff.gte(Decimal.pow(10,16))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
+        if (eff.gte(Decimal.pow(10,16)) && !hasUpgrade("t",11)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(Decimal.pow(10,1000))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (hasUpgrade("t", 11)){
@@ -271,7 +271,7 @@ addLayer("e", {
             unlocked() {return true},
 
             effect() {
-                return player[this.layer].points.add(1).pow(0.15)
+                return player[this.layer].points.add(2).pow(0.15)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
