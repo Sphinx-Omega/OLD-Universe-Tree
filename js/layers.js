@@ -284,7 +284,7 @@ addLayer("e", {
             done() { return player.e.total.gte(1e15) }
         },
     },
-    milestonePopups() {
+    milestonePopups(resettingLayer) {
         if(hasMilestone("a",1) && resettingLayer=='e')
             return false
         else return true
