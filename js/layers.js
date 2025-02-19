@@ -65,7 +65,7 @@ addLayer("p", {
             effect() {
                 return player.points.add(1).pow(0.5)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
 
         21: {
@@ -79,7 +79,7 @@ addLayer("p", {
             effect() {
                 return player[this.layer].points.add(1).pow(0.75)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
 
         22: {
@@ -91,10 +91,13 @@ addLayer("p", {
             },
 
             effect() {
-                return player[this.layer].points.add(0.5).pow(0.05),
-                player.points.add(0.5).pow(0.02)
+                let u22 = player.points.add(1).max(1)
+                let u22b = player.p.points.add(1).max(1)
+                u22 = u22.pow(2.2)
+                u22b = u22b.pow(0.63)
+                return {p:u22, q:u22b}
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x"}, // Add formatting to the effect
+            effectDisplay() { return "Currently: "+format(tmp.p.upgrades[22].effect.p)+"x to particles base, "+format(tmp.p.upgrades[22].effect.q)+"x to quarks base."}, // Add formatting to the effect
         },
     },
 
@@ -183,33 +186,47 @@ addLayer("e", {
             title: "Charge",
             description: "Negative charge of electrons causes faster particle division.",
             cost: new Decimal(1),
+            unlocked() {return true},
 
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
         },
 
         12: {
             title: "Vibration",
             description: "Electrons vibrate and bounce particles into each other, creating more quarks.",
             cost: new Decimal(100),
+            unlocked() {return true},
 
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
         },
 
-        13: {
+       13: {
             title: "Double negative",
             description: "Electrons collide with each other, boosting electron gain",
             cost: new Decimal(5000000),
+            unlocked() {return true},
 
             effect() {
                 return player[this.layer].points.add(2).pow(0.5)
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
+        }, 
+        21: {
+            title: "Burst",
+            description: "Electrons sometimes explode into particles. Boosts particle gain",
+            cost: new Decimal(5e8),
+            unlocked() {return true},
+
+            effect() {
+                return player[this.layer].points.add(1).pow(0.2)
+            },
+            effectDisplay() { return "Currently: "+format(upgradeEffect(this.layer, this.id))+"x" }
         },
     },
 
