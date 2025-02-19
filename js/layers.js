@@ -134,6 +134,7 @@ addLayer("e", {
     branches: ["p"],
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        if (hasUpgrade('e', 13)) mult = mult.times(upgradeEffect('e', 13))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -192,6 +193,17 @@ addLayer("e", {
             title: "Vibration",
             description: "Electrons vibrate and bounce particles into each other, creating more quarks.",
             cost: new Decimal(100),
+
+            effect() {
+                return player[this.layer].points.add(1).pow(0.15)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+
+        13: {
+            title: "Double negative",
+            description: "Electrons collide with each other, boosting electron gain",
+            cost: new Decimal(5000000),
 
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
