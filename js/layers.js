@@ -188,11 +188,15 @@ addLayer("e", {
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (player.e.points.lt(1) && player.e.best.gte(1)) eff = eff.add(1)
+        if (hasUpgrade('t', 11)) eff = eff.times(upgradeEffect('t', 11))
         return eff
     },
     effectDescription() {
         let dis = "which boosts particle splitting by " + format(tmp.e.effect)
-        if (tmp.e.effect.gte(Decimal.pow(10,16))) dis += " (softcapped)"
+        if (!hasUpgrade("t",11)) {
+        if (tmp.e.effect.gte(Decimal.pow(10,15))) dis += " (softcapped)"}
+        if (hasUpgrade("t",11)) {
+        if (tmp.e.effect.gte(Decimal.pow(10,15).times(upgradeEffect('t',11)))) dis += " (softcapped)"}
         return dis
     },
     layerShown() {
@@ -358,15 +362,15 @@ addLayer("t", {
 
     upgrades: {
         11: {
-            // title: "Charge",
-            // description: "Negative charge of electrons causes faster particle division.",
-            // cost: new Decimal(1),
-            // unlocked() {return true},
+            title: "Atomic",
+            description: "Atoms make electron effect softcap start later.",
+            cost: new Decimal(1),
+            unlocked() {return true},
 
-            // effect() {
-            //     return player[this.layer].points.add(1).pow(0.15)
-            // },
-            // effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effect() {
+                return player[this.layer].points.add(1).pow(0.1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
     },
 
@@ -469,7 +473,7 @@ addLayer("a", {
                 return eff
             },
             onComplete() {
-                addPoints("a",1)
+                addPoints("a",2)
             }
         },
         22: {
@@ -484,9 +488,19 @@ addLayer("a", {
         },
         23: {
             name: "Boundless Particles",
-            tooltip: "Have 1.000e308 particles.<br>Reward: 2 AP<br>Next achievement: 1 atom",
+            tooltip: "Have 1.798e308 particles.<br>Reward: 2 AP<br>Next achievement: 1 atom",
             done() {
-                return player.points.gte(1.000e100)
+                return player.points.gte(1.80e308)
+            },
+            onComplete() {
+                addPoints("a",2)
+            }
+        },
+        24: {
+            name: "Atom and Eve",
+            tooltip: "Gain 1 atom.<br>Reward: 2 AP<br>Next achievement: 50 atoms and 1.00e500 particles",
+            done() {
+                return player.t.points.gte(1)
             },
             onComplete() {
                 addPoints("a",2)
@@ -537,9 +551,9 @@ addLayer("a", {
             done() { return player.a.points.gte(5) }
         },
         1: {
-            requirementDescription: "10 achievement particles",
+            requirementDescription: "15 achievement particles",
             effectDescription: "Keep first electron milestone on atom reset",
-            done() { return player.a.points.gte(10) }
+            done() { return player.a.points.gte(15) }
         },
         2: {
             requirementDescription: "25 achievement particles",
