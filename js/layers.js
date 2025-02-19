@@ -213,7 +213,12 @@ addLayer("e", {
             unlocked() {return true},
 
             effect() {
-                return player[this.layer].points.add(1).pow(0.15)
+                let eff = player[this.layer].points.add(1).max(1)
+                eff = eff.pow(0.15)
+
+                if (hasUpgrade("t", 11)){
+                    eff = eff.mul(upgradeEffect('t',11).add(1).log10())}
+                return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
@@ -372,6 +377,16 @@ addLayer("t", {
                 return player[this.layer].points.add(1).log10().add(player[this.layer].points).pow(10).div(2)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+        12: {
+            title: "Positive charge",
+            description: "'Atomic' also boosts 'Charge'.",
+            cost: new Decimal(3),
+            unlocked() {return true},
+
+            effect() {
+                return player[this.layer].points.add(1).log10().add(player[this.layer].points).pow(10).div(2)
+            },
         },
     },
 
