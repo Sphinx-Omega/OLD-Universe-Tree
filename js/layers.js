@@ -252,7 +252,7 @@ addLayer("a", {
     achievements: {
         11: {
             name: "Beginning",
-            tooltip: "Create the first quark.<br>Next achievement: 500 quarks",
+            tooltip: "Create the first quark.<br>Reward: 1 AP<br>Next achievement: 500 quarks",
             done() {
                 return player.p.points.gte(1)
             },
@@ -262,7 +262,7 @@ addLayer("a", {
         },
         12: {
             name: "Expansion",
-            tooltip: "Create 500 quarks.<br>Next achievement: 1 electron",
+            tooltip: "Create 500 quarks.<br>Reward: 1 AP<br>Next achievement: 1 electron",
             done() {
                 return player.p.total.gte(500)
             },
@@ -272,7 +272,7 @@ addLayer("a", {
         },
         13: {
             name: "Theory of Negativity",
-            tooltip: "Create an electron.<br>Next achievement: 5.000e8 quarks",
+            tooltip: "Create an electron.<br>Reward: 1 AP<br>Next achievement: 5.000e8 quarks",
             done() {
                 return player.e.total.gte(1)
             },
@@ -282,7 +282,7 @@ addLayer("a", {
         },
         14: {
             name: "Cosmic Inflation",
-            tooltip: "Create 500,000,000 quarks.<br>Next achievement: 1.000e15 particles",
+            tooltip: "Create 500,000,000 quarks.<br>Reward: 1 AP<br>Next achievement: 1.000e15 particles",
             done() {
                 return player.p.total.gte(5e8)
             },
@@ -292,7 +292,7 @@ addLayer("a", {
         },
         15: {
             name: "Look at all these particle effects!",
-            tooltip: "Have 1.000e15 particles.<br>Next achievement: 50,000,000 electrons",
+            tooltip: "Have 1.000e15 particles.<br>Reward: 1 AP<br>Next achievement: 50,000,000 electrons",
             done() {
                 return player.points.gte(1.000e15)
             },
@@ -302,7 +302,7 @@ addLayer("a", {
         },
         21: {
             name: "Negative Aura",
-            tooltip() {return "Create 50,000,000 electrons.<br>Reward: AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles"},
+            tooltip() {return "Create 50,000,000 electrons.<br>Reward: 2 AP. AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles"},
             done() {
                 return player.e.total.gte(50000000)
             },
@@ -311,7 +311,17 @@ addLayer("a", {
                 return eff
             },
             onComplete() {
-                addPoints("a",1)
+                addPoints("a",2)
+            }
+        },
+        22: {
+            name: "Ultra HD",
+            tooltip: "Have 1.000e100 particles.<br>Reward: 2 AP<br>Next achievement: 1 atom",
+            done() {
+                return player.points.gte(1.000e100)
+            },
+            onComplete() {
+                addPoints("a",2)
             }
         },
     },
@@ -354,34 +364,64 @@ addLayer("a", {
     },
     milestones: {
         0: {
-            requirementDescription: "5 achievements",
+            requirementDescription: "5 achievement particles",
             effectDescription: "Keep quark upgrades",
             done() { return player.a.points.gte(5) }
         },
         1: {
-            requirementDescription: "10 achievements",
-            effectDescription: "Keep electron and atom upgrades and milestones",
+            requirementDescription: "10 achievement particles",
+            effectDescription: "Keep electron milestones",
             done() { return player.a.points.gte(10) }
         },
         2: {
-            requirementDescription: "20 achievements",
-            effectDescription: "Keep molecule and cell upgrades and milestones",
-            done() { return player.a.points.gte(20) }
+            requirementDescription: "25 achievement particles",
+            effectDescription: "Keep atom milestones",
+            done() { return player.a.points.gte(25) }
         },
         3: {
-            requirementDescription: "30 achievements",
-            effectDescription: "Keep organism upgrades and milestones",
-            done() { return player.a.points.gte(30) }
+            requirementDescription: "33 achievement particles",
+            effectDescription: "Keep molecule milestones",
+            done() { return player.a.points.gte(33) }
         },
         4: {
-            requirementDescription: "40 achievements",
-            effectDescription: "Keep stardust and dark matter upgrades and milestones",
-            done() { return player.a.points.gte(40) }
+            requirementDescription: "50 achievement particles",
+            effectDescription: "Keep cell milestones",
+            done() { return player.a.points.gte(50) }
         },
         5: {
-            requirementDescription: "50 achievements",
-            effectDescription: "Keep sol and nebula upgrades and milestones",
-            done() { return player.a.points.gte(50) }
+            requirementDescription: "75 achievement particles",
+            effectDescription: "Keep organism milestones",
+            done() { return player.a.points.gte(75) }
+        },
+        6: {
+            requirementDescription: "100 achievement particles",
+            effectDescription: "Keep stardust milestones",
+            done() { return player.a.points.gte(100) }
+        },
+        7: {
+            requirementDescription: "150 achievement particles",
+            effectDescription: "Keep dark matter milestones",
+            done() { return player.a.points.gte(150) }
+        },
+        8: {
+            requirementDescription: "225 achievement particles",
+            effectDescription: "Keep sol milestones",
+            done() { return player.a.points.gte(225) }
+        },
+        9: {
+            requirementDescription: "500 achievement particles",
+            effectDescription: "Keep nebula milestones",
+            done() { return player.a.points.gte(500) }
+        },
+        10: {
+            requirementDescription: "1000 achievement particles",
+            effectDescription: "Keep galaxy milestones",
+            done() { return player.a.points.gte(1000) }
+        },
+        11: {
+            requirementDescription: "2025 achievement particles",
+            effectDescription: "Discover a parallel universe...",
+            done() { return player.a.points.gte(2025) }
         }
     },
 })
