@@ -105,7 +105,7 @@ addLayer("p", {
             },
 
             effect() {
-                return player[this.layer].softcapPower.times(3/2)
+                return player[this.layer].softcapPower.mul(3/2)
             },
             effectDisplay() { return format(tmp.p.upgrades[23].effect)+"x"}, // Add formatting to the effect
         },
