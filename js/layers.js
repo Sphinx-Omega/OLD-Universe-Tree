@@ -19,7 +19,7 @@ addLayer("p", {
         if(!hasUpgrade('p',23))
         return Decimal.pow(10,4)
         if(hasUpgrade('p',23))
-        return Decimal.pow(10,8)
+        return Decimal.pow(10,50)
     },
     softcapPower: 0.6,
     gainMult() { // Calculate the multiplier for main currency from bonuses
