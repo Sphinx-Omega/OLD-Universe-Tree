@@ -216,7 +216,7 @@ addLayer("e", {
                 let eff = player[this.layer].points.add(1).max(1)
                 eff = eff.pow(0.15)
 
-                if (hasUpgrade("t", 11)){
+                if (hasUpgrade("t", 12)){
                     eff = eff.mul(upgradeEffect('t',11))}
                 return eff
             },
