@@ -21,6 +21,7 @@ addLayer("p", {
         mult = new Decimal(1)
         if (hasUpgrade('p', 13)) mult = mult.times(upgradeEffect('p', 13))
         if (hasUpgrade('p', 22)) mult = mult.times(upgradeEffect('p', 22).div(1.5))
+        if (hasUpgrade('e', 12)) mult = mult.times(upgradeEffect('e', 12))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -167,6 +168,17 @@ addLayer("e", {
             title: "Charge",
             description: "Negative charge of electrons causes faster particle division.",
             cost: new Decimal(1),
+
+            effect() {
+                return player[this.layer].points.add(1).pow(0.15)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+
+        12: {
+            title: "Vibration",
+            description: "Electrons vibrate and bounce particles into each other, creating more quarks.",
+            cost: new Decimal(100),
 
             effect() {
                 return player[this.layer].points.add(1).pow(0.15)
