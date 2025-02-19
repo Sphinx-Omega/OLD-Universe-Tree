@@ -314,8 +314,8 @@ addLayer("t", {
     baseResource: "electrons", // Name of resource prestige is based on
     baseAmount() {return player.e.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: new Decimal(1.7),
-    base: new Decimal(1e4),
+    exponent: new Decimal(1.3),
+    base: new Decimal(1e3),
     softcap: Decimal.pow(10,4),
     softcapPower: 0.4,
     branches: ["p","e"],
