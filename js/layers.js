@@ -252,7 +252,7 @@ addLayer("a", {
     achievements: {
         11: {
             name: "Beginning",
-            tooltip: "Create the first quark.\nNext achievement: 500 quarks",
+            tooltip: "Create the first quark.<br>Next achievement: 500 quarks",
             done() {
                 return player.p.points.gte(1)
             },
@@ -262,7 +262,7 @@ addLayer("a", {
         },
         12: {
             name: "Expansion",
-            tooltip: "Create 500 quarks.\nNext achievement: 1 electron",
+            tooltip: "Create 500 quarks.<br>Next achievement: 1 electron",
             done() {
                 return player.p.total.gte(500)
             },
@@ -272,7 +272,7 @@ addLayer("a", {
         },
         13: {
             name: "Theory of Negativity",
-            tooltip: "Create an electron.\nNext achievement: 5.000e8 quarks",
+            tooltip: "Create an electron.<br>Next achievement: 5.000e8 quarks",
             done() {
                 return player.e.total.gte(1)
             },
@@ -282,7 +282,7 @@ addLayer("a", {
         },
         14: {
             name: "Cosmic Inflation",
-            tooltip: "Create 500,000,000 quarks.\nNext achievement: 1.000e15 particles",
+            tooltip: "Create 500,000,000 quarks.<br>Next achievement: 1.000e15 particles",
             done() {
                 return player.p.total.gte(5e8)
             },
@@ -292,7 +292,7 @@ addLayer("a", {
         },
         15: {
             name: "Look at all these particle effects!",
-            tooltip: "Have 1.000e15 particles.\nNext achievement: 50,000,000 electrons",
+            tooltip: "Have 1.000e15 particles.<br>Next achievement: 50,000,000 electrons",
             done() {
                 return player.points.gte(1.000e15)
             },
@@ -302,9 +302,13 @@ addLayer("a", {
         },
         21: {
             name: "Negative Aura",
-            tooltip: "Create 50,000,000 electrons.\nReward: AP boosts quark gain.\nNext achievement: 1.000e100 particles",
+            tooltip: "Create 50,000,000 electrons.<br>Reward: AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles",
             done() {
                 return player.e.total.gte(50000000)
+            },
+            effect() {
+                let eff = player.a.points
+                return eff
             },
             onComplete() {
                 addPoints("a",1)
@@ -337,7 +341,7 @@ addLayer("a", {
         return eff
     },
     effectDescription() {
-        return ",speeding up particle division by " + format(tmp.a.effect)
+        return "speeding up particle division by " + format(tmp.a.effect)
     },
     tabFormat: {
         "Achievements" :{
