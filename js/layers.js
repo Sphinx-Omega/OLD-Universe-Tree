@@ -346,10 +346,16 @@ addLayer("t", {
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
     },
 
+    buyablePower(x) {
+        x = new Decimal(x)
+        let eff = decimalOne
+        return eff
+    },
+
     effect(){
         let eff = player.t.points.add(1).max(1)
-        eff = eff.pow(3)
-        eff = eff.add(player.t.buyables[11].setBuyableAmount)
+        eff = eff.add(getBuyableAmount("t", 11))
+        eff = eff.pow(((getBuyableAmount("t", 12)).div(4)).add(3))
         if (eff.gte(Decimal.pow(10,15))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
@@ -394,21 +400,127 @@ addLayer("t", {
     buyables: {
         11: {
             title: "Neutron",
-            cost(x,y) {
-                if(getBuyableAmount==0){
-                x=1, y=1}
-                if(getBuyableAmount>0){
-                x=2, y=1.5}
-                return new Decimal(1.00).mul(x).pow(y)
+            cost() { 
+                let base = tmp.t.buyables[11].costb
+                let exp = tmp.t.buyables[11].coste
+                let x = player.t.buyables[11]
+                let cost = Decimal.pow(base,x.pow(exp)).mul(1e130)
+                return cost
             },
-            display() { return "Increase atom effect base by 1<br>Cost:"+format(this.cost().mul(1e130))+" electrons<br><br>Amount: "},
-            canAfford() { return player.e.points.gte(this.cost()) },
+            costb() {
+                let cost = new Decimal(10)
+                return cost
+            },
+            coste() { 
+                let cost = new Decimal(1.5)
+                return cost
+            },
+            base() { 
+                let exp = decimalOne
+                //if (hasUpgrade("Ud",201)) exp = exp.mul(tmp.Ud.upgrades[201].effect)
+                let base = player.t.points.add(10).log10().add(10).log10().pow(exp)
+                if (player.t.buyables[11].gte(1)) base = base.mul(layers.t.buyablePower(player.t.buyables[11]))
+                return base
+            },
+            display() {
+                let x = tmp.t.buyables[11].extra
+                let extra = ""
+                if(getBuyableAmount("t", 11).gte(1)){
+                extra = formatWhole(x)}
+                let dis = "Increase Atom effect base<br>(based on electrons)"
+                return dis + ".\n\
+                Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" electrons\n\
+                Effect: +" + format(tmp[this.layer].buyables[this.id].effect)+"\n\
+                Amount: " + formatWhole(getBuyableAmount("t", 11))
+            },
+            canAfford() {
+                return player.e.points.gte(tmp[this.layer].buyables[this.id].cost)},
+            maxAfford() {
+                let s = player.e.points
+                let base = tmp.t.buyables[11].costb
+                let exp = tmp.t.buyables[11].coste
+                let target = s.div(5e3).log(base).root(exp)
+                return target.floor().add(1)
+            },
             buy() {
                 player.e.points = player.e.points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
+            buyMax() { 
+                let target = tmp.t.buyables[11].maxAfford
+                let base = tmp.t.buyables[11].costb
+                let exp = tmp.t.buyables[11].coste
+                let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
+                if (tmp[this.layer].buyables[this.id].canAfford) {
+                    player.t.buyables[11] = player.t.buyables[11].max(target)
+                
+                }
+            },
             effect() {
-                return player.t.points.add(1)
+                return 1
+            },  
+        },
+
+        12: {
+            title: "Proton",
+            cost() { 
+                let base = tmp.t.buyables[12].costb
+                let exp = tmp.t.buyables[12].coste
+                let x = player.t.buyables[12]
+                let cost = Decimal.pow(base,x.pow(exp)).mul(1e200)
+                return cost
+            },
+            costb() {
+                let cost = new Decimal(10)
+                return cost
+            },
+            coste() { 
+                let cost = new Decimal(2.5)
+                return cost
+            },
+            base() { 
+                let exp = decimalOne
+                //if (hasUpgrade("Ud",201)) exp = exp.mul(tmp.Ud.upgrades[201].effect)
+                let base = player.t.points.add(10).log10().add(10).log10().pow(exp)
+                if (player.t.buyables[12].gte(1)) base = base.mul(layers.t.buyablePower(player.t.buyables[12]))
+                return base
+            },
+            display() {
+                let x = tmp.t.buyables[12].extra
+                let extra = ""
+                if(getBuyableAmount("t", 12).gte(1)){
+                extra = formatWhole(x)}
+                let dis = "Increase Atom effect exponent<br>(based on electrons)"
+                return dis + ".\n\
+                Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" electrons\n\
+                Effect: +" + format(tmp[this.layer].buyables[this.id].effect)+"\n\
+                Amount: " + formatWhole(getBuyableAmount("t", 12))
+            },
+            canAfford() {
+                return player.e.points.gte(tmp[this.layer].buyables[this.id].cost)},
+            maxAfford() {
+                let s = player.e.points
+                let base = tmp.t.buyables[12].costb
+                let exp = tmp.t.buyables[12].coste
+                let target = s.div(5e3).log(base).root(exp)
+                return target.floor().add(1)
+            },
+            buy() {
+                player.e.points = player.e.points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            buyMax() { 
+                let target = tmp.t.buyables[12].maxAfford
+                let base = tmp.t.buyables[12].costb
+                let exp = tmp.t.buyables[12].coste
+                let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
+                if (tmp[this.layer].buyables[this.id].canAfford) {
+                    player.t.buyables[12] = player.t.buyables[12].max(target)
+                
+                }
+            },
+            effect() {
+                return 0.25
             },  
         },
     }
