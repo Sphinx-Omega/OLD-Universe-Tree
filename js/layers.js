@@ -349,6 +349,7 @@ addLayer("t", {
     effect(){
         let eff = player.t.points.add(1).max(1)
         eff = eff.pow(3)
+        eff = eff.add(player.t.buyables[11].setBuyableAmount)
         if (eff.gte(Decimal.pow(10,15))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
@@ -389,6 +390,28 @@ addLayer("t", {
             },
         },
     },
+
+    buyables: {
+        11: {
+            title: "Neutron",
+            cost(x,y) {
+                if(getBuyableAmount==0){
+                x=1, y=1}
+                if(getBuyableAmount>0){
+                x=2, y=1.5}
+                return new Decimal(1.00).mul(x).pow(y)
+            },
+            display() { return "Increase atom effect base by 1<br>Cost:"+format(this.cost().mul(1e130))+" electrons<br><br>Amount: "},
+            canAfford() { return player.e.points.gte(this.cost()) },
+            buy() {
+                player.e.points = player.e.points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect() {
+                return player.t.points.add(1)
+            },  
+        },
+    }
 
     // milestones: {
     //     0: {
