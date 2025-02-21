@@ -69,7 +69,9 @@ addLayer("p", {
             },
 
             effect() {
-                return player.points.add(1).pow(0.5)
+                let eff = player.points.add(1).pow(0.5)
+                if(hasUpgrade("t",21)) eff = eff.mul(upgradeEffect("t",21))
+                return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
@@ -114,6 +116,32 @@ addLayer("p", {
             },
             effectDisplay() { return format(tmp.p.upgrades[23].effect)+"x"}, // Add formatting to the effect
         },
+        31: {
+            title: "Particle Collider",
+            description: "Particles weaken electron softcap",
+            cost: new Decimal("1.00e1220"),
+            unlocked(){
+                return (hasMilestone('e',2))
+            },
+
+            effect() {
+                return player.points.add(1).max(1).log10()
+            },
+            effectDisplay() { return format(tmp.p.upgrades[31].effect)+"x"}, // Add formatting to the effect
+        },
+        32: {
+            title: "Positive energy",
+            description: "Quarks boost atom buyables amount",
+            cost: new Decimal("1.00e2580"),
+            unlocked(){
+                return (hasMilestone('e',2))
+            },
+
+            effect() {
+                return player.p.points.add(1).max(1).log10().div(1e3)
+            },
+            effectDisplay() { return format(tmp.p.upgrades[32].effect)+"x"}, // Add formatting to the effect
+        },
     },
 
     passiveGeneration(){
@@ -125,6 +153,7 @@ addLayer("p", {
     doReset(resettingLayer) {
         let keep = [];
         if (hasMilestone("a", 0) && resettingLayer=="e") keep.push("upgrades")
+        if (hasMilestone("t", 0) && resettingLayer=="t") keep.push("upgrades")
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
     },
 })
@@ -184,10 +213,11 @@ addLayer("e", {
         let eff = player.e.points.add(1).max(1)
         eff = eff.pow(2)
         if (eff.gte(Decimal.pow(10,16))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
-        if (eff.gte(Decimal.pow(10,1000))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (hasUpgrade("t", 11)){
             eff = eff.mul(upgradeEffect('t',11).add(1).log10())}
+        if (hasUpgrade("p", 31)){
+                eff = eff.mul(upgradeEffect('p',31).mul(1e7).add(1).max(1))}
         if (player.e.points.lt(1) && player.e.best.gte(1)) eff = eff.add(1)
         return eff
     },
@@ -217,7 +247,7 @@ addLayer("e", {
                 eff = eff.pow(0.15)
 
                 if (hasUpgrade("t", 12)){
-                    eff = eff.mul(upgradeEffect('t',11).pow(1.33))}
+                    eff = eff.mul(upgradeEffect('t',11).pow(1.33).div(2e3))}
                 return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
@@ -281,6 +311,12 @@ addLayer("e", {
         },
     },
 
+    passiveGeneration(){
+        let passive = new Decimal(0)
+        if (hasMilestone('t', 3)) passive = passive.add(1) //100% Prestige Points depending on Reset
+        return passive
+        },
+
     milestones: {
         0: {
             requirementDescription: "2,500,000 total electrons",
@@ -291,6 +327,14 @@ addLayer("e", {
             requirementDescription: "1e15 total electrons",
             effectDescription: "Unlock a quark upgrade",
             done() { return player.e.total.gte(1e15) }
+        },
+        2: {
+            requirementDescription: "1e365 total electrons",
+            effectDescription: "Unlock 3 more quark upgrades",
+            done() { return player.e.total.gte("1.00e365") },
+            unlocked() {
+                return hasUpgrade("t",23)
+            }
         },
     },
     milestonePopups(resettingLayer) {
@@ -323,9 +367,11 @@ addLayer("t", {
     base: new Decimal(1e3),
     softcap: Decimal.pow(10,4),
     softcapPower: 0.4,
-    branches: ["p","e"],
+    branches: ["p"],
     gainMult() { // Calculate the multiplier for main currency from bonuses
         tmult = new Decimal(1)
+        if (hasUpgrade("t",13))
+            tmult = tmult.times(upgradeEffect("t",13)).div(Decimal.pow(10,100).log10().pow(75))
         return tmult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -339,11 +385,51 @@ addLayer("t", {
         unlocked() {return player.t.best.gte(1)}}
     ],
     layerShown(){return player.e.best.gte(1e15)},
+    canBuyMax() { return hasMilestone("t", 2)},
     doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
         if(player.t.best>0) keep.push(player.e.best)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
+    },
+    tabFormat: {
+        "Main": {
+        content:[
+            function() {if (player.tab == "t") return "main-display"},
+            "prestige-button",
+            "blank",
+            ["raw-html"],
+            ["display-text",
+                function() {
+                    return "You have "+format(player.e.points)+" electrons<br><br>Your best atoms is "+format(player.t.best)+"<br>You have made a total of "+format(player.t.total)+" atoms"  
+                }
+            ],
+            "upgrades"
+            ]
+        },
+        "Milestones": {
+            content:[
+                function() {if (player.tab == "t") return "main-display"},
+            "prestige-button",
+            "blank",
+            ["raw-html"],
+            ["display-text"
+            ],
+                "milestones"
+            ],
+        },
+        "Nucleus": {
+            content:[
+                function() {if (player.tab == "t") return "main-display"},
+            "prestige-button",
+            "blank",
+            ["raw-html"]
+            ["display-text"
+            ],
+                "buyables"
+            ],
+            unlocked() {return hasMilestone("t",1)}
+        },
     },
 
     buyablePower(x) {
@@ -353,13 +439,15 @@ addLayer("t", {
     },
 
     effect(){
-        let eff = player.t.points.add(1).max(1)
-        eff = eff.add(getBuyableAmount("t", 11))
-        eff = eff.pow(((getBuyableAmount("t", 12)).div(4)).add(3))
+        let eff = player.t.points.add(1).max(1).pow(1.75)
+        if(getBuyableAmount("t", 11).gte(1)){
+        eff = eff.mul(getBuyableAmount("t", 11).mul(tmp.t.buyables[11].effect).mul(5).add(1))}
+        if(getBuyableAmount("t", 12).gte(1)){
+        eff = eff.pow(getBuyableAmount("t", 12).add(player.t.buyables[12].effect))}
         if (eff.gte(Decimal.pow(10,15))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
-        if (player.t.points.lt(1) && player.t.best.gte(1)) eff = eff.add(1)
+        if (player.t.points.lt(1) && player.t.best.gte(1) && getBuyableAmount("t", 11).lt(1)) eff = eff.add(1)
         return eff
     },
     effectDescription() {
@@ -381,19 +469,71 @@ addLayer("t", {
             unlocked() {return true},
 
             effect() {
-                return player[this.layer].points.add(1).log10().add(player[this.layer].points).pow(10).div(2)
+                if(player[this.layer].points.gte(1)) {
+                return player[this.layer].points.add(1).max(1).add(player[this.layer].points).pow(10).div(2)}
+                return decimalOne
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
         12: {
             title: "Positive charge",
-            description: "'Atomic' also boosts 'Charge'.",
+            description: "'Atomic' boosts 'Charge' at a reduced rate",
             cost: new Decimal(3),
             unlocked() {return true},
 
             effect() {
-                return player[this.layer].points.add(1).log10().add(player[this.layer].points).pow(10).div(2)
+                return true
             },
+        },
+        13: {
+            title: "Self-positivity",
+            description: "Atom upgrades boost atom gain",
+            cost: new Decimal(10),
+            unlocked() {return true},
+
+            effect() {
+                return player.t.upgrades.length
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+        21: {
+            title: "Nuclear fusion",
+            description: "Atoms boost 'Fusion' effect",
+            cost: new Decimal(30),
+            unlocked() {return true},
+
+            effect() {
+                let eff = player.t.points.max(1).pow(12)
+                if(player.t.points.lt(1)) eff = 1
+                return eff
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+        },
+        22: {
+            title: "Autoanalysis",
+            description: "Atoms boost nucleus buyables amount",
+            cost: new Decimal(35),
+            unlocked() {return true},
+
+            effect() {
+                let eff = player.t.points.max(1).pow(25).log(10).round()
+                if (hasUpgrade("p",32)) eff = eff.mul(upgradeEffect("p",32))
+                return eff
+            },
+            effectDisplay() { return "<br>Neutrons: +"+formatWhole(upgradeEffect(this.layer, this.id))+"<br>Protons +"+formatWhole(upgradeEffect(this.layer, this.id).pow(0.4))}
+        },
+        23: {
+            title: "Superatomic",
+            description: "Atoms boost neutron buyable effect",
+            cost: new Decimal(40),
+            unlocked() {return true},
+
+            effect() {
+                let eff = player.t.points.add(1)
+                if(eff.lt(1)) eff = 1
+                return eff
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x"}
         },
     },
 
@@ -409,10 +549,12 @@ addLayer("t", {
             },
             costb() {
                 let cost = new Decimal(10)
+                if(hasAchievement("a",31)) cost = cost.sub(5)
                 return cost
             },
             coste() { 
-                let cost = new Decimal(1.5)
+                let cost = new Decimal(1.45)
+                if(hasAchievement("a",31)) cost = cost.sub(0.2)
                 return cost
             },
             base() { 
@@ -425,13 +567,21 @@ addLayer("t", {
             display() {
                 let x = tmp.t.buyables[11].extra
                 let extra = ""
+                let bonus = ""
+                let bonusDis = ""
+                let effbonus = 1
+                if(hasUpgrade("t",22)){
+                    bonus = formatWhole(upgradeEffect("t",22))}
+                if(hasUpgrade("t",23)){
+                    effbonus = format(upgradeEffect("t",23))}
                 if(getBuyableAmount("t", 11).gte(1)){
                 extra = formatWhole(x)}
+                if(hasUpgrade("t",22)) bonusDis = "(+"+bonus+")"
                 let dis = "Increase Atom effect base<br>(based on electrons)"
                 return dis + ".\n\
                 Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" electrons\n\
-                Effect: +" + format(tmp[this.layer].buyables[this.id].effect)+"\n\
-                Amount: " + formatWhole(getBuyableAmount("t", 11))
+                Effect: x" + format(new Decimal(5).mul(effbonus))+"\n\
+                Amount: " + formatWhole(getBuyableAmount("t", 11))+bonusDis
             },
             canAfford() {
                 return player.e.points.gte(tmp[this.layer].buyables[this.id].cost)},
@@ -445,6 +595,8 @@ addLayer("t", {
             buy() {
                 player.e.points = player.e.points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
+                if(hasMilestone("t",2)) this.buyMax()
             },
             buyMax() { 
                 let target = tmp.t.buyables[11].maxAfford
@@ -453,11 +605,13 @@ addLayer("t", {
                 let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.t.buyables[11] = player.t.buyables[11].max(target)
-                
                 }
             },
             effect() {
-                return 1
+                let eff = new Decimal(5)
+                if (hasUpgrade("t",22)){eff = eff.add(upgradeEffect("t",22))}
+                if (hasUpgrade("t",23)){eff = eff.mul(upgradeEffect("t",23))}
+                return eff
             },  
         },
 
@@ -467,15 +621,17 @@ addLayer("t", {
                 let base = tmp.t.buyables[12].costb
                 let exp = tmp.t.buyables[12].coste
                 let x = player.t.buyables[12]
-                let cost = Decimal.pow(base,x.pow(exp)).mul(1e200)
+                let cost = Decimal.pow(base,x.pow(exp)).mul(1e150)
                 return cost
             },
             costb() {
-                let cost = new Decimal(10)
+                let cost = new Decimal(100)
+                if(hasAchievement("a",31)) cost = cost.sub(90)
                 return cost
             },
             coste() { 
-                let cost = new Decimal(2.5)
+                let cost = new Decimal(2.125)
+                if(hasAchievement("a",31)) cost = cost.sub(0.625)
                 return cost
             },
             base() { 
@@ -488,13 +644,18 @@ addLayer("t", {
             display() {
                 let x = tmp.t.buyables[12].extra
                 let extra = ""
+                let bonus = ""
+                let bonusDis = ""
+                if(hasUpgrade("t",22)){
+                    bonus = formatWhole(upgradeEffect("t",22).pow(0.4))}
                 if(getBuyableAmount("t", 12).gte(1)){
                 extra = formatWhole(x)}
+                if(hasUpgrade("t",22)) bonusDis = "(+"+bonus+")"
                 let dis = "Increase Atom effect exponent<br>(based on electrons)"
                 return dis + ".\n\
                 Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" electrons\n\
-                Effect: +" + format(tmp[this.layer].buyables[this.id].effect)+"\n\
-                Amount: " + formatWhole(getBuyableAmount("t", 12))
+                Effect: +" + format(0.2)+"\n\
+                Amount: " + formatWhole(getBuyableAmount("t", 12))+bonusDis
             },
             canAfford() {
                 return player.e.points.gte(tmp[this.layer].buyables[this.id].cost)},
@@ -508,6 +669,8 @@ addLayer("t", {
             buy() {
                 player.e.points = player.e.points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
+                if(hasMilestone("t",2)) this.buyMax()
             },
             buyMax() { 
                 let target = tmp.t.buyables[12].maxAfford
@@ -520,25 +683,36 @@ addLayer("t", {
                 }
             },
             effect() {
-                return 0.25
+                let eff = new Decimal(0.2)
+                if (hasUpgrade("t",22))eff = eff.add(upgradeEffect("t",22).pow(0.4))
+                return eff
             },  
         },
-    }
+    },
 
-    // milestones: {
-    //     0: {
-    //         requirementDescription: "2,500,000 total electrons",
-    //         effectDescription: "Gain 100% of quarks per second",
-    //         done() { return player.e.total.gte(2.5e6) }
-    //     },
-    //     1: {
-    //         requirementDescription: "1e15 total electrons",
-    //         effectDescription: "Unlock a quark upgrade",
-    //         done() { return player.e.total.gte(1e15) }
-    //     },
-    // },
+    milestones: {
+        0: {
+            requirementDescription: "3 atoms",
+            effectDescription: "Keep Quark upgrades on reset",
+            done() { return player.t.best.gte(3) }
+        },
+        1: {
+            requirementDescription: "7 atoms",
+            effectDescription: "Unlock the Nucleus",
+            done() { return player.t.best.gte(7) }
+        },
+        2: {
+            requirementDescription: "50 total atoms",
+            effectDescription: "You can buy max atoms and nucleus buyables",
+            done() { return player.t.total.gte(50) }
+        },
+        3: {
+            requirementDescription: "100 total atoms",
+            effectDescription: "Gain 100% of electrons per second",
+            done() { return player.t.total.gte(100) }
+        },
+    },
 })
-
 
 addLayer("a", {
     name: "Achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -546,7 +720,7 @@ addLayer("a", {
     position: 2, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: true,
-        points: new Decimal(0),
+        points: decimalZero,
     }},
     tooltip() {
       return "Achievements"
@@ -563,6 +737,8 @@ addLayer("a", {
     layerShown() { return true },
     achievementPopups: true,
     achievements: {
+        rows: 3,
+        cols: 5,
         11: {
             name: "Beginning",
             tooltip: "Create the first quark.<br>Reward: 1 AP<br>Next achievement: 500 quarks",
@@ -649,7 +825,7 @@ addLayer("a", {
         },
         24: {
             name: "Atom and Eve",
-            tooltip: "Gain 1 atom.<br>Reward: 2 AP<br>Next achievement: 50 atoms and 1.00e1000 particles",
+            tooltip: "Gain 1 atom.<br>Reward: 2 AP<br>Next achievement: 1 Neutron and 1 Proton",
             done() {
                 return player.t.points.gte(1)
             },
@@ -657,26 +833,31 @@ addLayer("a", {
                 addPoints("a",2)
             }
         },
+        25: {
+            name: "Now THAT's an atom!",
+            tooltip: "Have a Neutron and a Proton<br>Reward: 2 AP<br>Next achievement: 50 atoms and 1.00e1308 particles",
+            done() {
+                return (getBuyableAmount("t",11).gte(1) && getBuyableAmount("t",12).gte(1))
+            },
+            onComplete() {
+                addPoints("a",2)
+            }
+        },
+        31: {
+            name: "Particle accelerator",
+            tooltip: "Have 50 atoms and 1.00e1600 particles<br>Reward: 4 AP, AP reduces atom buyable costs<br>Next achievement: 1 molecule",
+            done() {
+                return (player.t.points.gte(50) && player.points.gte("1.00e1600"))
+            },
+             effect() {
+                let eff = player.a.points.pow(1e5)
+                return eff
+            },
+            onComplete() {
+                addPoints("a",4)
+            }
+        },
     },
-    midsection: ["grid", "blank"],
-    grid: {
-        getStartData(id) {
-            return id
-        },
-        getUnlocked(id) { // Default
-            return true
-        },
-        getStyle(data, id) {
-            return {'background-color': '#'+ (data*1234%999999)}
-        },
-        getTitle(data, id) {
-            return "Gridable #" + id
-        },
-        getDisplay(data, id) {
-            return data
-        },
-    },
-
 
     effect() {
         let eff = player.a.points
@@ -698,62 +879,62 @@ addLayer("a", {
     milestones: {
         0: {
             requirementDescription: "5 achievement particles",
-            effectDescription: "Keep quark upgrades on electron reset",
+            effectDescription: "Keep Quark upgrades on Electron reset",
             done() { return player.a.points.gte(5) }
         },
         1: {
             requirementDescription: "15 achievement particles",
-            effectDescription: "Keep electron milestones",
+            effectDescription: "Keep Electron milestones on Molecule reset",
             done() { return player.a.points.gte(15) }
         },
         2: {
             requirementDescription: "25 achievement particles",
-            effectDescription: "Keep atom milestones",
+            effectDescription: "Keep Atom milestones",
             done() { return player.a.points.gte(25) }
         },
         3: {
             requirementDescription: "33 achievement particles",
-            effectDescription: "Keep molecule milestones",
+            effectDescription: "Keep Molecule milestones",
             done() { return player.a.points.gte(33) }
         },
         4: {
             requirementDescription: "50 achievement particles",
-            effectDescription: "Keep cell milestones",
+            effectDescription: "Keep Cell milestones",
             done() { return player.a.points.gte(50) }
         },
         5: {
             requirementDescription: "75 achievement particles",
-            effectDescription: "Keep organism milestones",
+            effectDescription: "Keep Organism milestones",
             done() { return player.a.points.gte(75) }
         },
         6: {
             requirementDescription: "100 achievement particles",
-            effectDescription: "Keep stardust milestones",
+            effectDescription: "Keep Stardust milestones",
             done() { return player.a.points.gte(100) }
         },
         7: {
             requirementDescription: "150 achievement particles",
-            effectDescription: "Keep dark matter milestones",
+            effectDescription: "Keep Dark Matter milestones",
             done() { return player.a.points.gte(150) }
         },
         8: {
             requirementDescription: "225 achievement particles",
-            effectDescription: "Keep sol milestones",
+            effectDescription: "Keep Sol milestones",
             done() { return player.a.points.gte(225) }
         },
         9: {
             requirementDescription: "500 achievement particles",
-            effectDescription: "Keep nebula milestones",
+            effectDescription: "Keep Nebula milestones",
             done() { return player.a.points.gte(500) }
         },
         10: {
             requirementDescription: "1000 achievement particles",
-            effectDescription: "Keep galaxy milestones",
+            effectDescription: "Keep Galaxy milestones",
             done() { return player.a.points.gte(1000) }
         },
         11: {
             requirementDescription: "2025 achievement particles",
-            effectDescription: "Discover a parallel universe...",
+            effectDescription: "Discover a Parallel Universe...",
             done() { return player.a.points.gte(2025) }
         }
     },
