@@ -103,8 +103,8 @@ function getUndulatingColor(period = Math.sqrt(760)){
 // Display extra things at the top of the page
 var displayThings = [
     function(){
-        let x = getUndulatingColor()
-		let a = "Current endgame: "+colorText("h2", x,format("e280000000"))/*"Taeyeon"*/+" particles (v0.2)"
+        //let x = getUndulatingColor()
+		let a = "Current endgame: "+format("e280000000")+" particles (v0.2)"
         
 		return a + (options.autosave ? "" : ". Warning: autosave is off")
 	},
