@@ -123,11 +123,13 @@ addLayer("p", {
             description: "Particles weaken electron softcap",
             cost: new Decimal("1.00e21800"),
             unlocked(){
-                return (hasMilestone('e',2))
+                return (hasMilestone('e',2) || hasMilestone('m',2))
             },
 
             effect() {
-                return player.points.add(1).max(1).pow(100).log10().pow(50).pow(3)
+                let eff = player.points.add(1).max(1).pow(100).log10().pow(50).pow(3)
+                if (inChallenge("m", 11)) eff = decimalOne
+                return eff
             },
             effectDisplay() { return format(tmp.p.upgrades[31].effect)+"x"}, // Add formatting to the effect
         },
@@ -136,11 +138,13 @@ addLayer("p", {
             description: "Quarks boost atom buyables amount",
             cost: new Decimal("1.00e28000"),
             unlocked(){
-                return (hasMilestone('e',2))
+                return (hasMilestone('e',2) || hasMilestone('m',2))
             },
 
             effect() {
-                return player.p.points.add(1).max(1).log10().div(1e4)
+                let eff = player.p.points.add(1).max(1).log10().div(1e4).max(1)
+                if (inChallenge("m", 11)) eff = decimalOne
+                return eff
             },
             effectDisplay() { return format(tmp.p.upgrades[32].effect)+"x"}, // Add formatting to the effect
         },
@@ -149,11 +153,13 @@ addLayer("p", {
             description: "Quarks boost 'Double negative' effect",
             cost: new Decimal("1.00e52065"),
             unlocked(){
-                return (hasMilestone('e',2))
+                return (hasMilestone('e',2) || hasMilestone('m',2))
             },
 
             effect() {
-                return player.p.points.add(1).max(1).pow(160).log10().pow(404)
+                let eff = player.p.points.add(1).max(1).pow(160).log10().pow(404)
+                if (inChallenge("m", 11)) eff = decimalOne
+                return eff
             },
             effectDisplay() { return format(tmp.p.upgrades[33].effect)+"x"}, // Add formatting to the effect
         },
@@ -170,11 +176,12 @@ addLayer("p", {
         if (hasMilestone("a", 0) && resettingLayer=="e") keep.push("upgrades")
         if (hasMilestone("t", 0) && resettingLayer=="t") keep.push("upgrades")
         if (hasMilestone("m", 0)) keep.push(11,12,13,21,22)
-        if (hasMilestone("m", 0) && hasUpgrade("p",23)) keep.push(23)
-        if (hasMilestone("m", 0) && hasUpgrade("p",31)) keep.push(31)
-        if (hasMilestone("m", 0) && hasUpgrade("p",32)) keep.push(32)
-        if (hasMilestone("m", 0) && hasUpgrade("p",33)) keep.push(33)
+        if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",23) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(23)
+        if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",31) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(31)
+        if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",32) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(32)
+        if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",33) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(33)
         if (hasMilestone("m", 1)) keep.push(23)
+        if (hasMilestone("m", 2)) keep.push(31,32,33)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
         player[this.layer].upgrades = keep
     },
@@ -223,10 +230,11 @@ addLayer("e", {
     doReset(resettingLayer){
         if (layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
+        let keepMile = []
         if (player.e.best>0) keep.push(player.p.best)
-        if (hasMilestone("a",1)) keep.push("milestones")
+        if (hasMilestone("a",1)) keepMile.push(0,1,2)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
-        
+        player[this.layer].milestones = keepMile
     },
 
     
@@ -235,13 +243,13 @@ addLayer("e", {
         let eff = player.e.points.add(1).max(1)
         eff = eff.pow(2)
         if (eff.gte(Decimal.pow(10,16))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
-        if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (player.t.total.gte(1)) eff = eff.mul(tmp.t.effect)
         if (hasUpgrade("t", 11)){
             eff = eff.mul(upgradeEffect('t',11).add(1).log10())}
         if (hasUpgrade("p", 31)){
                 eff = eff.mul(upgradeEffect('p',31).mul(1e7).add(1).max(1))}
         if (player.e.points.lt(1) && player.e.best.gte(1)) eff = eff.add(1)
+        if (inChallenge("m", 11)) eff = eff.pow(0.75)
         return eff
     },
     effectDescription() {
@@ -383,12 +391,16 @@ addLayer("t", {
         best: new Decimal(0),
     }},
     color: "#99ff33",
-    requires: new Decimal(1e100), // Can be a function that takes requirement increases into account
+    requires()  { if(hasUpgrade("m",12) && !inChallenge("m",11)) {return new Decimal(1e100).div(upgradeEffect("m",11).pow(1e4).pow(25).max(1))}
+    else {return new Decimal(1e100)}}, // Can be a function that takes requirement increases into account
     resource: "atoms", // Name of prestige currency
     baseResource: "electrons", // Name of resource prestige is based on
     baseAmount() {return player.e.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: new Decimal(1.3),
+    exponent() {
+        let tExp = new Decimal(1.3)
+        if(hasUpgrade("m",13)) tExp = tExp.sub(upgradeEffect("m",13))
+        return tExp},
     base: new Decimal(1e3),
     softcap: Decimal.pow(10,4),
     softcapPower: 0.4,
@@ -415,8 +427,11 @@ addLayer("t", {
     doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
+        let keepMile = []
         if(player.t.best>0) keep.push(player.e.best)
+        if(hasMilestone("m",5)) keepMile.push(0,1,2,3,4)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
+        if(hasMilestone("m",5)) player[this.layer].milestones = keepMile
     },
     tabFormat: {
         "Main": {
@@ -475,6 +490,7 @@ addLayer("t", {
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (player.t.points.lt(1) && player.t.best.gte(1) && getBuyableAmount("t", 11).lt(1)) eff = eff.add(1)
+        if (inChallenge("m", 11)) eff = decimalOne
         return eff
     },
     effectDescription() {
@@ -760,7 +776,8 @@ addLayer("m", {
     nodeStyle() {return {
         "background-color": ((player.m.unlocked||canReset("m"))?"#ff6699":"#993366"),
     }},
-    requires() { if(hasUpgrade("m",11)) {return nnew Decimal(1310).div(upgradeEffect("m",11).max(1))ew Decimal(1310):}, // Can be a function that takes requirement increases into account
+    requires() { if(hasUpgrade("m",11)) {return new Decimal(1310).div(upgradeEffect("m",11).pow(0.5).max(1))}
+                else {return new Decimal(1310)}}, // Can be a function that takes requirement increases into account
     resource: "molecules", // Name of prestige currency
     baseResource: "atoms", // Name of resource prestige is based on
     baseAmount() {return player.t.points}, // Get the current amount of baseResource
@@ -786,7 +803,7 @@ addLayer("m", {
     ],
     layerShown(){return player.t.best.gte(700)},
     //resetsNothing() { return hasMilestone("t", 4) },
-    //canBuyMax() { return hasMilestone("t", 2)},
+    canBuyMax() { return hasMilestone("m", 3)},
     doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
@@ -828,7 +845,7 @@ addLayer("m", {
             "blank",
                 "challenges"
             ],
-            unlocked() {return hasMilestone("m",2)}
+            unlocked() {return hasMilestone("m",4)}
         },
         // "Nucleus": {
         //     content:[
@@ -856,7 +873,9 @@ addLayer("m", {
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (player.m.points.lt(1) && player.m.best.gte(1)) eff = eff.add(1)
+        if (hasUpgrade("m",14)) eff = eff.mul(upgradeEffect("m",14))
         if (inChallenge("m", 11)) eff = decimalOne
+        if (challengeCompletions("m", 11)>0) eff = eff.mul(tmp.m.challenges[11].rewardEffect)
         return eff
     },
     effect2(){
@@ -865,7 +884,9 @@ addLayer("m", {
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e6).pow(2e3)
         if (player.m.points.lt(1) && player.m.best.gte(1)) eff = eff.add(1)
+        if (hasUpgrade("m",14)) eff = eff.mul(upgradeEffect("m",14))
         if (inChallenge("m", 11)) eff = decimalOne
+        if (challengeCompletions("m", 11)>0) eff = eff.mul(tmp.m.challenges[11].rewardEffect)
         return eff
     },
     effectDescription() {
@@ -883,7 +904,7 @@ addLayer("m", {
     upgrades: {
         11: {
             title: "Reactivity",
-            description: "Best molecules reduce cost scaling",
+            description: "Best molecules reduce cost requirement",
             cost: new Decimal(5),
             unlocked() {return true},
 
@@ -894,43 +915,43 @@ addLayer("m", {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
         12: {
-            title: "M upg 2",
-            description: "placeholder",
-            cost: new Decimal(1e307),
+            title: "Submolecular",
+            description: "'Reactivity' also reduces atom cost requirement",
+            cost: new Decimal(10),
             unlocked() {return true},
-
-            // effect() {
-            //     if(player[this.layer].points.gte(1)) {
-            //     return player[this.layer].points.add(1).max(1).add(player[this.layer].points).pow(10).div(2)}
-            //     return decimalOne
-            // },
-            // effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            //{return new Decimal(1e100).div(upgradeEffect("m",11).pow(1e4).pow(25).max(1))}
+            effect() {
+                let eff = upgradeEffect("m",11).pow(10).max(1)
+                return eff
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
         13: {
-            title: "M upg 3",
-            description: "placeholder",
-            cost: new Decimal(1e307),
+            title: "Growth",
+            description: "Number of molecule upgrades reduces atom cost scaling exponent",
+            cost: new Decimal(20),
             unlocked() {return true},
 
-            // effect() {
-            //     if(player[this.layer].points.gte(1)) {
-            //     return player[this.layer].points.add(1).max(1).add(player[this.layer].points).pow(10).div(2)}
-            //     return decimalOne
-            // },
-            // effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effect() { 
+                return new Decimal(0.015).mul(player.m.upgrades.length)
+            },
+            effectDisplay() {
+                let dis ="-"+format(upgradeEffect(this.layer, this.id))+"<br>Atom cost exp: "+format(tmp.t.exponent)
+                return dis
+            }
         },
         14: {
-            title: "M upg 4",
-            description: "placeholder",
-            cost: new Decimal(1e307),
+            title: "Rapid expansion",
+            description: "Particles boost molecule effect",
+            cost: new Decimal(25),
             unlocked() {return true},
 
-            // effect() {
-            //     if(player[this.layer].points.gte(1)) {
-            //     return player[this.layer].points.add(1).max(1).add(player[this.layer].points).pow(10).div(2)}
-            //     return decimalOne
-            // },
-            // effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effect() {
+                let eff = player.points.add(1).max(1).pow(0.01).div(20)
+                if(player.points.gte(1)) {return eff}
+                else {return decimalOne}
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
         15: {
             title: "M upg 5",
@@ -1233,9 +1254,24 @@ addLayer("m", {
             done() { return player.m.best.gte(3) }
         },
         2: {
-            requirementDescription: "10 molecules",
+            requirementDescription: "10 total molecules",
+            effectDescription: "Keep all quark upgrades on reset",
+            done() { return player.m.total.gte(10) }
+        },
+        3: {
+            requirementDescription: "15 total molecules",
+            effectDescription: "You can buy max molecules",
+            done() { return player.m.total.gte(15) }
+        },
+        4: {
+            requirementDescription: "25 total molecules",
             effectDescription: "Unlock challenges",
-            done() { return player.m.best.gte(10) }
+            done() { return player.m.total.gte(25) }
+        },
+        5: {
+            requirementDescription: "100 total molecules",
+            effectDescription: "Keep atom milestones on reset",
+            done() { return player.m.total.gte(100) }
         },
     },
     challenges: { // Order: 1x1,2x1,1x2,3x1,4x1,2x2,1x3,3x2,2x3,4x2,3x3,4x3
@@ -1244,25 +1280,25 @@ addLayer("m", {
         11: {
             name: "Unreactive",
             challengeDescription: function() {
-                let c11 = "Molecule effect is useless."
-                if (inChallenge("m", 11)) c11 = c11 + " (In Challenge)"
-                if (challengeCompletions("m", 11) == 3) c11 = c11 + " (Completed)"
+                let c11 = "Molecule and atom effects are useless.<br>Row 3 quark upgrades have no effect.<br>Electron effect is weaker."
+                if (inChallenge("m", 11)) c11 = c11 + "<br> (In Challenge)"
+                if (challengeCompletions("m", 11) == 3) c11 = c11 + "<br> (Completed)"
                 c11 = c11 + "<br>Completed:" + challengeCompletions("m",11) + "/" + tmp.m.challenges[11].completionLimit
                 return c11
             },
             goal(){
-                if (challengeCompletions("m", 11) == 0) return Decimal.pow(10,2610);
-                if (challengeCompletions("m", 11) == 1) return Decimal.pow(10,2865);
-                if (challengeCompletions("m", 11) == 2) return Decimal.pow(10,4860);
+                if (challengeCompletions("m", 11) == 0) return Decimal.pow(10,200);
+                if (challengeCompletions("m", 11) == 1) return Decimal.pow(10,2e4);
+                if (challengeCompletions("m", 11) == 2) return Decimal.pow(10,2e6);
             },
             currencyDisplayName: "particles",
             completionLimit:3 ,
             rewardDescription: "Molecules boost their effect.",
             rewardEffect() {
                  let c11 = player.m.points.add(1).max(1)
-                 let c11r = new Decimal(1.27)
+                 let c11r = new Decimal(5)
                  let c11c = challengeCompletions("m", 11)
-                 c11c = Decimal.pow(1.2, c11c)
+                 c11c = Decimal.pow(1.3, c11c)
                  c11 = Decimal.log10(c11).pow(0.7)
                  c11 = Decimal.pow(10,c11)
                  c11r = c11r.mul(c11c)
@@ -1273,7 +1309,7 @@ addLayer("m", {
             },
             rewardDisplay() {return format(tmp.m.challenges[11].rewardEffect)+"x"},
             unlocked(){
-                return hasMilestone("m", 2)
+                return hasMilestone("m", 4)
             }
         },
     },
@@ -1424,9 +1460,29 @@ addLayer("a", {
         },
         32: {
             name: "They combine now??",
-            tooltip: "Gain 1 molecule<br>Reward: 4 AP<br>Next achievement: complete first molecular challenge",
+            tooltip: "Gain 1 molecule<br>Reward: 4 AP<br>Next achievement: 15 total molecules",
             done() {
                 return (player.m.points.gte(1))
+            },
+            onComplete() {
+                addPoints("a",4)
+            }
+        },
+        33: {
+            name: "They combine now!",
+            tooltip: "Gain 15 total molecules<br>Reward: 4 AP<br>Next achievement: complete first molecular challenge",
+            done() {
+                return (player.m.total.gte(15))
+            },
+            onComplete() {
+                addPoints("a",4)
+            }
+        },
+        34: {
+            name: "A new challenger approaches!",
+            tooltip: "Complete a challenge<br>Reward: 4 AP<br>Next achievement: complete second molecular challenge",
+            done() {
+                return (challengeCompletions("m",11)==1)
             },
             onComplete() {
                 addPoints("a",4)

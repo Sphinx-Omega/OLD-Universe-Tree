@@ -61,10 +61,64 @@ function getPointGen() {
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
+	lastSave: new Date().getTime(),
+	ms: 50,
+	options:false,
+    notation:'Scientific',
 }}
+
+function convertToB16(n){
+    let codes = {
+            0: "0",
+            1: "1",
+            2: "2",
+            3: "3",
+            4: "4",
+            5: "5",
+            6: "6",
+            7: "7",
+            8: "8",
+            9: "9",
+            10: "A",
+            11: "B",
+            12: "C",
+            13: "D",
+            14: "E",
+            15: "F",
+    }
+    let x = n % 16
+    return codes[(n-x)/16] + codes[x]
+}
+function getUndulatingColor(period = Math.sqrt(760)){
+        let t = new Date().getTime()
+        let a = Math.sin(t / 1e3 / period * 2 * Math.PI + 0) 
+        let b = Math.sin(t / 1e3 / period * 2 * Math.PI + 2)
+        let c = Math.sin(t / 1e3 / period * 2 * Math.PI + 4)
+        a = convertToB16(Math.floor(a*128) + 128)
+        b = convertToB16(Math.floor(b*128) + 128)
+        c = convertToB16(Math.floor(c*128) + 128)
+        return "#"+String(a) + String(b) + String(c)
+}
 
 // Display extra things at the top of the page
 var displayThings = [
+    function(){
+        let x = getUndulatingColor()
+		let a = "Current endgame: "+colorText("h2", x,format("e280000000"))/*"Taeyeon"*/+" particles (v0.2)"
+        
+		return a + (options.autosave ? "" : ". Warning: autosave is off")
+	},
+	function(){
+		let a = new Date().getTime() - player.lastSave
+		let b = "Last save was " + formatTime(a/1000) + " ago."
+		if (lastTenTicks.length < 10) return b
+		let c = 0
+		for (i = 0; i<10; i++){
+			c += lastTenTicks[i] / 10000
+		}
+        let d = isEndgame()?makeBlue("<br>You are past endgame,<br>and the game might not be balanced here."):""
+		return b + " Average TPS = " + format(c, 3) + "s/tick."+d
+	}
 ]
 
 // Determines when the game "ends"
