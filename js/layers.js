@@ -378,7 +378,9 @@ addLayer("e", {
             unlocked() {return challengeCompletions("m",12) >= 1},
 
             effect() {
-                return player[this.layer].points.add(1).pow(0.52)
+                let eff = player[this.layer].points.add(1).pow(0.52)
+                if(inChallenge("m",11)||inChallenge("m",12)||inChallenge("m",21)) eff= eff.max(1).log10().pow(0.1).log10().max(1)
+                return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
@@ -389,7 +391,9 @@ addLayer("e", {
             unlocked() {return challengeCompletions("m",12) >= 2},
 
             effect() {
-                return player[this.layer].points.add(1).pow(100).pow(100).max(1).log10()
+                let eff = player[this.layer].points.add(1).pow(100).pow(100).max(1).log10()
+                if(inChallenge("m",11)||inChallenge("m",12)||inChallenge("m",21)) eff= eff.max(1).log10().pow(0.1).log10().max(1)
+                return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
@@ -569,7 +573,7 @@ addLayer("t", {
         return eff
     },
     effectDescription() {
-        let dis = "Boosting electron vibration by x" + format(tmp.t.effect)
+        let dis = "Boosting electron vibration by " + format(tmp.t.effect) + "x"
         if (tmp.t.effect.gte(Decimal.pow(10,16))) dis += " (softcapped)"
         return dis
     },
@@ -857,7 +861,11 @@ addLayer("m", {
     baseResource: "atoms", // Name of resource prestige is based on
     baseAmount() {return player.t.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: new Decimal(1.3),
+    exponent(){
+        let mExp = new Decimal(1.3)
+        if(hasUpgrade("m",22)) mExp = mExp.sub((upgradeEffect("m",22).sub(decimalOne)).pow(1.5)).max(1)
+        return mExp
+    },
     base: new Decimal(1.04),
     softcap: Decimal.pow(10,4),
     softcapPower: 0.4,
@@ -1087,17 +1095,15 @@ addLayer("m", {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
         22: {
-            title: "M upg 6",
-            description: "placeholder",
-            cost: new Decimal(1e307),
+            title: "Adversity",
+            description: "Challenge completions reduce scaling exponent",
+            cost: new Decimal(50),
             unlocked() {return true},
 
-            // effect() {
-            //     if(player[this.layer].points.gte(1)) {
-            //     return player[this.layer].points.add(1).max(1).add(player[this.layer].points).pow(10).div(2)}
-            //     return decimalOne
-            // },
-            // effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effect() {
+                return (tmp.m.challengesTotalEffect).pow(0.025).max(1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
         23: {
             title: "M upg 7",
