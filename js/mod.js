@@ -55,7 +55,11 @@ function getPointGen() {
 	if (hasUpgrade('p', 22)) gain = gain.times(upgradeEffect('p', 22))
 	if (hasUpgrade('e', 11)) gain = gain.times(upgradeEffect('e', 11))
 	if (hasUpgrade('e', 21)) gain = gain.times(upgradeEffect('e', 21))
-	if (hasUpgrade('m', 15)) gain = gain.times(upgradeEffect('m', 15))
+	if (hasUpgrade('m', 21)) gain = gain.times(upgradeEffect('m', 21))
+	if (inChallenge("m",21)) { gain = gain.log10().pow(0.2)
+		if(hasUpgrade("r",13)) gain = gain.mul(upgradeEffect("r",13))
+		if(hasUpgrade("r",23)) gain = gain.mul(upgradeEffect("r",23))
+	}
 	return gain
 
 }
@@ -106,8 +110,9 @@ var displayThings = [
     function(){
         //let x = getUndulatingColor()
 		let a = "Current endgame: "+format("e1e6e6")+" particles (v0.2)"
-        
-		return a + (options.autosave ? "" : ". Warning: autosave is off")
+		let b = inChallenge("m",21)?"<br>'Undiscovered' progress: " + format(player.points.max(1).log10().pow(0.64953))
+        +"%":""
+		return a + b + (options.autosave ? "" : ". Warning: autosave is off")
 	},
 	function(){
         let d = isEndgame()?makeBlue("<br>You are past endgame,<br>and the game might not be balanced here."):""
