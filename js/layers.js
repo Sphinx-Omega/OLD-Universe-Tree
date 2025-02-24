@@ -1,3 +1,7 @@
+function makeBlue(c){
+    return "<span style='color:#4444bb'>" + c + "</span>"
+}
+
 addLayer("p", {
     name: "quarks", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "Q", // This appears on the layer's node. Default is the id with the first letter capitalized
@@ -9,6 +13,10 @@ addLayer("p", {
         best: new Decimal(0),
     }},
     color: "#737373",
+    nodeStyle() {return {
+        "background": ((inChallenge("m",21) && hasMilestone("m",7))?"radial-gradient(rgb(78, 78, 78),rgb(255, 255, 255))": "radial-gradient( #737373,#737373)"),
+        color: ((inChallenge("m",21) && hasMilestone("m",7))?"rgb(255, 233, 34)":"rgb(61, 61, 61)"),
+    }},
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
     resource: "quarks", // Name of prestige currency
     baseResource: "particles", // Name of resource prestige is based on
@@ -190,6 +198,7 @@ addLayer("p", {
 
     doReset(resettingLayer) {
         let keep = [];
+        if (resettingLayer == "p") keep.push("upgrades")
         if (hasMilestone("a", 0) && resettingLayer=="e") keep.push("upgrades")
         if (hasMilestone("t", 0) && resettingLayer=="t") keep.push("upgrades")
         if (hasMilestone("m", 0)) keep.push(11,12,13,21,22)
@@ -199,8 +208,8 @@ addLayer("p", {
         if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",33) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(33)
         if (hasMilestone("m", 1)) keep.push(23)
         if (hasMilestone("m", 2)) keep.push(31,32,33)
-        if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
-        player[this.layer].upgrades = keep
+        if (layers[resettingLayer].row > this.row) {layerDataReset(this.layer, keep)
+        player[this.layer].upgrades = keep}
     },
 })
 
@@ -218,9 +227,14 @@ addLayer("e", {
     }},
     color: "#0066ff",
     nodeStyle() {return {
+        "background": ((inChallenge("m",21))?"radial-gradient(rgb(60, 97, 153),rgb(0, 0, 0))":"#0066ff" ),
         "background-color": (((player.e.unlocked||canReset("e")) && !inChallenge("m",21))?"#0066ff":"#4e678d"),
     }},
-    requires: new Decimal(1000000), // Can be a function that takes requirement increases into account
+    requires() {
+        let cost = new Decimal(1e6)
+        if(hasUpgrade("e",33)) cost = cost.pow(decimalZero.sub(upgradeEffect("e",33)))
+        return cost
+    },  // Can be a function that takes requirement increases into account
     resource: "electrons", // Name of prestige currency
     baseResource: "quarks", // Name of resource prestige is based on
     baseAmount() {return player.p.points}, // Get the current amount of baseResource
@@ -275,7 +289,7 @@ addLayer("e", {
         if (player.e.points.lt(1) && player.e.best.gte(1)) eff = eff.add(1)
         if (inChallenge("m", 11)) eff = eff.pow(0.75)
         if (inChallenge("m", 12)) eff = decimalOne
-        if (inChallenge("m", 21)) eff = decimalOne
+        if (inChallenge("m", 21)) eff = decimalOne, player.e.points = decimalZero
         return eff
     },
     effectDescription() {
@@ -398,11 +412,11 @@ addLayer("e", {
         33: {
             title: "Despair",
             description: "Electrons boost 'Negative energy' effect",
-            cost: new Decimal("ee6143395"),
+            cost: new Decimal("e2.185e10"),
             unlocked() {return challengeCompletions("m",12) == 3},
 
             effect() {
-                return player[this.layer].points.add(1).pow(0.05).pow(0.05).max(1).log10()
+                return player[this.layer].points.add(1).pow(25).max(1).log10().max(1).pow(0.8)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
@@ -456,10 +470,13 @@ addLayer("t", {
     }},
     color: "#99ff33",
     nodeStyle() {return {
-        "background-color": (((player.t.unlocked||canReset("t")) && !inChallenge("m",21))?"#99ff33":"#697a57"),
+        "background": ((inChallenge("m",21))?"radial-gradient(rgb(65, 126, 65),rgb(0, 0, 0))":"#99ff33" ),
+        "background-color": (((player.e.unlocked||canReset("e")) && !inChallenge("m",21))?"#99ff33":"#697a57"),
     }},
-    requires()  { if(hasUpgrade("m",12) && !inChallenge("m",11)) {return new Decimal(1e100).div(upgradeEffect("m",11).pow(1e4).pow(25).max(1))}
-    else {return new Decimal(1e100)}}, // Can be a function that takes requirement increases into account
+    requires()  {
+        if(hasUpgrade("m",12) && !inChallenge("m",11)) {return new Decimal(1e100).div(upgradeEffect("m",11).pow(1e4).pow(25).max(1))}
+        else {return new Decimal(1e100)}
+    }, // Can be a function that takes requirement increases into account
     resource: "atoms", // Name of prestige currency
     baseResource: "electrons", // Name of resource prestige is based on
     baseAmount() {return player.e.points}, // Get the current amount of baseResource
@@ -482,7 +499,8 @@ addLayer("t", {
         return tmult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
-        return new Decimal(1)
+        let exp = decimalOne
+        return exp
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
@@ -557,6 +575,7 @@ addLayer("t", {
 
     effect(){
         let eff = player.t.points.add(1).max(1).pow(1.8)
+        let hc1 = Decimal.pow(10,3.333333e6)
         if(player.m.best.gte(1)) eff = eff.mul(tmp.m.effect1)
         if(getBuyableAmount("t", 11).gte(1)){
         eff = eff.mul(getBuyableAmount("t", 11).mul(tmp.t.buyables[11].effect))}
@@ -566,13 +585,18 @@ addLayer("t", {
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e4).pow(2e5)
         if (player.t.points.lt(1) && player.t.best.gte(1) && getBuyableAmount("t", 11).lt(1)) eff = eff.add(1)
+        if (eff.gte(hc1)) eff = hc1
         if (inChallenge("m", 11)) eff = decimalOne
-        if (inChallenge("m", 21)) eff = decimalOne
+        if (inChallenge("m", 21)) eff = decimalOne, player.t.points = decimalZero
         return eff
     },
     effectDescription() {
         let dis = "Boosting electron vibration by " + format(tmp.t.effect) + "x"
-        if (tmp.t.effect.gte(Decimal.pow(10,16))) dis += " (softcapped)"
+        let disSC = " (softcapped)"
+        let disHC = " (hardcapped)"
+        let disLim = disSC
+        if (tmp.t.effect.gte(Decimal.pow(10,3.333333e6))) disLim = disHC
+        if (tmp.t.effect.gte(Decimal.pow(10,16))) dis += disLim
         return dis
     },
     layerShown() {
@@ -680,6 +704,7 @@ addLayer("t", {
             coste() { 
                 let cost = new Decimal(1.45)
                 if(hasAchievement("a",31)) cost = cost.sub(0.2)
+                if(getBuyableAmount("t",11).gte(5e6)) cost = cost.add(0.25)
                 return cost
             },
             base() { 
@@ -757,6 +782,7 @@ addLayer("t", {
             coste() { 
                 let cost = new Decimal(2.125)
                 if(hasAchievement("a",31)) cost = cost.sub(0.625)
+                if(getBuyableAmount("t",12).gte(5e5)) cost = cost.add(0.25)
                 return cost
             },
             base() { 
@@ -804,14 +830,13 @@ addLayer("t", {
                 let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.t.buyables[12] = player.t.buyables[12].max(target)
-                
                 }
             },
             effect() {
                 let eff = new Decimal(0.125)
                 if (hasUpgrade("t",22))eff = eff.add(upgradeEffect("t",22).pow(0.3))
                 return eff
-            },  
+            }, 
         },
     },
 
@@ -857,7 +882,8 @@ addLayer("m", {
     }},
     color: "#ff6699",
     nodeStyle() {return {
-        "background-color": (((player.m.unlocked||canReset("m")) && !inChallenge("m",21))?"#ff6699":"#76425c"),
+        "background": (inChallenge("m",21))?((hasMilestone("m",9))?"radial-gradient(rgb(7, 0, 15),rgb(162, 0, 255))": "radial-gradient(rgb(163, 65, 98),rgb(54, 18, 33))"):(((player.m.unlocked||canReset("m")))?"#ff6699":"#bb5476"),   
+        color: ((inChallenge("m",21) && hasMilestone("m",9))?"rgb(255, 251, 0)":"rgb(129, 0, 106)"),
     }},
     requires() { if(hasUpgrade("m",11)) {return new Decimal(1310).div(upgradeEffect("m",11).pow(0.5).max(1))}
                 else {return new Decimal(1310)}}, // Can be a function that takes requirement increases into account
@@ -873,7 +899,13 @@ addLayer("m", {
     base: new Decimal(1.04),
     softcap: Decimal.pow(10,4),
     softcapPower: 0.4,
-    branches: ["e","t"],
+    branches() {
+        let branch1 = "e"
+        let branch2 = "t"
+        let branch3 = ""
+        if(inChallenge("m",21) && hasMilestone("m",9)) {branch3 += "r"}
+        return  [branch1,branch2,branch3]
+    },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mMult = new Decimal(1)
         return mMult
@@ -889,6 +921,16 @@ addLayer("m", {
         unlocked() {return player.m.best.gte(1)}}
     ],
     layerShown(){return player.t.best.gte(700)},
+    shouldNotify() {
+        return inChallenge("m",21) && ((!hasUpgrade("m",41) && tmp.m.upgrades[41].canAfford) || (!hasUpgrade("m",42) && tmp.m.upgrades[42].canAfford) || (!hasUpgrade("m",43) && tmp.m.upgrades[43].canAfford) || (!hasUpgrade("m",44) && tmp.m.upgrades[44].canAfford))
+    },
+    tooltip() {
+        let dis = player.m.points + " molecules"
+        if (inChallenge("m",21)) {
+            if (tmp.m.upgrades[41].canAfford || tmp.m.upgrades[42].canAfford || tmp.m.upgrades[43].canAfford || tmp.m.upgrades[44].canAfford) dis += " (Anti-upgrade available!)"
+        }
+        return dis
+    },
     //resetsNothing() { return hasMilestone("t", 4) },
     canBuyMax() { return hasMilestone("m", 3)},
     doReset(resettingLayer){
@@ -937,7 +979,7 @@ addLayer("m", {
             "blank",
             ["raw-html"],
                 function() {
-                    if(inChallenge("m",21) || hasMilestone("m",7)) {return ["milestones",[7,9,10,11]]}
+                    if(inChallenge("m",21) || hasMilestone("m",7)) {return ["milestones",[7,9,10,11,13,14]]}
                 },
             "blank",
             function () {if (player.tab == "m" && player.subtabs.m.mainTabs == "Undiscovered") return ["row",[["buyable",11],["buyable",12]]]},
@@ -973,15 +1015,17 @@ addLayer("m", {
         let sc1 = Decimal.pow(10,15)
         let sc2 = Decimal.pow(10,100)
         let sc3 = Decimal.pow(10,1e6)
+        let sc4 = Decimal.pow(10,1e9)
         let effExp = decimalOne
         if (challengeCompletions("m",21)>0) sc2 = sc2.mul(challenges("m",21).rewardEffect)
         if (eff.gte(sc1)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,8)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(sc2)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
-        if (eff.gte(sc3)) eff = eff.log10().div(1e6).pow(2e3)
+        if (eff.gte(sc3)) eff = eff.log10().div(1e6).pow(2e3)     
         if (player.m.points.lt(1) && player.m.best.gte(1)) eff = eff.add(1)
         if (hasUpgrade("m",14)) eff = eff.mul(upgradeEffect("m",14))
         if (getBuyableAmount("m",12).gte(1)) effExp = effExp.add(tmp.m.buyables[12].effect) 
         if (challengeCompletions("m", 11)>0) eff = eff.mul(tmp.m.challenges[11].rewardEffect)
+        if (eff.gte(sc4)) eff = eff.div(Decimal.pow(10,2)).pow(0.1).max(1)
         if (inChallenge("m", 11)) eff = decimalOne
         if (inChallenge("m", 21)) eff = decimalOne
         return eff.pow(effExp)
@@ -991,6 +1035,7 @@ addLayer("m", {
         let sc1 = Decimal.pow(10,15)
         let sc2 = Decimal.pow(10,100)
         let sc3 = Decimal.pow(10,1e6)
+        let sc4 = Decimal.pow(10,1e9)
         let effExp = decimalOne
         if (challengeCompletions("m",21)>0) sc2 = sc2.mul(challenges("m",21).rewardEffect)
         if (eff.gte(sc1)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,8)).log10().pow(0.88)).mul(Decimal.pow(10,5))
@@ -1000,6 +1045,7 @@ addLayer("m", {
         if (hasUpgrade("m",14)) eff = eff.mul(upgradeEffect("m",14))
         if (getBuyableAmount("m",12).gte(1)) effExp = effExp.add(tmp.m.buyables[12].effect)
         if (challengeCompletions("m", 11)>0) eff = eff.mul(tmp.m.challenges[11].rewardEffect)
+        if (eff.gte(sc4)) eff = eff.div(Decimal.pow(10,2)).pow(0.1).max(1)
         if (inChallenge("m", 11)) eff = decimalOne
         if (inChallenge("m", 21)) eff = decimalOne
         return eff.pow(effExp)
@@ -1137,6 +1183,7 @@ addLayer("m", {
 
             effect() {
                 let eff = player.points.add(1).max(1).log10().max(1).log10().max(1).pow(4)
+                if(hasUpgrade("m",42) && inChallenge("m",12)) eff = eff.pow(upgradeEffect("m",42))
                 return eff
             },
             effectDisplay() { return "^"+format(upgradeEffect(this.layer, this.id)) }
@@ -1178,23 +1225,37 @@ addLayer("m", {
             }
         },
         42: {
-            title: "M upg 10",
-            description: "placeholder",
-            cost: new Decimal(1e307),
+            title: "Anti Charged",
+            description: "'Molecular Boost II' is stronger in 'Uncharged'",
+            cost() {
+                return new Decimal(1e165)
+            },
+            currencyDisplayName: "particles in 'Undiscovered'",
             unlocked() {return hasMilestone("m",11)},
 
-            // effect() {
-            //     if(player[this.layer].points.gte(1)) {
-            //     return player[this.layer].points.add(1).max(1).add(player[this.layer].points).pow(10).div(2)}
-            //     return decimalOne
-            // },
-            // effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+            effect() {
+                let eff = decimalOne
+                eff = eff.div(3).add(1)
+                return eff
+            },
+            effectDisplay() { return "^"+format(upgradeEffect(this.layer, this.id)) },
+
+            canAfford() {
+                return  (player.points.gte(1e165) && inChallenge("m",21))
+            },
+
+            pay() {
+                player.points = player.points.sub(this.cost())
+            },
 
             style: {
                 "background"() {
+                    if (!hasUpgrade("m",42)) {
                     let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
-                    if (tmp.m.upgrades[42].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    if (tmp.m.upgrades[42].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"   
                     return color
+                    } if (hasUpgrade("m",42)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                        return color}
                 }
             }
         },
@@ -1350,10 +1411,11 @@ addLayer("m", {
                 return target.floor().add(1)
             },
             buy() {
-                player.r.points = player.r.points.sub(this.cost())
+                if(!hasMilestone("m",13)) {
+                player.r.points = player.r.points.sub(this.cost())}
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
                 // if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
-                // if(hasMilestone("t",2)) this.buyMax()
+                if(hasMilestone("m",13)) this.buyMax()
             },
             buyMax() { 
                 let target = tmp.m.buyables[11].maxAfford
@@ -1432,10 +1494,11 @@ addLayer("m", {
                 return target.floor().add(1)
             },
             buy() {
-                player.r.points = player.r.points.sub(this.cost())
+                if(!hasMilestone("m",14)) {
+                player.r.points = player.r.points.sub(this.cost())}
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
                 // if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
-                // if(hasMilestone("t",2)) this.buyMax()
+                if(hasMilestone("m",14)) this.buyMax()
             },
             buyMax() { 
                 let target = tmp.m.buyables[12].maxAfford
@@ -1572,6 +1635,38 @@ addLayer("m", {
             done() { return player.m.total.gte(560) },
             unlocked() {return hasMilestone("m",7)},
         },
+        13: {
+            requirementDescription: "1e130 particles in 'Undiscovered'",
+            effectDescription: "You can buy max Anti-Boosters and they cost nothing",
+            done() {
+                if(inChallenge("m",21)) {return player.points.gte(1e130)}
+                else return false
+            },
+            doneColor: "#623dc7",   
+            style() {return {
+                "background": (hasMilestone("m",13)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
+            },
+            unlocked() {
+                if(tmp.m.milestones[10].done) return true
+                else return false
+            }
+        },
+        14: {
+            requirementDescription: "1e250 particles in 'Undiscovered'",
+            effectDescription: "You can buy max Anti-Bonds and they cost nothing",
+            done() {
+                if(inChallenge("m",21)) {return player.points.gte(1e250)}
+                else return false
+            },
+            doneColor: "#623dc7",   
+            style() {return {
+                "background": (hasMilestone("m",14)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
+            },
+            unlocked() {
+                if(tmp.m.milestones[10].done) return true
+                else return false
+            }
+        },
     },
     
 
@@ -1627,7 +1722,7 @@ addLayer("m", {
             goal(){
                 if (challengeCompletions("m", 12) == 0) return Decimal.pow(10,1710);
                 if (challengeCompletions("m", 12) == 1) return Decimal.pow(10,7000);
-                if (challengeCompletions("m", 12) == 2) return Decimal.pow(10,2e7);
+                if (challengeCompletions("m", 12) == 2) return Decimal.pow(10,"27775000");
             },
             currencyDisplayName: "particles",
             completionLimit:3 ,
@@ -1645,7 +1740,7 @@ addLayer("m", {
         21: {
             name: "Undiscovered",
             challengeDescription: function() {
-                let c21 = "Effects of both challenges, and their total completions boost row 2 quark upgrades while in this challenge. (Currently: "+format(tmp.m.challengesTotalEffect)+"x)<br>Unlock a layer only accessible in this challenge, replacing electrons."
+                let c21 = "Effects of both challenges, and their total completions boost row 2 quark upgrades while in this challenge. (Currently: "+(tmp.m.challengesTotalEffect)+"x)<br>Unlock a layer only accessible in this challenge, replacing electrons."
                 if (inChallenge("m", 21)) c21 = c21 + "<br> (In Challenge)"
                 if (challengeCompletions("m", 21) == 3) c21 = c21 + "<br> (Completed)"
                 c21 = c21 + "<br>Completed:" + challengeCompletions("m",21) + "/" + tmp.m.challenges[21].completionLimit
@@ -1655,6 +1750,9 @@ addLayer("m", {
                 if (challengeCompletions("m", 21) == 0) return Decimal.pow(10,1200);
             },
             onEnter() {
+                return true
+            },
+            onExit() {
                 return true
             },
             currencyDisplayName: "particles",
@@ -1913,7 +2011,7 @@ addLayer("a", {
         },
         21: {
             name: "Negative Aura",
-            tooltip() {return "Create 50,000,000 electrons.<br>Reward: 2 AP. AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles"},
+            tooltip() {return "Create 50,000,000 electrons.<br>Reward: 2 AP. AP boosts quark gain.<br>Currently: "+(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles"},
             done() {
                 return player.e.total.gte(50000000)
             },
