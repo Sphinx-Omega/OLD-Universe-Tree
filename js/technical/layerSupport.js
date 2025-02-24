@@ -1,13 +1,7 @@
 var layers = {}
 
 const decimalZero = new Decimal(0)
-const decimalHalf = new Decimal(1/2)
 const decimalOne = new Decimal(1)
-const decimalTwo = new Decimal(2)
-const decimalThree = new Decimal(3)
-const decimalFour = new Decimal(4)
-const decimalFive = new Decimal(5)
-const decimalTen = new Decimal(10)
 const decimalNaN = new Decimal(NaN)
 
 const defaultGlow = "#ff0000"
@@ -130,7 +124,7 @@ function setupLayer(layer){
                 if (layers[layer].buyables[thing].unlocked === undefined)
                     layers[layer].buyables[thing].unlocked = true
                 layers[layer].buyables[thing].canBuy = function() {return canBuyBuyable(this.layer, this.id)}
-                if (layers[layer].buyables[thing].purchaseLimit === undefined) layers[layer].buyables[thing].purchaseLimit = tet10(1.79769e308)
+                if (layers[layer].buyables[thing].purchaseLimit === undefined) layers[layer].buyables[thing].purchaseLimit = new Decimal(Infinity)
         
             }  
     
@@ -290,20 +284,9 @@ addLayer("info-tab", {
 })
 
 addLayer("options-tab", {
-    tabFormat: [
-        "options-tab",
-        ["raw-html", function() { return `
-        <div class="slidecontainer">
-        <p>Update Rate: <span id="demo">50</span>ms</p>
-        <input type="range" min="33" max="200" value="50" class="slider" id="myRange" onchange="input()" oninput = "input()">
-        </div>
-        `
-        }
-    ]
-    ],
+    tabFormat: ["options-tab"],
     row: "otherside"
 })
-
 
 addLayer("changelog-tab", {
     tabFormat() {return ([["raw-html", modInfo.changelog]])},
