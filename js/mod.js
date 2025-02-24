@@ -113,20 +113,27 @@ function getUndulatingColor(period = Math.sqrt(760)){
 var displayThings = [
     function(){
         let x = getUndulatingColor()
-		let a = "Current endgame: "+colorText("h2", x,+format("eeeee1"))+" particles (v0.2)"
+		let a = "Current endgame: "+colorText("h2", x,format("eeeee1"))+" particles (v0.2)"
 		let b = inChallenge("m",21)?"<br>'Undiscovered' progress: " + format(player.points.max(1).log10().pow(0.64953))
         +"%":""
-		return a + b + (options.autosave ? "" : ". Warning: autosave is off")
+		return a + b + (options.autosave ? "" : colorText("h3",x,"<br>Warning: autosave is off"))
 	},
 	function(){
+		let a = new Date().getTime() - player.lastSave
+		let b = "Last save was " + formatTime(a/1000) + " ago."
+		if (lastTenTicks.length < 10) return b
+		let c = 0
+		for (i = 0; i<10; i++){
+			c += lastTenTicks[i] / 10000
+		}
         let d = isEndgame()?makeBlue("<br>You are past endgame,<br>and the game might not be balanced here."):""
-		return d
+		return b + "<br>Average TPS = " + format(c) + "s/tick."+d
 	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e1e6e6"))
+	return player.points.gte(new Decimal("eeeee1"))
 }
 
 

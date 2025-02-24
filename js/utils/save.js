@@ -1,68 +1,77 @@
-// ************ Save stuff ************
-let getModID = () => modInfo.id ?? `${modInfo.name.replace(/\s+/g, '-')}-${modInfo.author.replace(/\s+/g, '-')}`;
 
+// ************ Save stuff ************
+var logSave = false
 function save(force) {
+	let t = new Date().getTime()
+	if (logSave) console.log("saved at " + t)
+	if (!(player === null)) player.lastSave = t
 	NaNcheck(player)
 	if (NaNalert && !force) return
-	localStorage.setItem(getModID(), btoa(unescape(encodeURIComponent(JSON.stringify(player)))));
-	localStorage.setItem(getModID()+"_options", btoa(unescape(encodeURIComponent(JSON.stringify(options)))));
+	localStorage.setItem(modInfo.id, btoa(unescape(encodeURIComponent(JSON.stringify(player)))));
+	localStorage.setItem(modInfo.id+"_options", btoa(unescape(encodeURIComponent(JSON.stringify(options)))));
 
 }
+
 function startPlayerBase() {
 	return {
 		tab: layoutInfo.startTab,
 		navTab: (layoutInfo.showTree ? layoutInfo.startNavTab : "none"),
 		time: Date.now(),
 		notify: {},
-		versionType: getModID(),
+		versionType: modInfo.id,
 		version: VERSION.num,
 		beta: VERSION.beta,
 		timePlayed: 0,
 		keepGoing: false,
 		hasNaN: false,
-
+		hideChallenges: false,
+		hideNews: false,
+		showStory: true,
+		anim: true,
+		grad: true,
+		forceOneTab: false,
 		points: modInfo.initialStartPoints,
 		subtabs: {},
 		lastSafeTab: (readData(layoutInfo.showTree) ? "none" : layoutInfo.startTab)
 	};
 }
-function getStartPlayer() {
-	playerdata = startPlayerBase();
 
+function getStartPlayer() {
+	playerdata = startPlayerBase()
+	
 	if (addedPlayerData) {
-		extradata = addedPlayerData();
+		extradata = addedPlayerData()
 		for (thing in extradata)
-			playerdata[thing] = extradata[thing];
+			playerdata[thing] = extradata[thing]
 	}
 
-	playerdata.infoboxes = {};
-	for (layer in layers) {
-		playerdata[layer] = getStartLayerData(layer);
+	playerdata.infoboxes = {}
+	for (layer in layers){
+		playerdata[layer] = getStartLayerData(layer)
 
 		if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
-			playerdata.subtabs[layer] = {};
-			playerdata.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
+			playerdata.subtabs[layer] = {}
+			playerdata.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0]
 		}
 		if (layers[layer].microtabs) {
-			if (playerdata.subtabs[layer] == undefined)
-				playerdata.subtabs[layer] = {};
+			if (playerdata.subtabs[layer] == undefined) playerdata.subtabs[layer] = {}
 			for (item in layers[layer].microtabs)
-				playerdata.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
+			playerdata.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0]
 		}
 		if (layers[layer].infoboxes) {
-			if (playerdata.infoboxes[layer] == undefined)
-				playerdata.infoboxes[layer] = {};
+			if (playerdata.infoboxes[layer] == undefined) playerdata.infoboxes[layer] = {}
 			for (item in layers[layer].infoboxes)
-				playerdata.infoboxes[layer][item] = false;
+				playerdata.infoboxes[layer][item] = false
 		}
-
+	
 	}
-	return playerdata;
+	return playerdata
 }
-function getStartLayerData(layer) {
-	layerdata = {};
-	if (layers[layer].startData)
-		layerdata = layers[layer].startData();
+
+function getStartLayerData(layer){
+	layerdata = {}
+	if (layers[layer].startData) 
+		layerdata = layers[layer].startData()
 
 	if (layerdata.unlocked === undefined)
 		layerdata.unlocked = true;
@@ -90,32 +99,36 @@ function getStartLayerData(layer) {
 
 	return layerdata;
 }
-function getStartBuyables(layer) {
-	let data = {};
+
+
+function getStartBuyables(layer){
+	let data = {}
 	if (layers[layer].buyables) {
 		for (id in layers[layer].buyables)
 			if (isPlainObject(layers[layer].buyables[id]))
 				data[id] = decimalZero;
 	}
-	return data;
+	return data
 }
-function getStartClickables(layer) {
-	let data = {};
+
+function getStartClickables(layer){
+	let data = {}
 	if (layers[layer].clickables) {
 		for (id in layers[layer].clickables)
 			if (isPlainObject(layers[layer].clickables[id]))
-				data[id] = "";
+				data[id] = ""
 	}
-	return data;
+	return data
 }
-function getStartChallenges(layer) {
-	let data = {};
+
+function getStartChallenges(layer){
+	let data = {}
 	if (layers[layer].challenges) {
 		for (id in layers[layer].challenges)
 			if (isPlainObject(layers[layer].challenges[id]))
-				data[id] = 0;
+				data[id] = 0
 	}
-	return data;
+	return data
 }
 function getStartGrid(layer) {
 	let data = {};
@@ -132,63 +145,49 @@ function getStartGrid(layer) {
 }
 
 function fixSave() {
-	defaultData = getStartPlayer();
-	fixData(defaultData, player);
+	defaultData = getStartPlayer()
+	fixData(defaultData, player)
 
 	for (layer in layers) {
-		if (player[layer].best !== undefined)
-			player[layer].best = new Decimal(player[layer].best);
-		if (player[layer].total !== undefined)
-			player[layer].total = new Decimal(player[layer].total);
+		if (player[layer].best !== undefined) player[layer].best = new Decimal(player[layer].best)
+		if (player[layer].total !== undefined) player[layer].total = new Decimal(player[layer].total)
 
-		if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
-
-			if (!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs))
-				player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
+		if (layers[layer].tabFormat != undefined && !Array.isArray(layers[layer].tabFormat)) {
+			if(!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs)) player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0]
 		}
-		if (layers[layer].microtabs) {
+		if (layers[layer].microtabs != undefined) {
 			for (item in layers[layer].microtabs)
-				if (!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item]))
-					player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
+				if(!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item])) player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0]
 		}
 	}
 }
+
 function fixData(defaultData, newData) {
-	for (item in defaultData) {
+	for (item in defaultData){
 		if (defaultData[item] == null) {
-			if (newData[item] === undefined)
-				newData[item] = null;
+			if (newData[item] === undefined) newData[item] = null
 		}
 		else if (Array.isArray(defaultData[item])) {
-			if (newData[item] === undefined)
-				newData[item] = defaultData[item];
-
-			else
-				fixData(defaultData[item], newData[item]);
+			if (newData[item] === undefined) newData[item] = defaultData[item]
+			else fixData(defaultData[item], newData[item])
 		}
 		else if (defaultData[item] instanceof Decimal) { // Convert to Decimal
-			if (newData[item] === undefined)
-				newData[item] = defaultData[item];
-
-			else
-				newData[item] = new Decimal(newData[item]);
+			if (newData[item] === undefined) newData[item] = defaultData[item]
+			else newData[item] = new Decimal(newData[item])
 		}
 		else if ((!!defaultData[item]) && (typeof defaultData[item] === "object")) {
-			if (newData[item] === undefined || (typeof defaultData[item] !== "object"))
-				newData[item] = defaultData[item];
-
-			else
-				fixData(defaultData[item], newData[item]);
+			if (newData[item] === undefined || (typeof defaultData[item] !== "object")) {
+				newData[item] = defaultData[item]
+			} else fixData(defaultData[item], newData[item])
 		}
 		else {
-			if (newData[item] === undefined)
-				newData[item] = defaultData[item];
+			if (newData[item] === undefined) newData[item] = defaultData[item]
 		}
-	}
+	}	
 }
-function load() {
-	let get = localStorage.getItem(getModID());
 
+function load() {
+	let get = localStorage.getItem(modInfo.id);
 	if (get === null || get === undefined) {
 		player = getStartPlayer();
 		options = getStartOptions();
@@ -205,21 +204,33 @@ function load() {
 		player.offTime.remain += (Date.now() - player.time) / 1000;
 	}
 	player.time = Date.now();
-	versionCheck();
+	if (player.newsArray === undefined) player.newsArray = [];
+	
+	
 	changeTheme();
 	changeTreeQuality();
-	updateLayers();
-	setupModInfo();
-
+	updateLayers()
+	setupModInfo()
 	setupTemp();
+	updateTemp();
+	updateTemp();
 	updateTemp();
 	updateTemp();
 	updateTabFormats()
 	loadVue();
+	updateTemp()
+	updateTemp()
+	updateTemp()
+	updateTemp()
+	updateTemp()
+	versionCheck();
+	startInterval()
+	slider = document.getElementById("myRange")
+	if (slider) slider.value = player.up
 }
 
 function loadOptions() {
-	let get2 = localStorage.getItem(getModID()+"_options");
+	let get2 = localStorage.getItem(modInfo.id+"_options");
 	if (get2) 
 		options = Object.assign(getStartOptions(), JSON.parse(decodeURIComponent(escape(atob(get2)))));
 	else 
@@ -230,19 +241,21 @@ function loadOptions() {
 }
 
 function setupModInfo() {
-	modInfo.changelog = changelog;
-	modInfo.winText = winText ? winText : `Congratulations! You have reached the end and beaten this game, but for now...`;
+	modInfo.changelog = changelog
+	modInfo.winText = winText ? winText : `Congratulations! You have reached the end and beaten this game, but for now...`
 
 }
+
 function fixNaNs() {
-	NaNcheck(player);
+	NaNcheck(player)
 }
+
 function NaNcheck(data) {
-	for (item in data) {
+	for (item in data){
 		if (data[item] == null) {
 		}
 		else if (Array.isArray(data[item])) {
-			NaNcheck(data[item]);
+			NaNcheck(data[item])
 		}
 		else if (data[item] !== data[item] || checkDecimalNaN(data[item])) {
 			if (!NaNalert) {
@@ -255,31 +268,30 @@ function NaNcheck(data) {
 		else if (data[item] instanceof Decimal) {
 		}
 		else if ((!!data[item]) && (data[item].constructor === Object)) {
-			NaNcheck(data[item]);
+			NaNcheck(data[item])
 		}
-	}
+	}	
 }
 function exportSave() {
 	//if (NaNalert) return
 	let str = btoa(JSON.stringify(player));
-
 	const el = document.createElement("textarea");
 	el.value = str;
 	document.body.appendChild(el);
 	el.select();
-	el.setSelectionRange(0, 99999);
+    el.setSelectionRange(0, 99999);
 	document.execCommand("copy");
 	document.body.removeChild(el);
 }
-function importSave(imported = undefined, forced = false) {
-	if (imported === undefined)
-		imported = prompt("Paste your save here");
+
+function importSave(imported=undefined, forced=false) {
+	if (imported===undefined) imported = prompt("Paste your save here")
 	try {
-		tempPlr = Object.assign(getStartPlayer(), JSON.parse(atob(imported)));
-		if (tempPlr.versionType != getModID() && !forced && !confirm("This save appears to be for a different mod! Are you sure you want to import?")) // Wrong save (use "Forced" to force it to accept.)
-			return;
+		tempPlr = Object.assign(getStartPlayer(), JSON.parse(atob(imported)))
+		if(tempPlr.versionType != modInfo.id && !forced && !confirm("This save appears to be for a different mod! Are you sure you want to import?")) // Wrong save (use "Forced" to force it to accept.)
+			return
 		player = tempPlr;
-		player.versionType = getModID();
+		player.versionType = modInfo.id;
 		fixSave();
 		versionCheck();
 		NaNcheck(save)
@@ -289,23 +301,31 @@ function importSave(imported = undefined, forced = false) {
 		return;
 	}
 }
+
+function layerText(elem, layer, text) {
+	return "<" + elem + " style='color:" + tmp[layer].color + ";text-shadow:0px 0px 10px;'>" + text + "</" + elem + ">"
+}
+
+function colorText(elem, color, text) {
+	return "<" + elem + " style='color:" + color + ";text-shadow:0px 0px 10px;'>" + text + "</" + elem + ">"
+}
+
 function versionCheck() {
-	let setVersion = true;
-
-	if (player.versionType === undefined || player.version === undefined) {
-		player.versionType = getModID();
-		player.version = 0;
+	let setVersion = true
+	
+	if (player.versionType===undefined||player.version===undefined) {
+		player.versionType = modInfo.id
+		player.version = 0
 	}
-
+	
 	if (setVersion) {
-		if (player.versionType == getModID() && VERSION.num > player.version) {
-			player.keepGoing = false;
-			if (fixOldSave)
-				fixOldSave(player.version);
-		}
-		player.versionType = getStartPlayer().versionType;
-		player.version = VERSION.num;
-		player.beta = VERSION.beta;
+		if (player.versionType == modInfo.id && VERSION.num > player.version) {
+			player.keepGoing = false
+			if (fixOldSave) fixOldSave(player.version)
+		} 
+		player.versionType = getStartPlayer().versionType
+		player.version = VERSION.num
+		player.beta = VERSION.beta
 	}
 }
 var saveInterval = setInterval(function () {

@@ -82,6 +82,18 @@ function sumValues(x) {
     return x.reduce((a, b) => Decimal.add(a, b))
 }
 
+function t1format(x,mult=false,y) {
+	let ills = ['','M','B','T','Qa','Qi','Sx','Sp','Oc','No']
+	let t1ones = ["","U","D","T","Qa","Qi","Sx","Sp","Oc","No"]
+	if (mult && y>0 && x<10) t1ones = ["","","D","T","Qa","Qi","Sx","Sp","Oc","No"]
+	let t1tens = ["","Dc","Vg","Tg","Qag","Qig","Sxg","Spg","Ocg","Nog"]
+	let t1hunds = ["","Ce","De","Te","Qae","Qie","Sxe","Spe","Oce","Noe"]
+	let t1f = ills[x]
+	if (mult && y>0) t1f = t1ones[x]
+	if (x>=10) t1f = t1ones[x%10]+t1tens[Math.floor(x/10)%10]+t1hunds[Math.floor(x/100)]
+	return t1f
+}
+
 function t2format(x,mult=false,y) {
 	let t2ills = ["","Mi","Mc","Na","Pc","Fm","At","Zp","Yc","Xn"]
 	let t2ones = ["","Me","Du","Tr","Te","Pe","He","Hp","Ot","En"]

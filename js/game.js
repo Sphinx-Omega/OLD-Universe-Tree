@@ -1,5 +1,7 @@
 var player;
 var needCanvasUpdate = true;
+var gameEnded = false;
+var scrolled = false;
 
 // Don't change this
 const TMT_VERSION = {
@@ -324,8 +326,34 @@ function autobuyUpgrades(layer){
 			buyUpg(layer, id) 
 }
 
-function gameLoop(diff) {
-	if (isEndgame() || tmp.gameEnded){
+function gameLoop() {
+	if (player===undefined||tmp===undefined) return;
+	if (ticking) return;
+	if (tmp.gameEnded&&!player.keepGoing) return;
+	ticking = true
+	let now = Date.now()
+	let diff = (now - player.time) / 1e3
+	let trueDiff = diff
+	if (player.offTime !== undefined) {
+		if (player.offTime.remain > modInfo.offlineLimit * 3600) player.offTime.remain = modInfo.offlineLimit * 3600
+		if (player.offTime.remain > 0) {
+			let offlineDiff = Math.max(player.offTime.remain / 10, diff)
+			player.offTime.remain -= offlineDiff
+			diff += offlineDiff
+		}
+		if (!options.offlineProd || player.offTime.remain <= 0) player.offTime = undefined
+	}
+	if (player.devSpeed) diff *= player.devSpeed
+	player.time = now
+	if (needCanvasUpdate){ resizeCanvas();
+		needCanvasUpdate = false;
+	}
+	tmp.scrolled = document.getElementById('treeTab') && document.getElementById('treeTab').scrollTop > 30
+	updateTemp();
+	updateOomps(diff);
+	updateWidth()
+	updateTabFormats()
+	if (isEndgame() || gameEnded){
 		tmp.gameEnded = true
 		clearParticles()
 	}
@@ -336,15 +364,11 @@ function gameLoop(diff) {
 		//player.tab = "tmp.gameEnded"
 		clearParticles()
 	}
-
-	if (maxTickLength) {
-		let limit = maxTickLength()
-		if(diff > limit)
-			diff = limit
-	}
+	let limit = maxTickLength()
+	if (diff > limit) diff = limit
 	addTime(diff)
+	adjustPopupTime(diff)
 	player.points = player.points.add(tmp.pointGen.times(diff)).max(0)
-
 	for (let x = 0; x <= maxRow; x++){
 		for (item in TREE_LAYERS[x]) {
 			let layer = TREE_LAYERS[x][item]
@@ -386,7 +410,12 @@ function gameLoop(diff) {
 		if (layers[layer].milestones) updateMilestones(layer);
 		if (layers[layer].achievements) updateAchievements(layer)
 	}
-
+	lastTenTicks.push(Date.now()-now)
+	if (lastTenTicks.length > 10) lastTenTicks = lastTenTicks.slice(1,)
+	fixNaNs()
+	adjustPopupTime(trueDiff)
+	updateParticles(trueDiff)
+	ticking = false
 }
 
 function hardReset(resetOptions) {
@@ -398,39 +427,34 @@ function hardReset(resetOptions) {
 }
 
 var ticking = false
+var lastTenTicks = []
+var interval
+var tickWait = 0
+var tickWaitStart = 0
+function input () {
+	value = document.getElementById("myRange").value
+	document.getElementById("demo").innerHTML = value
+	player.ms = Number(value)
+	clearInterval(interval)
+	startInterval()
+}
+function startInterval() {
+	interval = setInterval(function() {
+	tickWait = 1/0
 
-var interval = setInterval(function() {
-	if (player===undefined||tmp===undefined) return;
-	if (ticking) return;
-	if (tmp.gameEnded&&!player.keepGoing) return;
-	ticking = true
-	let now = Date.now()
-	let diff = (now - player.time) / 1e3
-	let trueDiff = diff
-	if (player.offTime !== undefined) {
-		if (player.offTime.remain > modInfo.offlineLimit * 3600) player.offTime.remain = modInfo.offlineLimit * 3600
-		if (player.offTime.remain > 0) {
-			let offlineDiff = Math.max(player.offTime.remain / 10, diff)
-			player.offTime.remain -= offlineDiff
-			diff += offlineDiff
-		}
-		if (!options.offlineProd || player.offTime.remain <= 0) player.offTime = undefined
+	var tickStart = new Date().getTime()
+	try {
+		gameLoop()
+	} catch (e) {
+		console.error(e)
 	}
-	if (player.devSpeed) diff *= player.devSpeed
-	player.time = now
-	if (needCanvasUpdate){ resizeCanvas();
-		needCanvasUpdate = false;
-	}
-	tmp.scrolled = document.getElementById('treeTab') && document.getElementById('treeTab').scrollTop > 30
-	updateTemp();
-	updateOomps(diff);
-	updateWidth()
-	updateTabFormats()
-	gameLoop(diff)
-	fixNaNs()
-	adjustPopupTime(trueDiff)
-	updateParticles(trueDiff)
-	ticking = false
-}, 50)
+	var tickEnd = new Date().getTime()
+	var tickDiff = tickEnd - tickStart
+
+	tickWait = tickDiff * 2
+	tickWaitStart = tickEnd
+	}, player.ms);
+}
+
 
 setInterval(function() {needCanvasUpdate = true}, 500)
