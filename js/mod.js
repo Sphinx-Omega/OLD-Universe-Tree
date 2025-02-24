@@ -112,8 +112,8 @@ function getUndulatingColor(period = Math.sqrt(760)){
 // Display extra things at the top of the page
 var displayThings = [
     function(){
-        //let x = getUndulatingColor()
-		let a = "Current endgame: "+format("eeeee1")+" particles (v0.2)"
+        let x = getUndulatingColor()
+		let a = "Current endgame: "+colorText("h2", x,+format("eeeee1"))+" particles (v0.2)"
 		let b = inChallenge("m",21)?"<br>'Undiscovered' progress: " + format(player.points.max(1).log10().pow(0.64953))
         +"%":""
 		return a + b + (options.autosave ? "" : ". Warning: autosave is off")

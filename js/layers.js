@@ -1740,7 +1740,7 @@ addLayer("m", {
         21: {
             name: "Undiscovered",
             challengeDescription: function() {
-                let c21 = "Effects of both challenges, and their total completions boost row 2 quark upgrades while in this challenge. (Currently: "+(tmp.m.challengesTotalEffect)+"x)<br>Unlock a layer only accessible in this challenge, replacing electrons."
+                let c21 = "Effects of both challenges, and their total completions boost row 2 quark upgrades while in this challenge. (Currently: "+format(tmp.m.challengesTotalEffect)+"x)<br>Unlock a layer only accessible in this challenge, replacing electrons."
                 if (inChallenge("m", 21)) c21 = c21 + "<br> (In Challenge)"
                 if (challengeCompletions("m", 21) == 3) c21 = c21 + "<br> (Completed)"
                 c21 = c21 + "<br>Completed:" + challengeCompletions("m",21) + "/" + tmp.m.challenges[21].completionLimit
@@ -2011,7 +2011,7 @@ addLayer("a", {
         },
         21: {
             name: "Negative Aura",
-            tooltip() {return "Create 50,000,000 electrons.<br>Reward: 2 AP. AP boosts quark gain.<br>Currently: "+(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles"},
+            tooltip() {return "Create 50,000,000 electrons.<br>Reward: 2 AP. AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles"},
             done() {
                 return player.e.total.gte(50000000)
             },
