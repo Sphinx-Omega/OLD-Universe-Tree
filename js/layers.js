@@ -585,9 +585,9 @@ addLayer("t", {
         if (eff.gte(Decimal.pow(10,15))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,8)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(Decimal.pow(10,100))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(Decimal.pow(10,1e6))) eff = eff.log10().div(1e4).pow(2e5)
+        if (eff.gte(Decimal.pow(10,3.333333e6)) && hasUpgrade("m",44)) eff = eff.pow(upgradeEffect("m",44))
         if (player.t.points.lt(1) && player.t.best.gte(1) && getBuyableAmount("t", 11).lt(1)) eff = eff.add(1)
         if (eff.gte(hc1) && !hasUpgrade("m",44)) eff = hc1
-        if (eff.gte(sc1)) eff = eff.log(2).pow(0.5)
         if (inChallenge("m", 11)) eff = decimalOne
         if (inChallenge("m", 21)) eff = decimalOne, player.t.points = decimalZero
         return eff
@@ -596,9 +596,11 @@ addLayer("t", {
         let dis = "Boosting electron vibration by " + format(tmp.t.effect) + "x"
         let disSC = " (softcapped)"
         let disHC = " (hardcapped)"
+        let sc1 = Decimal.pow(10,16) 
         let disLim = disSC
+        if(hasUpgrade("m",44)) sc1 = sc1.mul(upgradeEffect("m",44))
         if (tmp.t.effect.gte(Decimal.pow(10,3.333333e6)) && !hasUpgrade("m",44)) disLim = disHC
-        if (tmp.t.effect.gte(Decimal.pow(10,16))) dis += disLim
+        if (tmp.t.effect.gte(Decimal.pow(sc1))) dis += disLim
         return dis
     },
     layerShown() {
@@ -706,7 +708,7 @@ addLayer("t", {
             coste() { 
                 let cost = new Decimal(1.45)
                 if(hasAchievement("a",31)) cost = cost.sub(0.2)
-                if(getBuyableAmount("t",11).gte(5e6)) cost = cost.add(0.25)
+                if(getBuyableAmount("t",11).gte(5e6)) cost = cost.add(0.125)
                 return cost
             },
             base() { 
@@ -741,7 +743,13 @@ addLayer("t", {
                 let s = player.e.points
                 let base = tmp.t.buyables[11].costb
                 let exp = tmp.t.buyables[11].coste
-                let target = s.div(5e3).log(base).root(exp)
+                let target = s.div(1e250).log(base).root(exp)
+                if (target.gte(5e6)) target = target.div(5e6).root(1.1).mul(5e6)
+                    if (target.gte(1e20)) target = target.div(1e20).root(1.1).mul(1e15)
+                    if (target.gte(1e100)) target = target.div(1e100).root(1.2).mul(1e67).div(1e25)
+                    if (target.gte("1e5e4")) target = target.div("1e5e4").root(1.2).mul("1e100").div(1e250)
+                    if (target.gte("1e1e6")) target = target.div("1e1e6").root(1.2).mul("1e1e3").div("1e500")
+                    if (target.gte("1e1e8")) target = target.div("1e1e8").root(1.2).mul("1e1e5").div("1e5e4")
                 return target.floor().add(1)
             },
             buy() {
@@ -754,7 +762,7 @@ addLayer("t", {
                 let target = tmp.t.buyables[11].maxAfford
                 let base = tmp.t.buyables[11].costb
                 let exp = tmp.t.buyables[11].coste
-                let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
+                let cost = Decimal.pow(base,target.pow(exp)).mul(1e250)
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.t.buyables[11] = player.t.buyables[11].max(target)
                 }
@@ -784,7 +792,7 @@ addLayer("t", {
             coste() { 
                 let cost = new Decimal(2.125)
                 if(hasAchievement("a",31)) cost = cost.sub(0.625)
-                if(getBuyableAmount("t",12).gte(5e5)) cost = cost.add(0.25)
+                if(getBuyableAmount("t",12).gte(5e5)) cost = cost.add(0.125)
                 return cost
             },
             base() { 
@@ -816,7 +824,13 @@ addLayer("t", {
                 let s = player.e.points
                 let base = tmp.t.buyables[12].costb
                 let exp = tmp.t.buyables[12].coste
-                let target = s.div(5e3).log(base).root(exp)
+                let target = s.div(1e250).log(base).root(exp)
+                if (target.gte(5e6)) target = target.div(5e6).root(1.1).mul(5e6)
+                if (target.gte(1e20)) target = target.div(1e20).root(1.1).mul(1e15)
+                if (target.gte(1e100)) target = target.div(1e100).root(1.2).mul(1e67)
+                if (target.gte("1e5e4")) target = target.div("1e5e4").root(1.2).mul("1e100").div(5e3)
+                if (target.gte("1e1e6")) target = target.div("1e1e6").root(1.2).mul("1e1e3").div(1e5)
+                if (target.gte("1e1e8")) target = target.div("1e1e8").root(1.2).mul("1e1e5").div("1e5e4")
                 return target.floor().add(1)
             },
             buy() {
@@ -829,7 +843,7 @@ addLayer("t", {
                 let target = tmp.t.buyables[12].maxAfford
                 let base = tmp.t.buyables[12].costb
                 let exp = tmp.t.buyables[12].coste
-                let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
+                let cost = Decimal.pow(base,target.pow(exp)).mul(1e250)
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.t.buyables[12] = player.t.buyables[12].max(target)
                 }
@@ -877,7 +891,7 @@ addLayer("m", {
     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: false,
-		points: new Decimal(0),
+		points: decimalZero,
         total: new Decimal(0),
         best: new Decimal(0),
         antiQuarks: decimalZero,
@@ -1310,10 +1324,10 @@ addLayer("m", {
 
             effect() {
                 if(player[this.layer].points.gte(1)) {
-                return player[this.layer].points.add(1).max(1).add(player[this.layer].points).pow(1.25).div(2)}
+                return player[this.layer].points.max(1).pow(1.125)}
                 return decimalOne
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { return "^"+format(upgradeEffect(this.layer, this.id)) },
 
             canAfford() {
                 return  (player.points.gte("1e720") && inChallenge("m",21))
@@ -1442,6 +1456,7 @@ addLayer("m", {
                 let base = tmp.m.buyables[11].costb
                 let exp = tmp.m.buyables[11].coste
                 let target = s.div(5e3).log(base).root(exp)
+                if (target.gte(5)) target = target.div(5).root(1.1).mul(5)
                 return target.floor().add(1)
             },
             buy() {
@@ -1525,6 +1540,7 @@ addLayer("m", {
                 let base = tmp.m.buyables[12].costb
                 let exp = tmp.m.buyables[12].coste
                 let target = s.div(5e3).log(base).root(exp)
+                if (target.gte(5)) target = target.div(5).root(1.1).mul(5)
                 return target.floor().add(1)
             },
             buy() {
@@ -1611,6 +1627,7 @@ addLayer("m", {
                 let base = tmp.m.buyables[21].costb
                 let exp = tmp.m.buyables[21].coste
                 let target = s.div(5e3).log(base).root(exp)
+                if (target.gte("1e10")) target = target.div("1e10").root(1.2).mul("1e10")
                 return target.floor().add(1)
             },
             buy() {
