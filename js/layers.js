@@ -412,7 +412,7 @@ addLayer("e", {
         33: {
             title: "Despair",
             description: "Electrons boost 'Negative energy' effect",
-            cost: new Decimal("e2.185e10"),
+            cost: new Decimal("e2.200e10"),
             unlocked() {return challengeCompletions("m",12) == 3},
 
             effect() {
@@ -927,7 +927,7 @@ addLayer("m", {
     tooltip() {
         let dis = player.m.points + " molecules"
         if (inChallenge("m",21)) {
-            if (tmp.m.upgrades[41].canAfford || tmp.m.upgrades[42].canAfford || tmp.m.upgrades[43].canAfford || tmp.m.upgrades[44].canAfford) dis += " (Anti-upgrade available!)"
+            tmp.m.shouldNotify?dis += " (Anti-upgrade available!)":""
         }
         return dis
     },
@@ -1262,7 +1262,7 @@ addLayer("m", {
         43: {
             title: "M upg 11",
             description: "placeholder",
-            cost: new Decimal(1e307),
+            cost: new Decimal(1e50),
             unlocked() {return hasMilestone("m",11)},
 
             // effect() {
@@ -1271,6 +1271,14 @@ addLayer("m", {
             //     return decimalOne
             // },
             // effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+
+            canAfford() {
+                return  (player.points.gte(1e185) && inChallenge("m",21))
+            },
+
+            pay() {
+                player.points = player.points.sub(this.cost())
+            },
 
             style: {
                 "background"() {
@@ -1825,7 +1833,7 @@ addLayer("r", {
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "p", description: "P: Anti-Quark reset (can only reset in 'Undiscovered' challenge", onPress(){if ((inChallenge("m",21)) && (canReset(this.layer))) doReset(this.layer)}},
+        {key: "p", description: "P: Anti-Quark reset (in 'Undiscovered')", onPress(){if ((inChallenge("m",21)) && (canReset(this.layer))) doReset(this.layer)}},
     ],
     layerShown(){return inChallenge("m",21)},
     canBuyMax() {return true},
@@ -1956,62 +1964,106 @@ addLayer("a", {
     row: "side", // Row the layer is in on the tree (0 is the first row)
     layerShown() { return true },
     achievementPopups: true,
+    tabFormat: {
+        "Achievements" :{
+            content: ["main-display",
+            "achievements"]
+        },
+        "Milestones" :{
+            content: ["milestones"]
+        }
+    },
     achievements: {
-        rows: 3,
+        rows: 4,
         cols: 5,
         11: {
             name: "Beginning",
-            tooltip: "Create the first quark.<br>Reward: 1 AP<br>Next achievement: 500 quarks",
+            tooltip: "Create the first quark.<br>Reward: 1 AP",
             done() {
                 return player.p.points.gte(1)
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",11)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         12: {
             name: "Expansion",
-            tooltip: "Create 500 quarks.<br>Reward: 1 AP<br>Next achievement: 1 electron",
+            tooltip: "Create 500 quarks.<br>Reward: 1 AP",
             done() {
                 return player.p.total.gte(500)
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",12)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         13: {
             name: "Theory of Negativity",
-            tooltip: "Create an electron.<br>Reward: 1 AP<br>Next achievement: 5.000e8 quarks",
+            tooltip: "Create an electron.<br>Reward: 1 AP",
             done() {
                 return player.e.total.gte(1)
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",13)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         14: {
             name: "Cosmic Inflation",
-            tooltip: "Create 500,000,000 quarks.<br>Reward: 1 AP<br>Next achievement: 1.000e15 particles",
+            tooltip: "Create 500,000,000 quarks.<br>Reward: 1 AP",
             done() {
                 return player.p.total.gte(5e8)
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",14)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         15: {
             name: "Look at all these particle effects!",
-            tooltip: "Have 1.000e15 particles.<br>Reward: 1 AP<br>Next achievement: 50,000,000 electrons",
+            tooltip: "Have 1.000e15 particles.<br>Reward: 1 AP",
             done() {
                 return player.points.gte(1.000e15)
             },
             onComplete() {
                 addPoints("a",1)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",15)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         21: {
             name: "Negative Aura",
-            tooltip() {return "Create 50,000,000 electrons.<br>Reward: 2 AP. AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"+"<br>Next achievement: 1.000e100 particles"},
+            tooltip() {return "Create 50,000,000 electrons.<br>Reward: 2 AP. AP boosts quark gain.<br>Currently: "+format(tmp.a.achievements[21].effect)+"x"},
             done() {
                 return player.e.total.gte(50000000)
             },
@@ -2021,51 +2073,86 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",2)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",21)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         22: {
             name: "Ultra HD",
-            tooltip: "Have 1.000e100 particles.<br>Reward: 2 AP<br>Next achievement: 1.000e308 particles",
+            tooltip: "Have 1.000e100 particles.<br>Reward: 2 AP",
             done() {
                 return player.points.gte(1.000e100)
             },
             onComplete() {
                 addPoints("a",2)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",22)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         23: {
             name: "Boundless Particles",
-            tooltip: "Have 1.000e308 particles.<br>Reward: 2 AP<br>Next achievement: 1 atom",
+            tooltip: "Have 1.000e308 particles.<br>Reward: 2 AP",
             done() {
                 return player.points.gte(1e308)
             },
             onComplete() {
                 addPoints("a",2)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",23)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         24: {
             name: "Atom and Eve",
-            tooltip: "Gain 1 atom.<br>Reward: 2 AP<br>Next achievement: 1 Neutron and 1 Proton",
+            tooltip: "Gain 1 atom.<br>Reward: 2 AP",
             done() {
                 return player.t.points.gte(1)
             },
             onComplete() {
                 addPoints("a",2)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",24)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         25: {
             name: "Now THAT's an atom!",
-            tooltip: "Have a Neutron and a Proton<br>Reward: 2 AP<br>Next achievement: 50 atoms and 1.00e1308 particles",
+            tooltip: "Have a Neutron and a Proton<br>Reward: 2 AP",
             done() {
                 return (getBuyableAmount("t",11).gte(1) && getBuyableAmount("t",12).gte(1))
             },
             onComplete() {
                 addPoints("a",2)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",25)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         31: {
             name: "Particle accelerator",
-            tooltip: "Have 50 atoms and 1.00e1600 particles<br>Reward: 4 AP, AP reduces atom buyable costs<br>Next achievement: 1 molecule",
+            tooltip: "Have 50 atoms and 1.00e1600 particles<br>Reward: 4 AP, AP reduces atom buyable costs",
             done() {
                 return (player.t.points.gte(50) && player.points.gte("1.00e1600"))
             },
@@ -2075,57 +2162,99 @@ addLayer("a", {
             },
             onComplete() {
                 addPoints("a",4)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",31)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         32: {
             name: "They combine now??",
-            tooltip: "Gain 1 molecule<br>Reward: 4 AP<br>Next achievement: 15 total molecules",
+            tooltip: "Gain 1 molecule<br>Reward: 4 AP",
             done() {
                 return (player.m.points.gte(1))
             },
             onComplete() {
                 addPoints("a",4)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",32)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         33: {
             name: "They combine now!",
-            tooltip: "Gain 15 total molecules<br>Reward: 4 AP<br>Next achievement: complete first molecular challenge",
+            tooltip: "Gain 15 total molecules<br>Reward: 4 AP",
             done() {
                 return (player.m.total.gte(15))
             },
             onComplete() {
                 addPoints("a",4)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",33)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         34: {
             name: "A new challenger approaches!",
-            tooltip: "Complete a challenge<br>Reward: 4 AP<br>Next achievement: complete 4 molecular challenges",
+            tooltip: "Complete a challenge<br>Reward: 4 AP",
             done() {
                 return (challengeCompletions("m",11)==1)
             },
             onComplete() {
                 addPoints("a",4)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",34)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         35: {
             name: "C'mon, challenge me!",
-            tooltip: "Complete 4 challenges<br>Reward: 4 AP<br>Next achievement: fully complete all molecular challenges",
+            tooltip: "Complete 4 challenges<br>Reward: 4 AP",
             done() {
                 return (challengeCompletions("m",11) + (challengeCompletions("m",12))) == 4
             },
             onComplete() {
                 addPoints("a",4)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",35)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
         41: {
             name: "Too easy!",
-            tooltip: "Complete all molecular challenges<br>Reward: 7 AP<br>Next achievement: fully complete all molecular challenges",
+            tooltip: "Complete all molecular challenges<br>Reward: 7 AP",
             done() {
                 return (challengeCompletions("m",11) + (challengeCompletions("m",12)) + (challengeCompletions("m",21))) == 7
             },
             onComplete() {
                 addPoints("a",7)
-            }
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",41)) color = "#77BF5F"
+                    return color
+                }
+            },
         },
     },
 
@@ -2136,15 +2265,6 @@ addLayer("a", {
     },
     effectDescription() {
         return "speeding up particle division by " + format(tmp.a.effect)
-    },
-    tabFormat: {
-        "Achievements" :{
-            content: ["main-display",
-            "achievements"]
-        },
-        "Milestones" :{
-            content: ["milestones"]
-        }
     },
     milestones: {
         0: {

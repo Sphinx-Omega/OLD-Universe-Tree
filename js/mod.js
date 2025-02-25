@@ -12,20 +12,26 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.2",
-	name: "Big Bang",
+	num: "0.3",
+	name: "Atomic Fusion",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.1</h3><br>
+	<br><h3>v0.1</h3><br>
 		- Universe begins.<br>
 		- Added particles.<br>
 		- Added quarks.<br>
 		- Added electrons.<br>
 		<br><h3>v0.2</h3><br>
-		- Universe expanding.<br>
 		- Added atoms<br>
-		- Added achievement milestones`
+		- Added achievement milestones<br>
+		<br><h3>v0.3</h3><br>
+		- Added molecules<br>
+		- Added endgame text<br>
+		- Added molecule challenges<br>
+		- Added Anti-quarks in molecule challenge 3<br>
+		- Added save and TPS text<br>
+		- Added autosave warning`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
