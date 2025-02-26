@@ -995,7 +995,7 @@ addLayer("m", {
             "blank",
             ["raw-html"],
                 function() {
-                    if(inChallenge("m",21) || hasMilestone("m",7)) {return ["milestones",[7,9,10,11,13,14,15,16]]}
+                    if(inChallenge("m",21) || hasMilestone("m",7)) {return ["milestones",[7,9,10,11,13,14,15,16,17,18]]}
                 },
             "blank",
             function () {if (player.tab == "m" && player.subtabs.m.mainTabs == "Undiscovered") return ["row",[["buyable",11],["buyable",12]]]},
@@ -1034,7 +1034,7 @@ addLayer("m", {
         let sc3 = Decimal.pow(10,1e6)
         let sc4 = Decimal.pow(10,1e9)
         let effExp = decimalOne
-        if (challengeCompletions("m",21)>0) sc2 = sc2.mul(challenges("m",21).rewardEffect)
+        if (challengeCompletions("m",21)>0) sc2 = sc2.mul(tmp.m.challenges[21].rewardEffect)
         if (eff.gte(sc1)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,8)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(sc2)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(sc3)) eff = eff.log10().div(1e6).pow(2e3)     
@@ -1054,7 +1054,7 @@ addLayer("m", {
         let sc3 = Decimal.pow(10,1e6)
         let sc4 = Decimal.pow(10,1e9)
         let effExp = decimalOne
-        if (challengeCompletions("m",21)>0) sc2 = sc2.mul(challenges("m",21).rewardEffect)
+        if (challengeCompletions("m",21)>0) sc2 = sc2.mul(tmp.m.challenges[21].rewardEffect)
         if (eff.gte(sc1)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,8)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(sc2)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(sc3)) eff = eff.log10().div(1e6).pow(2e3)
@@ -1420,6 +1420,7 @@ addLayer("m", {
             },
             coste() { 
                 let cost = new Decimal(0.33)
+                if(getBuyableAmount("m",11).gte(350)) cost = new Decimal(0.334)
                 return cost
             },
             base() { 
@@ -1455,8 +1456,8 @@ addLayer("m", {
                 let s = player.r.points
                 let base = tmp.m.buyables[11].costb
                 let exp = tmp.m.buyables[11].coste
-                let target = s.div(5e3).log(base).root(exp)
-                if (target.gte(5)) target = target.div(5).root(1.1).mul(5)
+                let target = s.div(1.12e3).log(base).root(exp)
+                if (target.gte(10)) target = target.div(10).root(1.1).mul(9)
                 return target.floor().add(1)
             },
             buy() {
@@ -1484,6 +1485,7 @@ addLayer("m", {
             },
             effect() {
                 let eff = new Decimal(0.2)
+                if(hasUpgrade("r",31)) eff = eff.add(upgradeEffect("r",31))
                 if(getBuyableAmount("m", 11).gte(1)) eff = eff.mul(getBuyableAmount("m", 11))
                 return eff
             },  
@@ -1540,7 +1542,7 @@ addLayer("m", {
                 let base = tmp.m.buyables[12].costb
                 let exp = tmp.m.buyables[12].coste
                 let target = s.div(5e3).log(base).root(exp)
-                if (target.gte(5)) target = target.div(5).root(1.1).mul(5)
+                if (target.gte(10)) target = target.div(10).root(1.1).mul(9)
                 return target.floor().add(1)
             },
             buy() {
@@ -1568,6 +1570,7 @@ addLayer("m", {
             },
             effect() {
                 let eff = new Decimal(0.5)
+                if(hasUpgrade("r",32)) eff = eff.add(upgradeEffect("r",32))
                 if(getBuyableAmount("m", 12).gte(1)){ eff = eff.mul(getBuyableAmount("m", 12))}
                 return eff
             },
@@ -1586,7 +1589,8 @@ addLayer("m", {
             },
             costb() {
                 let cost = new Decimal(2.5)
-                if(getBuyableAmount("m",21).gte(15)) cost = new Decimal(1.33)
+                if(hasMilestone("m",17)) cost = cost.sub(0.167)
+                if(getBuyableAmount("m",21).gte(15)) cost = cost.add(0.15)
                 return cost
             },
             coste() { 
@@ -1627,15 +1631,15 @@ addLayer("m", {
                 let base = tmp.m.buyables[21].costb
                 let exp = tmp.m.buyables[21].coste
                 let target = s.div(5e3).log(base).root(exp)
-                if (target.gte("1e10")) target = target.div("1e10").root(1.2).mul("1e10")
+                if (target.gte(10)) target = target.div(10).root(1.2).mul(9)
                 return target.floor().add(1)
             },
             buy() {
-                if(!hasMilestone("m",16)) {
+                if(!hasMilestone("m",18)) {
                 player.r.points = player.r.points.sub(this.cost())}
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
                 // if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
-                if(hasMilestone("m",16)) this.buyMax()
+                if(hasMilestone("m",18)) this.buyMax()
             },
             buyMax() { 
                 let target = tmp.m.buyables[21].maxAfford
@@ -1655,6 +1659,7 @@ addLayer("m", {
             },
             effect() {
                 let eff = new Decimal(0.125)
+                if(hasUpgrade("r",33)) eff = eff.add(upgradeEffect("r",33))
                 if(getBuyableAmount("m", 21).gte(1)){ eff = eff.mul(getBuyableAmount("m", 21))}
                 return eff
             },
@@ -1821,6 +1826,38 @@ addLayer("m", {
             }
         },
         16: {
+            requirementDescription: "1e750 particles in 'Undiscovered'",
+            effectDescription: "Unlock a row of Anti-quark upgrades",
+            done() {
+                if(inChallenge("m",21)) {return player.points.gte("1e750")}
+                else return false
+            },
+            doneColor: "#623dc7",   
+            style() {return {
+                "background": (hasMilestone("m",16)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
+            },
+            unlocked() {
+                if(tmp.m.milestones[10].done) return true
+                else return false
+            }
+        },
+        17: {
+            requirementDescription: "1e1050 particles in 'Undiscovered'",
+            effectDescription: "reduce 'Anti-Reactivity' cost base by 6.8%",
+            done() {
+                if(inChallenge("m",21)) {return player.points.gte("1e1050")}
+                else return false
+            },
+            doneColor: "#623dc7",   
+            style() {return {
+                "background": (hasMilestone("m",17)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
+            },
+            unlocked() {
+                if(tmp.m.milestones[10].done) return true
+                else return false
+            }
+        },
+        18: {
             requirementDescription: "1e1200 particles in 'Undiscovered'",
             effectDescription: "You can buy max Anti-Reactivity's and they cost nothing",
             done() {
@@ -1829,7 +1866,7 @@ addLayer("m", {
             },
             doneColor: "#623dc7",   
             style() {return {
-                "background": (hasMilestone("m",16)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
+                "background": (hasMilestone("m",18)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
             },
             unlocked() {
                 if(tmp.m.milestones[14].done) return true
@@ -1916,7 +1953,7 @@ addLayer("m", {
                 return c21
             },
             goal(){
-                if (challengeCompletions("m", 21) == 0) return Decimal.pow(10,1200);
+                if (challengeCompletions("m", 21) == 0) return Decimal.pow(10,1350);
             },
             onEnter() {
                 return true
@@ -1958,9 +1995,9 @@ addLayer("r", {
         best: new Decimal(0),
         
     }},
-    color: "#583758",
+    color: "rgb(98, 57, 145)",
     nodeStyle() {return {
-        "background": "radial-gradient(#000000,rgb(196, 0, 218))",
+        "background":"radial-gradient(#000000,rgb(196, 0, 218))",
         color: (player.oldStyle?"000000":"rgb(255, 217, 0)"),
     }},
     componentStyles() { return {
@@ -2007,9 +2044,28 @@ addLayer("r", {
         if (getBuyableAmount("m",11).gte(1)) effExp = effExp.add(tmp.m.buyables[11].effect)
         return eff.pow(effExp)
     },
-    effectDescription() {
-        let dis = "Boosting quark formation by " + format(tmp.r.effect) + "x"
-        return dis
+
+    tabFormat:{
+        "": {
+            content: [
+                ["raw-html", 
+                function () {
+                    if (player.tab == "r" && player.subtabs.r.mainTabs == "") {
+                    let a = "You have " + layerText("h2", "r", format(player.r.points)) +  ' anti-quarks, boosting quark formation by ' + layerText("h2", "r", format(tmp.r.effect)) + "x"
+                    return a
+                    }
+                }],
+                "blank",
+                function () {if (player.tab == "r") return "prestige-button"},    
+                "blank",
+                ["row",[["upgrade",11],["upgrade",12],["upgrade",13]]],
+                ["row",[["upgrade",21],["upgrade",22],["upgrade",23]]],
+                ["row",[["upgrade",31],["upgrade",32]]],
+                ["upgrade",33],
+                ["upgrade",41],
+            ],
+            unlocked() {return false}
+        },
     },
 
     upgrades: {
@@ -2020,6 +2076,19 @@ addLayer("r", {
             cost: new Decimal(3),
             unlocked(){
                 return true
+            },
+            canAfford() {
+                return  (player.r.points.gte(this.cost) && inChallenge("m",21))
+            },
+            style: {
+                "background"() {
+                    if (!hasUpgrade("r",11)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[11].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",11)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
             }
         },
         12: {
@@ -2028,6 +2097,19 @@ addLayer("r", {
             cost: new Decimal(30),
             unlocked(){
                 return true
+            },
+            canAfford() {
+                return  (player.r.points.gte(this.cost) && inChallenge("m",21))
+            },
+            style: {
+                "background"() {
+                    if (!hasUpgrade("r",12)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[12].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",12)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
             }
         },
         13: {
@@ -2042,6 +2124,19 @@ addLayer("r", {
                 return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            canAfford() {
+                return  (player.r.points.gte(this.cost) && inChallenge("m",21))
+            },
+            style: {
+                "background"() {
+                    if (!hasUpgrade("r",13)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[13].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",13)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
+            }
         },
         21: {
             title: "Subcharged",
@@ -2055,6 +2150,19 @@ addLayer("r", {
                 return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            canAfford() {
+                return  (player.r.points.gte(this.cost) && inChallenge("m",21))
+            },
+            style: {
+                "background"() {
+                    if (!hasUpgrade("r",21)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[21].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",21)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
+            }
         },
         22: {
             title: "Antidrive",
@@ -2068,6 +2176,19 @@ addLayer("r", {
                 return eff
             },
             effectDisplay() { return format(upgradeEffect("r",22))+"x quarks,<br>"+format(upgradeEffect("r",41))+"x anti-quarks" },
+            canAfford() {
+                return  (player.r.points.gte(this.cost) && inChallenge("m",21))
+            },
+            style: {
+                "background"() {
+                    if (!hasUpgrade("r",22)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[22].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",22)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
+            }
         },
         23: {
             title: "Inhibitor",
@@ -2081,7 +2202,114 @@ addLayer("r", {
                 return eff
             },
             effectDisplay() { return format(upgradeEffect("r",23))+"x" },
+            canAfford() {
+                return  (player.r.points.gte(this.cost) && inChallenge("m",21))
+            },
+            style: {
+                "background"() {
+                    if (!hasUpgrade("r",23)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[23].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",23)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
+            }
         },
+        31: {
+            title: "Antier Boosters",
+            description: "Anti-quarks boost Anti-Boost effect",
+            cost(){
+                let c = new Decimal(17e6)
+                if(hasUpgrade("r",32) || hasUpgrade("r",33)) c = new Decimal(45e6)
+                if(hasUpgrade("r",32) && hasUpgrade("r",33)) c = new Decimal(1e8)
+                return c
+            },
+            unlocked(){
+                return hasMilestone("m",16)
+            },
+            effect() {
+                let eff = player.r.points.add(1).pow(0.001).max(1).sub(1)
+                return eff
+            },
+            effectDisplay() { return "+"+format(upgradeEffect("r",31)) },
+            canAfford() {
+                return  (player.r.points.gte(this.cost()) && inChallenge("m",21))
+            },
+            style: {"width":"150px","height":"150px",
+                "background"() {
+                    if (!hasUpgrade("r",31)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[31].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",31)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
+            }
+        },
+        32: {
+            title: "Antier Bonds",
+            description: "Anti-quarks boost Anti-Bond effect",
+            cost(){
+                let c = new Decimal(17e6)
+                if(hasUpgrade("r",31) || hasUpgrade("r",33)) c = new Decimal(45e6)
+                if(hasUpgrade("r",31) && hasUpgrade("r",33)) c = new Decimal(1e8)
+                return c
+            },
+            unlocked(){
+                return hasMilestone("m",16)
+            },
+            effect() {
+                let eff = player.r.points.add(1).pow(0.005).max(1).sub(1)
+                return eff
+            },
+            effectDisplay() { return "+"+format(upgradeEffect("r",32)) },
+            canAfford() {
+                return  (player.r.points.gte(this.cost()) && inChallenge("m",21))
+            },
+            style: {"width":"150px","height":"150px",
+                "background"() {
+                    if (!hasUpgrade("r",32)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[32].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",32)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
+            }
+        },
+        33: {
+            title: "Antier Reactivity",
+            description: "Anti-quarks boost Anti-Reactivity effect",
+            cost(){
+                let c = new Decimal(17e6)
+                if(hasUpgrade("r",31) || hasUpgrade("r",32)) c = new Decimal(45e6)
+                if(hasUpgrade("r",31) && hasUpgrade("r",32)) c = new Decimal(1e8)
+                return c
+            },
+            unlocked(){
+                return hasMilestone("m",16)
+            },
+            effect() {
+                let eff = player.r.points.add(1).pow(0.005).max(1).sub(1)
+                return eff
+            },
+            effectDisplay() { return "+"+format(upgradeEffect("r",33)) },
+            canAfford() {
+                return  (player.r.points.gte(this.cost()) && inChallenge("m",21))
+            },
+            style: {"width":"150px","height":"150px",
+                "background"() {
+                    if (!hasUpgrade("r",33)) {
+                    let color = "radial-gradient(rgb(155, 117, 170),rgb(52, 42, 63))"
+                    if (tmp.r.upgrades[33].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+                    return color
+                } if (hasUpgrade("r",33)) {color = "radial-gradient(rgb(199, 146, 219),rgb(100, 32, 179))"
+                    return color}
+                }
+            }
+        },
+        
         41: {
             title: "",
             description: "",
@@ -2095,13 +2323,6 @@ addLayer("r", {
             },
         },
     },
-
-    doReset(resettingLayer) {
-        let keep = [];
-        if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
-    },
-
-    
 })
 
 addLayer("a", {

@@ -249,3 +249,20 @@ button > * {
 	--background: transparent !important;
 }
 
+/* .m.grad:not(.locked):not(.bought) {
+	background: radial-gradient(#34c29a, #00f0ac, #34c29a,#00f0ac);
+	background-size: 50% 100%;
+}
+	
+.m.anim:not(.locked):not(.bought) {
+	animation: m 10s linear infinite;
+}
+
+@keyframes m {
+	0% {
+		background-position: 0% 400%;
+	}
+	100% {
+		background-position: 400% 0%;
+	}
+} */
