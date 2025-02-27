@@ -739,32 +739,27 @@ addLayer("t", {
             },
             canAfford() {
                 return player.e.points.gte(tmp[this.layer].buyables[this.id].cost)},
-            maxAfford() {
-                let s = player.e.points
-                let base = tmp.t.buyables[11].costb
-                let exp = tmp.t.buyables[11].coste
-                let target = s.div(1e250).log(base).root(exp)
-                if (target.gte(5e6)) target = target.div(5e6).root(1.1).mul(5e6)
-                    if (target.gte(1e20)) target = target.div(1e20).root(1.1).mul(1e15)
-                    if (target.gte(1e100)) target = target.div(1e100).root(1.2).mul(1e67).div(1e25)
-                    if (target.gte("1e5e4")) target = target.div("1e5e4").root(1.2).mul("1e100").div(1e250)
-                    if (target.gte("1e1e6")) target = target.div("1e1e6").root(1.2).mul("1e1e3").div("1e500")
-                    if (target.gte("1e1e8")) target = target.div("1e1e8").root(1.2).mul("1e1e5").div("1e5e4")
-                return target.floor().add(1)
-            },
             buy() {
                 player.e.points = player.e.points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
                 if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
                 if(hasMilestone("t",2)) this.buyMax()
             },
+            maxAfford() {
+                let s = player.e.points
+                let base = tmp.t.buyables[11].costb
+                let exp = tmp.t.buyables[11].coste
+                let target = s.log(base).root(exp)
+                return target.floor().add(1)
+            },
             buyMax() { 
                 let target = tmp.t.buyables[11].maxAfford
                 let base = tmp.t.buyables[11].costb
                 let exp = tmp.t.buyables[11].coste
-                let cost = Decimal.pow(base,target.pow(exp)).mul(1e250)
+                let cost = Decimal.pow(base,target.pow(exp)).pow10()
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.t.buyables[11] = player.t.buyables[11].max(target)
+                
                 }
             },
             effect() {
@@ -820,32 +815,27 @@ addLayer("t", {
             },
             canAfford() {
                 return player.e.points.gte(tmp[this.layer].buyables[this.id].cost)},
-            maxAfford() {
-                let s = player.e.points
-                let base = tmp.t.buyables[12].costb
-                let exp = tmp.t.buyables[12].coste
-                let target = s.div(1e250).log(base).root(exp)
-                if (target.gte(5e6)) target = target.div(5e6).root(1.1).mul(5e6)
-                if (target.gte(1e20)) target = target.div(1e20).root(1.1).mul(1e15)
-                if (target.gte(1e100)) target = target.div(1e100).root(1.2).mul(1e67)
-                if (target.gte("1e5e4")) target = target.div("1e5e4").root(1.2).mul("1e100").div(5e3)
-                if (target.gte("1e1e6")) target = target.div("1e1e6").root(1.2).mul("1e1e3").div(1e5)
-                if (target.gte("1e1e8")) target = target.div("1e1e8").root(1.2).mul("1e1e5").div("1e5e4")
-                return target.floor().add(1)
-            },
             buy() {
                 player.e.points = player.e.points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
                 if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
                 if(hasMilestone("t",2)) this.buyMax()
             },
+            maxAfford() {
+                let s = player.e.points
+                let base = tmp.t.buyables[12].costb
+                let exp = tmp.t.buyables[12].coste
+                let target = s.log(base).root(exp)
+                return target.floor().add(1)
+            },
             buyMax() { 
                 let target = tmp.t.buyables[12].maxAfford
                 let base = tmp.t.buyables[12].costb
                 let exp = tmp.t.buyables[12].coste
-                let cost = Decimal.pow(base,target.pow(exp)).mul(1e250)
+                let cost = Decimal.pow(base,target.pow(exp)).pow10()
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.t.buyables[12] = player.t.buyables[12].max(target)
+                
                 }
             },
             effect() {
@@ -984,7 +974,7 @@ addLayer("m", {
             ["display-text"
             ],
                 function() {
-                    return ["milestones",[0,1,2,3,4,5,6,8,12]]
+                    return ["milestones",[0,1,2,3,4,5,6,8,12,19]]
                 },
             ],
         },
@@ -1034,7 +1024,7 @@ addLayer("m", {
         let sc3 = Decimal.pow(10,1e6)
         let sc4 = Decimal.pow(10,1e9)
         let effExp = decimalOne
-        if (challengeCompletions("m",21)>0) sc2 = sc2.mul(tmp.m.challenges[21].rewardEffect)
+        if (challengeCompletions("m",21)>0) sc4 = sc4.mul(tmp.m.challenges[21].rewardEffect)
         if (eff.gte(sc1)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,8)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(sc2)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(sc3)) eff = eff.log10().div(1e6).pow(2e3)     
@@ -1054,7 +1044,7 @@ addLayer("m", {
         let sc3 = Decimal.pow(10,1e6)
         let sc4 = Decimal.pow(10,1e9)
         let effExp = decimalOne
-        if (challengeCompletions("m",21)>0) sc2 = sc2.mul(tmp.m.challenges[21].rewardEffect)
+        if (challengeCompletions("m",21)>0) sc4 = sc4.mul(tmp.m.challenges[21].rewardEffect)
         if (eff.gte(sc1)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,8)).log10().pow(0.88)).mul(Decimal.pow(10,5))
         if (eff.gte(sc2)) eff = Decimal.pow(10,eff.div(Decimal.pow(10,100)).log10().pow(0.85)).mul(Decimal.pow(10,100))
         if (eff.gte(sc3)) eff = eff.log10().div(1e6).pow(2e3)
@@ -1448,18 +1438,11 @@ addLayer("m", {
                 Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" anti-quarks\n\
                 Effect: +" + format(new Decimal(0.2).mul(effbonus))+"\n\
                 Amount: " + formatWhole(getBuyableAmount("m", 11))+bonusDis+"\n\
-                Currently: +" + format(getBuyableAmount("m", 11).div(5))
+                Currently: +" + format(getBuyableAmount("m", 11).div(5))+"\n\
+                Bulk: " + formatWhole(this.bulk())
             },
             canAfford() {
                 return player.r.points.gte(tmp[this.layer].buyables[this.id].cost)},
-            maxAfford() {
-                let s = player.r.points
-                let base = tmp.m.buyables[11].costb
-                let exp = tmp.m.buyables[11].coste
-                let target = s.div(1.12e3).log(base).root(exp)
-                if (target.gte(10)) target = target.div(10).root(1.1).mul(9)
-                return target.floor().add(1)
-            },
             buy() {
                 if(!hasMilestone("m",13)) {
                 player.r.points = player.r.points.sub(this.cost())}
@@ -1467,13 +1450,21 @@ addLayer("m", {
                 // if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
                 if(hasMilestone("m",13)) this.buyMax()
             },
+            maxAfford() {
+                let s = player.r.points.log10().pow(1.4)
+                let base = tmp.m.buyables[11].costb
+                let exp = tmp.m.buyables[11].coste
+                let target = s.log(base).root(exp)
+                return target.floor().add(1)
+            },
             buyMax() { 
                 let target = tmp.m.buyables[11].maxAfford
                 let base = tmp.m.buyables[11].costb
                 let exp = tmp.m.buyables[11].coste
-                let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
+                let cost = Decimal.pow(base,target.pow(exp)).pow10()
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.m.buyables[11] = player.m.buyables[11].max(target)
+                
                 }
             },
             style: {"width":"200px","height":"200px",
@@ -1488,7 +1479,28 @@ addLayer("m", {
                 if(hasUpgrade("r",31)) eff = eff.add(upgradeEffect("r",31))
                 if(getBuyableAmount("m", 11).gte(1)) eff = eff.mul(getBuyableAmount("m", 11))
                 return eff
-            },  
+            },
+            bulkbase() { 
+                let base = new Decimal(2)
+                return base
+            },
+            total() {
+                let total = getBuyableAmount("m", 11)
+                return total
+            },
+			speed() { 
+                let x = tmp.m.buyables[this.id].total
+                let base = tmp.m.buyables[this.id].speedbase
+                return Decimal.pow(base, x).div(1.25).min(10);
+            },
+            bulk() { 
+                let x = tmp.m.buyables[this.id].total
+                let base = tmp.m.buyables[this.id].bulkbase
+                let eff = Decimal.pow(base, x)
+                // if (hasUpgrade("e",21)) eff = eff.mul(1e6)
+                // if (hasUpgrade("e",143)) eff = Decimal.tetrate(10,1.79e308)
+                return eff;
+            },    
         },
         12: {
             title: "Anti-Bonds",
@@ -1533,18 +1545,11 @@ addLayer("m", {
                 Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" anti-quarks\n\
                 Effect: +" + format(new Decimal(0.5).mul(effbonus))+"\n\
                 Amount: " + formatWhole(getBuyableAmount("m", 12))+bonusDis+"\n\
-                Currently: +" + format(getBuyableAmount("m", 12).div(2))
+                Currently: +" + format(getBuyableAmount("m", 12).div(2))+"\n\
+                Bulk: " + formatWhole(this.bulk())
             },
             canAfford() {
                 return player.r.points.gte(tmp[this.layer].buyables[this.id].cost)},
-            maxAfford() {
-                let s = player.r.points
-                let base = tmp.m.buyables[12].costb
-                let exp = tmp.m.buyables[12].coste
-                let target = s.div(5e3).log(base).root(exp)
-                if (target.gte(10)) target = target.div(10).root(1.1).mul(9)
-                return target.floor().add(1)
-            },
             buy() {
                 if(!hasMilestone("m",15)) {
                 player.r.points = player.r.points.sub(this.cost())}
@@ -1552,13 +1557,21 @@ addLayer("m", {
                 // if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
                 if(hasMilestone("m",15)) this.buyMax()
             },
+            maxAfford() {
+                let s = player.r.points.log10().pow(1.4)
+                let base = tmp.m.buyables[12].costb
+                let exp = tmp.m.buyables[12].coste
+                let target = s.log(base).root(exp)
+                return target.floor().add(1)
+            },
             buyMax() { 
                 let target = tmp.m.buyables[12].maxAfford
                 let base = tmp.m.buyables[12].costb
                 let exp = tmp.m.buyables[12].coste
-                let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
+                let cost = Decimal.pow(base,target.pow(exp)).pow10()
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.m.buyables[12] = player.m.buyables[12].max(target)
+                
                 }
             },
             style: {"width":"200px","height":"200px",
@@ -1576,7 +1589,28 @@ addLayer("m", {
             },
             unlocked() {
                 return hasMilestone("m",10)
-            },  
+            },
+            bulkbase() { 
+                let base = new Decimal(2)
+                return base
+            },
+            total() {
+                let total = getBuyableAmount("m", 12)
+                return total
+            },
+			speed() { 
+                let x = tmp.m.buyables[this.id].total
+                let base = tmp.m.buyables[this.id].speedbase
+                return Decimal.pow(base, x).div(1.25).min(10);
+            },
+            bulk() { 
+                let x = tmp.m.buyables[this.id].total
+                let base = tmp.m.buyables[this.id].bulkbase
+                let eff = Decimal.pow(base, x)
+                // if (hasUpgrade("e",21)) eff = eff.mul(1e6)
+                // if (hasUpgrade("e",143)) eff = Decimal.tetrate(10,1.79e308)
+                return eff;
+            },    
         },
         21: {
             title: "Anti-Reactivity",
@@ -1612,8 +1646,8 @@ addLayer("m", {
                 let effbonus = 1
                 // if(hasUpgrade("t",22)){
                 //     bonus = formatWhole(upgradeEffect("t",22))}
-                // if(hasUpgrade("t",23)){
-                //     effbonus = format(upgradeEffect("t",23))}
+                if(hasMilestone("m",19)){
+                    effbonus = format(player.m.points.add(1).pow(0.033))}
                 if(getBuyableAmount("m", 21).gte(1)){
                 extra = formatWhole(x)}
                 //if(hasUpgrade("t",22)) bonusDis = "(+"+bonus+")"
@@ -1622,18 +1656,11 @@ addLayer("m", {
                 Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" anti-quarks\n\
                 Effect: +" + format(new Decimal(0.125).mul(effbonus))+"\n\
                 Amount: " + formatWhole(getBuyableAmount("m", 21))+bonusDis+"\n\
-                Currently: +" + format(getBuyableAmount("m", 21).div(8))
+                Currently: +" + format((getBuyableAmount("m", 21).div(8)).mul(effbonus))+"\n\
+                Bulk: " + formatWhole(this.bulk())
             },
             canAfford() {
-                return player.r.points.gte(tmp[this.layer].buyables[this.id].cost)},
-            maxAfford() {
-                let s = player.r.points
-                let base = tmp.m.buyables[21].costb
-                let exp = tmp.m.buyables[21].coste
-                let target = s.div(5e3).log(base).root(exp)
-                if (target.gte(10)) target = target.div(10).root(1.2).mul(9)
-                return target.floor().add(1)
-            },
+                return player.r.points.gte(tmp[this.layer].buyables[this.id].cost)},  
             buy() {
                 if(!hasMilestone("m",18)) {
                 player.r.points = player.r.points.sub(this.cost())}
@@ -1641,13 +1668,21 @@ addLayer("m", {
                 // if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
                 if(hasMilestone("m",18)) this.buyMax()
             },
+       maxAfford() {
+                let s = player.r.points.log10().pow(1.4)
+                let base = tmp.m.buyables[21].costb
+                let exp = tmp.m.buyables[21].coste
+                let target = s.log(base).root(exp)
+                return target.floor().add(1)
+            },
             buyMax() { 
                 let target = tmp.m.buyables[21].maxAfford
                 let base = tmp.m.buyables[21].costb
                 let exp = tmp.m.buyables[21].coste
-                let cost = Decimal.pow(base,target.pow(exp)).mul(5e3)
+                let cost = Decimal.pow(base,target.pow(exp)).pow10()
                 if (tmp[this.layer].buyables[this.id].canAfford) {
                     player.m.buyables[21] = player.m.buyables[21].max(target)
+                
                 }
             },
             style: {"width":"200px","height":"200px",
@@ -1660,11 +1695,33 @@ addLayer("m", {
             effect() {
                 let eff = new Decimal(0.125)
                 if(hasUpgrade("r",33)) eff = eff.add(upgradeEffect("r",33))
+                if(hasMilestone("m",19)) eff = eff.mul(player.m.points.add(1).pow(0.033))
                 if(getBuyableAmount("m", 21).gte(1)){ eff = eff.mul(getBuyableAmount("m", 21))}
                 return eff
             },
             unlocked() {
                 return hasMilestone("m",14)
+            },
+            bulkbase() { 
+                let base = new Decimal(2)
+                return base
+            },
+            total() {
+                let total = getBuyableAmount("m", 21)
+                return total
+            },
+			speed() { 
+                let x = tmp.m.buyables[this.id].total
+                let base = tmp.m.buyables[this.id].speedbase
+                return Decimal.pow(base, x).div(1.25).min(10);
+            },
+            bulk() { 
+                let x = tmp.m.buyables[this.id].total
+                let base = tmp.m.buyables[this.id].bulkbase
+                let eff = Decimal.pow(base, x)
+                // if (hasUpgrade("e",21)) eff = eff.mul(1e6)
+                // if (hasUpgrade("e",143)) eff = Decimal.tetrate(10,1.79e308)
+                return eff;
             },  
         },
     },
@@ -1873,6 +1930,17 @@ addLayer("m", {
                 else return false
             }
         },
+        19: {
+            requirementDescription: "600 molecules",
+            effectDescription: "Molecules boost Anti-Reactivity effect: (<sup>*</sup>molecules^<sup>0.05</sup>)",
+            done() {
+                return player.m.points.gte(600)
+            },  
+            unlocked() {
+                if(tmp.m.milestones[14].done) return true
+                else return false
+            }
+        },
     },
     
 
@@ -1966,10 +2034,10 @@ addLayer("m", {
             rewardDescription: "Molecule softcaps start later.",
             rewardEffect() {
                  let c21 = player.m.points.add(1).max(1)
-                 let c21r = new Decimal(4.2)
+                 let c21r = new Decimal(100)
                  let c21c = challengeCompletions("m", 21)
-                 c21c = Decimal.pow(1.5, c21c)
-                 c21 = Decimal.log10(c21).pow(0.7)
+                 c21c = Decimal.pow(2.5, c21c)
+                 c21 = Decimal.log10(c21).pow(25)
                  c21 = Decimal.pow(10,c21)
                  c21r = c21r.mul(c21c)
                  c21 = c21.pow(c21r)
