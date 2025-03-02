@@ -985,7 +985,7 @@ addLayer("m", {
             "blank",
             ["raw-html"],
                 function() {
-                    if(inChallenge("m",21) || hasMilestone("m",7)) {return ["milestones",[7,9,10,11,13,14,15,16,17,18]]}
+                    if(inChallenge("m",21) || hasMilestone("m",7)) {return ["milestones",[7,9,10,11,13,14,15,16,17,18,20]]}
                 },
             "blank",
             function () {if (player.tab == "m" && player.subtabs.m.mainTabs == "Undiscovered") return ["row",[["buyable",11],["buyable",12]]]},
@@ -1533,6 +1533,7 @@ addLayer("m", {
                 let bonus = ""
                 let bonusDis = ""
                 let effbonus = 1
+                let effdecimal = 0.5
                 // if(hasUpgrade("t",22)){
                 //     bonus = formatWhole(upgradeEffect("t",22))}
                 // if(hasUpgrade("t",23)){
@@ -1540,12 +1541,13 @@ addLayer("m", {
                 if(getBuyableAmount("m", 12).gte(1)){
                 extra = formatWhole(x)}
                 //if(hasUpgrade("t",22)) bonusDis = "(+"+bonus+")"
+                if(hasMilestone("m",20)) effdecimal = new Decimal(1)
                 let dis = "Increase Molecule effect exponent"
                 return dis + ".\n\
                 Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" anti-quarks\n\
-                Effect: +" + format(new Decimal(0.5).mul(effbonus))+"\n\
+                Effect: +" + format(new Decimal(effdecimal).mul(effbonus))+"\n\
                 Amount: " + formatWhole(getBuyableAmount("m", 12))+bonusDis+"\n\
-                Currently: +" + format(getBuyableAmount("m", 12).div(2))+"\n\
+                Currently: +" + format(getBuyableAmount("m", 12).mul(effdecimal))+"\n\
                 Bulk: " + formatWhole(this.bulk())
             },
             canAfford() {
@@ -1583,6 +1585,7 @@ addLayer("m", {
             },
             effect() {
                 let eff = new Decimal(0.5)
+                if(hasMilestone("m",20)) eff = new Decimal(1)
                 if(hasUpgrade("r",32)) eff = eff.add(upgradeEffect("r",32))
                 if(getBuyableAmount("m", 12).gte(1)){ eff = eff.mul(getBuyableAmount("m", 12))}
                 return eff
@@ -1647,7 +1650,7 @@ addLayer("m", {
                 // if(hasUpgrade("t",22)){
                 //     bonus = formatWhole(upgradeEffect("t",22))}
                 if(hasMilestone("m",19)){
-                    effbonus = format(player.m.points.add(1).pow(0.033))}
+                    effbonus = format(player.m.points.add(1).pow(0.067))}
                 if(getBuyableAmount("m", 21).gte(1)){
                 extra = formatWhole(x)}
                 //if(hasUpgrade("t",22)) bonusDis = "(+"+bonus+")"
@@ -1695,7 +1698,7 @@ addLayer("m", {
             effect() {
                 let eff = new Decimal(0.125)
                 if(hasUpgrade("r",33)) eff = eff.add(upgradeEffect("r",33))
-                if(hasMilestone("m",19)) eff = eff.mul(player.m.points.add(1).pow(0.033))
+                if(hasMilestone("m",19)) eff = eff.mul(player.m.points.max(1).pow(0.067))
                 if(getBuyableAmount("m", 21).gte(1)){ eff = eff.mul(getBuyableAmount("m", 21))}
                 return eff
             },
@@ -1938,6 +1941,22 @@ addLayer("m", {
             },  
             unlocked() {
                 if(tmp.m.milestones[14].done) return true
+                else return false
+            }
+        },
+        20: {
+            requirementDescription: "1e2450 particles in 'Undiscovered'",
+            effectDescription: "Anti-Bonds effect is 2x stronger",
+            done() {
+                if(inChallenge("m",21)) {return player.points.gte("1.000e2450")}
+                else return false
+            },
+            doneColor: "#623dc7",   
+            style() {return {
+                "background": (hasMilestone("m",20)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
+            },
+            unlocked() {
+                if(tmp.m.milestones[18].done) return true
                 else return false
             }
         },
