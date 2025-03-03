@@ -197,19 +197,13 @@ addLayer("p", {
         },
 
     doReset(resettingLayer) {
-        let keep = [];
-        if (resettingLayer == "p") keep.push("upgrades")
-        if (hasMilestone("a", 0) && resettingLayer=="e") keep.push("upgrades")
-        if (hasMilestone("t", 0) && resettingLayer=="t") keep.push("upgrades")
-        if (hasMilestone("m", 0)) keep.push(11,12,13,21,22)
-        if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",23) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(23)
-        if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",31) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(31)
-        if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",32) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(32)
-        if (hasMilestone("m", 0) && !hasMilestone("m", 2) && hasUpgrade("p",33) && (resettingLayer=="p"||resettingLayer=="e"||resettingLayer=="t")) keep.push(33)
-        if (hasMilestone("m", 1)) keep.push(23)
-        if (hasMilestone("m", 2)) keep.push(31,32,33)
-        if (layers[resettingLayer].row > this.row) {layerDataReset(this.layer, keep)
-        player[this.layer].upgrades = keep}
+        let keep = []
+        if (hasMilestone("a", 0) && resettingLayer == "e") keep.push("upgrades")
+        if (hasMilestone("t", 0) && resettingLayer == "t") keep.push("upgrades")     
+        if (hasMilestone("m", 0) && resettingLayer == "m") keep.push('11','12','13','21','22')
+        if (hasMilestone("m", 1) && resettingLayer == "m") keep.push('23')
+        if (hasMilestone("m", 2) && resettingLayer == "m") keep.push('31','32','33') 
+        if (layers[resettingLayer].row > this.row) {layerDataReset(this.layer, keep)}
     },
 })
 
@@ -233,6 +227,7 @@ addLayer("e", {
     requires() {
         let cost = new Decimal(1e6)
         if(hasUpgrade("e",33)) cost = cost.pow(decimalZero.sub(upgradeEffect("e",33)))
+        if (player.p.points.gte("e1e250")) cost = cost.mul(10).pow(50)
         return cost
     },  // Can be a function that takes requirement increases into account
     resource: "electrons", // Name of prestige currency
@@ -254,7 +249,8 @@ addLayer("e", {
         return emult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
-        return new Decimal(1)
+        let eexp = decimalOne
+        return eexp    
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
@@ -281,11 +277,12 @@ addLayer("e", {
         let eff = player.e.points.add(1).max(1)
         eff = eff.pow(2)
         if (eff.gte(Decimal.pow(10,16))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
+        if (eff.gte(Decimal.pow(10,1e250))) eff = eff.pow(0.1).log10()
         if (player.t.total.gte(1)) eff = eff.mul(tmp.t.effect)
         if (hasUpgrade("t", 11)){
             eff = eff.mul(upgradeEffect('t',11).add(1).log10())}
         if (hasUpgrade("p", 31)){
-                eff = eff.mul(upgradeEffect('p',31).mul(1e7).add(1).max(1))}
+            eff = eff.mul(upgradeEffect('p',31).mul(1e7).add(1).max(1))}
         if (player.e.points.lt(1) && player.e.best.gte(1)) eff = eff.add(1)
         if (inChallenge("m", 11)) eff = eff.pow(0.75)
         if (inChallenge("m", 12)) eff = decimalOne
@@ -317,8 +314,8 @@ addLayer("e", {
                 let eff = player[this.layer].points.add(1).max(1)
                 eff = eff.pow(0.15)
 
-                if (hasUpgrade("t", 12)){
-                    eff = eff.mul(upgradeEffect('t',11).pow(1.33).div(2e3))}
+                if (hasUpgrade("t", 12)) {eff = eff.mul(upgradeEffect('t',11).pow(1.33).div(2e3))}      
+                if (player.c.tis > decimalZero) {eff = eff.mul(tmp.c.tisEffect2)}
                 return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
@@ -875,6 +872,8 @@ addLayer("t", {
     },
 })
 
+
+
 addLayer("m", {
     name: "molecules", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "M", // This appears on the layer's node. Default is the id with the first letter capitalized
@@ -900,6 +899,7 @@ addLayer("m", {
     exponent(){
         let mExp = new Decimal(1.3)
         if(hasUpgrade("m",22)) mExp = mExp.sub((upgradeEffect("m",22).sub(decimalOne))).max(1)
+        if(player.m.points.gte(600)) mExp = mExp.add(0.1)
         return mExp
     },
     base: new Decimal(1.04),
@@ -938,7 +938,7 @@ addLayer("m", {
         return dis
     },
     //resetsNothing() { return hasMilestone("t", 4) },
-    canBuyMax() { return hasMilestone("m", 3)},
+    canBuyMax() { return hasMilestone("m", 3) || hasMilestone("c",0)},
     doReset(resettingLayer){
         if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
         let keep = []
@@ -974,7 +974,7 @@ addLayer("m", {
             ["display-text"
             ],
                 function() {
-                    return ["milestones",[0,1,2,3,4,5,6,8,12,19]]
+                    return ["milestones",[0,1,2,3,4,5,6,8,12]]
                 },
             ],
         },
@@ -985,7 +985,7 @@ addLayer("m", {
             "blank",
             ["raw-html"],
                 function() {
-                    if(inChallenge("m",21) || hasMilestone("m",7)) {return ["milestones",[7,9,10,11,13,14,15,16,17,18,20]]}
+                    if(inChallenge("m",21) || hasMilestone("m",7)) {return ["milestones",[7,9,10,11,13,14,15,16,17,18,19]]}
                 },
             "blank",
             function () {if (player.tab == "m" && player.subtabs.m.mainTabs == "Undiscovered") return ["row",[["buyable",11],["buyable",12]]]},
@@ -1541,7 +1541,7 @@ addLayer("m", {
                 if(getBuyableAmount("m", 12).gte(1)){
                 extra = formatWhole(x)}
                 //if(hasUpgrade("t",22)) bonusDis = "(+"+bonus+")"
-                if(hasMilestone("m",20)) effdecimal = new Decimal(1)
+                if(hasMilestone("m",19)) effdecimal = new Decimal(1)
                 let dis = "Increase Molecule effect exponent"
                 return dis + ".\n\
                 Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" anti-quarks\n\
@@ -1585,7 +1585,7 @@ addLayer("m", {
             },
             effect() {
                 let eff = new Decimal(0.5)
-                if(hasMilestone("m",20)) eff = new Decimal(1)
+                if(hasMilestone("m",19)) eff = new Decimal(1)
                 if(hasUpgrade("r",32)) eff = eff.add(upgradeEffect("r",32))
                 if(getBuyableAmount("m", 12).gte(1)){ eff = eff.mul(getBuyableAmount("m", 12))}
                 return eff
@@ -1649,8 +1649,8 @@ addLayer("m", {
                 let effbonus = 1
                 // if(hasUpgrade("t",22)){
                 //     bonus = formatWhole(upgradeEffect("t",22))}
-                if(hasMilestone("m",19)){
-                    effbonus = format(player.m.points.add(1).pow(0.067))}
+                // if(hasMilestone("m",19)){
+                //     effbonus = format(player.m.points.add(1).pow(0.067))}
                 if(getBuyableAmount("m", 21).gte(1)){
                 extra = formatWhole(x)}
                 //if(hasUpgrade("t",22)) bonusDis = "(+"+bonus+")"
@@ -1698,7 +1698,7 @@ addLayer("m", {
             effect() {
                 let eff = new Decimal(0.125)
                 if(hasUpgrade("r",33)) eff = eff.add(upgradeEffect("r",33))
-                if(hasMilestone("m",19)) eff = eff.mul(player.m.points.max(1).pow(0.067))
+                // if(hasMilestone("m",19)) eff = eff.mul(player.m.points.max(1).pow(0.067))
                 if(getBuyableAmount("m", 21).gte(1)){ eff = eff.mul(getBuyableAmount("m", 21))}
                 return eff
             },
@@ -1934,17 +1934,6 @@ addLayer("m", {
             }
         },
         19: {
-            requirementDescription: "600 molecules",
-            effectDescription: "Molecules boost Anti-Reactivity effect: (<sup>*</sup>molecules^<sup>0.05</sup>)",
-            done() {
-                return player.m.points.gte(600)
-            },  
-            unlocked() {
-                if(tmp.m.milestones[14].done) return true
-                else return false
-            }
-        },
-        20: {
             requirementDescription: "1e2450 particles in 'Undiscovered'",
             effectDescription: "Anti-Bonds effect is 2x stronger",
             done() {
@@ -1953,7 +1942,7 @@ addLayer("m", {
             },
             doneColor: "#623dc7",   
             style() {return {
-                "background": (hasMilestone("m",20)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
+                "background": (hasMilestone("m",19)?"radial-gradient(rgb(255, 252, 53),#623dc7)":"radial-gradient(rgb(156, 132, 196),rgb(53, 16, 95))" )}
             },
             unlocked() {
                 if(tmp.m.milestones[18].done) return true
@@ -2053,7 +2042,7 @@ addLayer("m", {
             rewardDescription: "Molecule softcaps start later.",
             rewardEffect() {
                  let c21 = player.m.points.add(1).max(1)
-                 let c21r = new Decimal(100)
+                 let c21r = new Decimal(92.5)
                  let c21c = challengeCompletions("m", 21)
                  c21c = Decimal.pow(2.5, c21c)
                  c21 = Decimal.log10(c21).pow(25)
@@ -2069,6 +2058,7 @@ addLayer("m", {
         },
     },
 })
+
 
 
 addLayer("r", {
@@ -2412,6 +2402,538 @@ addLayer("r", {
     },
 })
 
+
+
+addLayer("c", {
+    name: "cells", 
+    symbol: "C", 
+    position: 1, 
+    startData() { return {
+        unlocked: false,
+		points: decimalZero,
+        total: new Decimal(0),
+        best: new Decimal(0),
+        resettime: new Decimal(0.001),
+        tis: new Decimal(0)
+    }},
+    color: "#ffcc00",
+    nodeStyle() {return {
+        "background": ((player.c.unlocked||canReset("c"))?"#ffcc00":"#ac994d"),   
+    }},
+    requires() { 
+        let req = new Decimal(600)
+            return formatWhole(req)
+        },
+    resource: "cells", 
+    baseResource: "molecules", 
+    baseAmount() {return player.m.points}, 
+    type: "static", 
+    exponent(){
+        let mExp = new Decimal(2)
+        return mExp
+    },
+    base: new Decimal(1.1),
+    softcap: Decimal.pow(10,4),
+    softcapPower: 0.4,
+    branches() {
+        return  ["m","e","t"]
+    },
+    gainMult() { // Calculate the multiplier for main currency from bonuses
+        mMult = new Decimal(1)
+        return mMult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        return new Decimal(1)
+    },
+    row: 2, // Row the layer is in on the tree (0 is the first row)
+    hotkeys: [
+        {key: "c",
+        description: "C: Cell reset",
+        onPress(){if (canReset(this.layer)) doReset(this.layer)},
+        unlocked() {return player.c.best.gte(1)}}
+    ],
+    layerShown(){return player.m.best.gte(420) && !inChallenge("m",21)},
+    // shouldNotify() {
+    // },
+    tooltip() {
+        let dis = player.c.points + " cells"
+        // if (inChallenge("m",21)) {
+        //     tmp.m.shouldNotify?dis += " (Anti-upgrade available!)":""
+        // }
+        return dis
+    },
+    //resetsNothing() { return hasMilestone("t", 4) },
+    canBuyMax() { return true},
+    doReset(resettingLayer){
+        if(layers[layer].row <= layers[this.layer].row || layers[layer].row == "side")return;
+        let keep = []
+        if (layers[resettingLayer].row > this.row || layers[resettingLayer].position > this.position) layerDataReset(this.layer, keep)
+    },
+    tabFormat: {
+        "Main": {
+        content:[
+            function() {if (player.tab == "c") return "main-display"},
+            "prestige-button",
+            "blank",
+            ["raw-html",
+            function() {
+            let a = "You have " + layerText("h2", "c", format(player.c.tis)) +  ' tissues, which boost particle gain by ^' + layerText("h2", "c", format(tmp.c.tisEffect)) + ", and  makes 'Charge' " + layerText("h2", "c", format(tmp.c.tisEffect2)) + "x stronger.<br>"
+            return a}],
+            "upgrades"
+            ]
+        },
+        "Milestones": {
+            content:[
+                function() {if (player.tab == "c") return "main-display"},
+            "prestige-button",
+            "blank",
+            ["raw-html"],
+            ["display-text"
+            ],
+            "milestones"
+            ],
+        },
+        "Buyables": {
+            content:[
+                function() {if (player.tab == "c") return "main-display"},
+            "prestige-button",
+            "blank",
+            ["raw-html"],
+            ["display-text"
+            ],
+                function() {
+                    return ["buyables"]
+                },
+            ],
+        },
+        // "Challenges": {
+        //     content:[
+        //         function() {if (player.tab == "m") return "main-display"},
+        //     "prestige-button",
+        //     ["display-text",
+        //         function() {
+        //             let ms12 = (player.m.best).pow(0.0033).max(1).sub(decimalOne).min(1)
+        //             let ms12Eff = ""
+        //             if(hasMilestone("m",12)) ms12Eff = " (Boosting Anti-quark gain exp by "+format(ms12)+")"
+        //             return "Your best molecules is "+format(player.m.best)+ms12Eff+"<br>You have made a total of "+format(player.m.total)+" molecules"  
+        //         }
+        //     ],
+        //     "blank",
+        //         "challenges"
+        //     ],
+        //     unlocked() {return hasMilestone("m",4)}
+        // },
+    },
+
+    buyablePower(x) {
+        x = new Decimal(x)
+        let eff = decimalOne
+        return eff
+    },
+
+    effbase() {
+        let eff = new Decimal(1.0001)
+        // if (hasUpgrade("e",22)) eff = eff.add(upgradeEffect("e",22))
+        // if (hasUpgrade("e",26)) eff = eff.add(tmp.e.upgrades[26].effect2)
+        // if (hasUpgrade("e",66)) eff = eff.mul(upgradeEffect("e",66))
+        // if (hasUpgrade("e",73)) eff = eff.mul(upgradeEffect("e",73))
+        // if (hasMilestone("Uu",7)) eff = eff.mul(10)
+        // eff = eff.mul(tmp.c.buyables[12].effect)
+        return eff
+    },
+
+    effect(){//tissue gain
+        let eff = player.c.points
+        eff = Decimal.pow(this.effbase(),eff).sub(1)
+        // if (inChallenge("ct",32)) {
+        //     eff = player.e.points
+        //     if (hasUpgrade("Uu",21)) eff = eff.mul(tmp.Uu.upgrades[21].effect)
+        //     if (hasUpgrade("Uu",22)) eff = eff.mul(tmp.Uu.upgrades[22].effect)
+        //     if (hasUpgrade("Uu",41)) eff = eff.mul(tmp.Uu.upgrades[41].effect)
+        //     if (hasMilestone("Uu",8)) eff = eff.mul(tmp.Uu.milestones[8].effect)
+        //     if (hasMilestone("Uu",9)) eff = eff.mul(tmp.Uu.milestones[9].effect)
+        // }
+        // else {
+        // if (hasUpgrade("e",14)) eff = eff.mul(tmp.e.upgrades[14].effect)
+        // if (hasUpgrade("e",21)) eff = eff.mul(upgradeEffect("e",21))
+        // if (hasUpgrade("e",23)) eff = eff.mul(upgradeEffect("e",23))
+        // if (hasUpgrade("e",32)) eff = eff.mul(upgradeEffect("e",32))
+        // if (hasUpgrade("e",36)) eff = eff.mul(upgradeEffect("e",36))
+        // if (hasUpgrade("e",83)) eff = eff.mul(upgradeEffect("e",83))
+        // if (hasUpgrade("e",112)) eff = eff.mul(upgradeEffect("e",112))
+        // if (hasUpgrade("e",121)) eff = eff.mul(upgradeEffect("e",121))
+        // if (hasUpgrade("e",122)) eff = eff.mul(upgradeEffect("e",122))
+        // if (hasUpgrade("e",126)) eff = eff.mul(upgradeEffect("e",126))
+        // eff = eff.mul(tmp.e.buyables[11].effect).mul(tmp.ct.effect).mul(tmp.a.achievements[74].effect)
+        // if (eff.gte(Decimal.tetrate(10,7))) eff = tet10(slog(eff).sub(7).div(2).add(7))
+        eff = eff.min(Decimal.tetrate(10,8))
+        // }
+        return eff
+    },
+    tisEffect(){
+        let eff = player.c.tis.add(1).max(1)
+        eff = Decimal.pow(10,eff.log10().pow(0.9999)).max(1)
+        // if (hasUpgrade("e",31)) eff = eff.pow(upgradeEffect("e",31))
+        // if (hasUpgrade("e",135)) eff = eff.pow(upgradeEffect("e",135))
+        // if (hasUpgrade("e",106)) eff = Decimal.pow(10,eff.add(10).max(10).max(1).log10().pow(1.1))
+        // if (hasUpgrade("e",156)) eff = Decimal.pow(10,eff.add(10).max(10).max(1).log10().pow(upgradeEffect("e",156)))
+        // if (hasUpgrade("e",204)) eff = eff.pow(tmp.e.upgrades[204].effect)
+        if (eff.gte("eee25")) eff = eff.log10().log10().pow(4e23).pow10()
+        return eff
+    },
+    tisEffect2(){
+        let eff = player.c.tis.add(1).max(1)
+        eff = Decimal.pow(10,eff.log10().pow(0.75)).max(1)
+        // if (hasUpgrade("e",103)) eff = eff.pow(upgradeEffect("e",103))
+        // if (hasUpgrade("e",173)) eff = eff.pow(upgradeEffect("e",173))
+        // if (hasUpgrade("e",183)) eff = eff.pow(upgradeEffect("e",183))
+        // if (hasUpgrade("e",186)) eff = eff.pow(tmp.e.upgrades[186].effect2)
+        // if (hasUpgrade("e",204)) eff = eff.pow(tmp.e.upgrades[204].effect2)
+        return eff
+    },
+    // challengesTotalEffect(){
+    //     let eff = new Decimal(0)
+    //     if (challengeCompletions("m",11)+(challengeCompletions("m",12))+(challengeCompletions("m",21))>=1)
+    //         eff = eff.add(1)
+    //     if (challengeCompletions("m",11)+(challengeCompletions("m",12))+(challengeCompletions("m",21))>=2)
+    //         eff = eff.add(1)
+    //     if (challengeCompletions("m",11)+(challengeCompletions("m",12))+(challengeCompletions("m",21))>=3)
+    //         eff = eff.add(1)
+    //     if (challengeCompletions("m",11)+(challengeCompletions("m",12))+(challengeCompletions("m",21))>=4)
+    //         eff = eff.add(1)
+    //     if (challengeCompletions("m",11)+(challengeCompletions("m",12))+(challengeCompletions("m",21))>=5)
+    //         eff = eff.add(1)
+    //     if (challengeCompletions("m",11)+(challengeCompletions("m",12))+(challengeCompletions("m",21))>=6)
+    //         eff = eff.add(1)
+    //     if (challengeCompletions("m",11)+(challengeCompletions("m",12))+(challengeCompletions("m",21))==7)
+    //         eff = eff.add(1)
+    //     eff = eff.pow(3).pow(2).pow(1.25)
+    //     return eff
+    // },
+    effectDescription() {
+        return "producing "+layerText("h2", "c", format(tmp.c.effect)) + " tissues per second."
+    },
+    layerShown() {
+        let shown = player.m.total.gte(420)
+        if(player.c.unlocked) shown = true
+        if(inChallenge("m",21)) shown = false
+        return shown
+    },
+
+    // upgrades: {
+    //     11: {
+    //         title: "Reactivity",
+    //         description: "Best molecules reduce cost requirement",
+    //         cost: new Decimal(5),
+    //         unlocked() {return true},
+
+    //         effect() {
+    //             let eff = player[this.layer].best.add(1).max(1).pow(3).div(10).log10().max(1)
+    //             return eff
+    //         },
+    //         effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
+    //     },
+    // },
+
+    // buyables: {
+    //     11: {
+    //         title: "Anti-Booster",
+    //         cost() { 
+    //             let base = tmp.m.buyables[11].costb
+    //             let exp = tmp.m.buyables[11].coste
+    //             let x = player.m.buyables[11]
+    //             let cost = Decimal.pow(base,x.pow(exp)).mul(5000)
+    //             return cost
+    //         },
+    //         costb() {
+    //             let cost = new Decimal(2.74)
+    //             if(getBuyableAmount("m",11).gte(50)) cost = new Decimal(3.33)
+    //             if(getBuyableAmount("m",11).gte(300)) cost = new Decimal(3.67)
+    //             return cost
+    //         },
+    //         coste() { 
+    //             let cost = new Decimal(0.33)
+    //             if(getBuyableAmount("m",11).gte(350)) cost = new Decimal(0.334)
+    //             return cost
+    //         },
+    //         base() { 
+    //             let exp = decimalOne
+    //             let base = player.r.points.add(10).log10().add(10).log10().pow(exp)
+    //             if (player.m.buyables[11].gte(1)) base = base.mul(layers.m.buyablePower(player.m.buyables[11]))
+    //             return base
+    //         },
+    //         display() {
+    //             if (player.tab != "m" || player.subtabs.m.mainTabs != "Undiscovered") return
+    //             let x = tmp.m.buyables[11].extra
+    //             let extra = ""
+    //             let bonus = ""
+    //             let bonusDis = ""
+    //             let effbonus = 1
+    //             // if(hasUpgrade("t",22)){
+    //             //     bonus = formatWhole(upgradeEffect("t",22))}
+    //             // if(hasUpgrade("t",23)){
+    //             //     effbonus = format(upgradeEffect("t",23))}
+    //             if(getBuyableAmount("m", 11).gte(1)){
+    //             extra = formatWhole(x)}
+    //             //if(hasUpgrade("t",22)) bonusDis = "(+"+bonus+")"
+    //             let dis = "Increase Anti-quark effect exponent"
+    //             return dis + ".\n\
+    //             Cost: " + formatWhole(tmp[this.layer].buyables[this.id].cost)+" anti-quarks\n\
+    //             Effect: +" + format(new Decimal(0.2).mul(effbonus))+"\n\
+    //             Amount: " + formatWhole(getBuyableAmount("m", 11))+bonusDis+"\n\
+    //             Currently: +" + format(getBuyableAmount("m", 11).div(5))+"\n\
+    //             Bulk: " + formatWhole(this.bulk())
+    //         },
+    //         canAfford() {
+    //             return player.r.points.gte(tmp[this.layer].buyables[this.id].cost)},
+    //         buy() {
+    //             if(!hasMilestone("m",13)) {
+    //             player.r.points = player.r.points.sub(this.cost())}
+    //             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+    //             // if(hasUpgrade("t",22)) getBuyableAmount("t",11).add(upgradeEffect("t",22))
+    //             if(hasMilestone("m",13)) this.buyMax()
+    //         },
+    //         maxAfford() {
+    //             let s = player.r.points.log10().pow(1.4)
+    //             let base = tmp.m.buyables[11].costb
+    //             let exp = tmp.m.buyables[11].coste
+    //             let target = s.log(base).root(exp)
+    //             return target.floor().add(1)
+    //         },
+    //         buyMax() { 
+    //             let target = tmp.m.buyables[11].maxAfford
+    //             let base = tmp.m.buyables[11].costb
+    //             let exp = tmp.m.buyables[11].coste
+    //             let cost = Decimal.pow(base,target.pow(exp)).pow10()
+    //             if (tmp[this.layer].buyables[this.id].canAfford) {
+    //                 player.m.buyables[11] = player.m.buyables[11].max(target)
+                
+    //             }
+    //         },
+    //         style: {"width":"200px","height":"200px",
+    //             "background"() {
+    //                 let color = "radial-gradient(rgb(141, 82, 165),rgb(26, 6, 49))"
+    //                 if (tmp.m.buyables[11].canAfford) color = "radial-gradient(rgb(255, 252, 53),#623dc7)"
+    //                 return color
+    //             }
+    //         },
+    //         effect() {
+    //             let eff = new Decimal(0.2)
+    //             if(hasUpgrade("r",31)) eff = eff.add(upgradeEffect("r",31))
+    //             if(getBuyableAmount("m", 11).gte(1)) eff = eff.mul(getBuyableAmount("m", 11))
+    //             return eff
+    //         },
+    //         bulkbase() { 
+    //             let base = new Decimal(2)
+    //             return base
+    //         },
+    //         total() {
+    //             let total = getBuyableAmount("m", 11)
+    //             return total
+    //         },
+	// 		speed() { 
+    //             let x = tmp.m.buyables[this.id].total
+    //             let base = tmp.m.buyables[this.id].speedbase
+    //             return Decimal.pow(base, x).div(1.25).min(10);
+    //         },
+    //         bulk() { 
+    //             let x = tmp.m.buyables[this.id].total
+    //             let base = tmp.m.buyables[this.id].bulkbase
+    //             let eff = Decimal.pow(base, x)
+    //             // if (hasUpgrade("e",21)) eff = eff.mul(1e6)
+    //             // if (hasUpgrade("e",143)) eff = Decimal.tetrate(10,1.79e308)
+    //             return eff;
+    //         },    
+    //     },
+    // },
+
+    milestones: {
+        0: {
+            requirementDescription: "1 cell",
+            effectDescription: "You can buy max molecules",
+            done() { return player.c.best.gte(1) }
+        },
+        1: {
+            requirementDescription: "2 cells",
+            effectDescription: "Keep molecule milestones on reset",
+            done() { return player.c.best.gte(2) }
+        },
+    },
+    
+
+    // challenges: {
+    //    // rows: 2,
+    //    // cols: 2,
+    //     11: {
+    //         name: "Unreactive",
+    //         challengeDescription: function() {
+    //             let c11 = "Molecule and atom effects are useless.<br>Row 3 quark upgrades have no effect.<br>Electron effect is weaker."
+    //             if (inChallenge("m", 11)) c11 = c11 + "<br> (In Challenge)"
+    //             if (challengeCompletions("m", 11) == 3) c11 = c11 + "<br> (Completed)"
+    //             c11 = c11 + "<br>Completed:" + challengeCompletions("m",11) + "/" + tmp.m.challenges[11].completionLimit
+    //             return c11
+    //         },
+    //         goal(){
+    //             if (challengeCompletions("m", 11) == 0) return Decimal.pow(10,200);
+    //             if (challengeCompletions("m", 11) == 1) return Decimal.pow(10,750);
+    //             if (challengeCompletions("m", 11) == 2) return Decimal.pow(10,2.611e5);
+    //         },
+    //         currencyDisplayName: "particles",
+    //         completionLimit:3 ,
+    //         rewardDescription: "Molecules boost their effect.",
+    //         rewardEffect() {
+    //              let c11 = player.m.points.add(1).max(1)
+    //              let c11r = new Decimal(5)
+    //              let c11c = challengeCompletions("m", 11)
+    //              c11c = Decimal.pow(1.75, c11c)
+    //              c11 = Decimal.log10(c11).pow(0.7)
+    //              c11 = Decimal.pow(10,c11)
+    //              c11r = c11r.mul(c11c)
+    //              c11 = c11.pow(c11r)
+    //              //if (hasMilestone("Ui", 5)) c11 = powExp(c11.pow(1.1),1.1)
+    //              //if (inChallenge("m", 12)) c11 = decimalOne
+    //              return c11
+    //         },
+    //         rewardDisplay() {return format(tmp.m.challenges[11].rewardEffect)+"x"},
+    //         unlocked(){
+    //             return hasMilestone("m", 4)
+    //         }
+    //     },
+    // },
+
+    update(diff) {
+        if (player.c.unlocked) player.c.tis = player.c.tis.add(tmp.c.effect.times(diff)).min(tmp.c.effect.mul(1000))
+    //     if (hasMilestone("e",2)) player.e.diseases = player.e.diseases.add(tmp.e.dgain.times(diff))
+    //     if (hasUpgrade("e",46)) player.e.qc = player.e.qc.add(tmp.e.ucGain.times(diff))
+    //     if (hasUpgrade("e",196)) player.e.rna = player.e.rna.add(tmp.e.rgain.times(diff))
+    //     if (hasUpgrade("e",316)) player.e.mm = player.e.mm.add(tmp.e.mm.times(diff)).min(tmp.e.mmlim)
+    //     if (hasUpgrade("e",226)) {
+    //         if (inChallenge("ct",32) && !hasUpgrade("Ud",53)) {
+    //             player.e.h = getLogisticAmount(player.e.h, tmp.e.buyables[81].effect, tmp.Us.recoveryEff2, diff)
+    //             player.e.c = getLogisticAmount(player.e.c, tmp.e.buyables[82].effect, tmp.Us.recoveryEff2, diff)
+    //             player.e.n = getLogisticAmount(player.e.n, tmp.e.buyables[83].effect, tmp.Us.recoveryEff2, diff)
+    //             player.e.o = getLogisticAmount(player.e.o, tmp.e.buyables[91].effect, tmp.Us.recoveryEff2, diff)
+    //             player.e.ph = getLogisticAmount(player.e.ph, tmp.e.buyables[92].effect, tmp.Us.recoveryEff2, diff)
+    //         }
+    //         else {
+    //         player.e.h = player.e.h.add(tmp.e.buyables[81].effect.times(diff))
+    //         player.e.c = player.e.c.add(tmp.e.buyables[82].effect.times(diff))
+    //         player.e.n = player.e.n.add(tmp.e.buyables[83].effect.times(diff))
+    //         player.e.o = player.e.o.add(tmp.e.buyables[91].effect.times(diff))
+    //         player.e.ph = player.e.ph.add(tmp.e.buyables[92].effect.times(diff))
+    //         }
+    //     }
+    //     if (hasUpgrade("e",266)) {
+    //         player.e.ad = player.e.ad.add(player.e.h.div(5).min(player.e.c.div(5)).min(player.e.n.div(5)).times(diff))
+    //         player.e.ur = player.e.ur.add(player.e.h.div(4).min(player.e.c.div(4)).min(player.e.n.div(2)).min(player.e.o.div(2)).times(diff))
+    //         player.e.cy = player.e.cy.add(player.e.h.div(5).min(player.e.c.div(4)).min(player.e.n.div(3)).min(player.e.o).times(diff))
+    //         player.e.gu = player.e.gu.add(player.e.h.div(5).min(player.e.c.div(5)).min(player.e.n.div(5)).min(player.e.o).times(diff))
+    //         player.e.rp = player.e.rp.add(player.e.h.div(11).min(player.e.c.div(5)).min(player.e.o.div(8)).min(player.e.ph).times(diff))
+    //         player.e.mrna = player.e.mrna.add(tmp.e.mrgain.times(diff))
+    //     }
+    //     if (player.e.inC) {
+    //         if ((hasUpgrade("e",162)) && hasAchievement("a",83)) player.e.inC=false
+    //     }
+    //     player.e.i = tmp.e.i
+    //     player.e.at = player.e.h.add(1).max(1).mul(player.e.c.add(1).max(1)).mul(player.e.n.add(1).max(1)).mul(player.e.o.add(1).max(1)).mul(player.e.ph.add(1).max(1)).sub(1).pow(tmp.Us.buyables[31].effect.add(1))
+    //     if (hasUpgrade("e",46)) player.e.ins = player.e.ins.add(upgradeEffect("e",46).times(diff))
+    //     player.e.in = tmp.e.buyables[11].total.add(tmp.e.buyables[12].total).add(tmp.e.buyables[13].total).add(tmp.e.buyables[21].total.mul(10)).add(tmp.e.buyables[22].total.mul(10)).add(tmp.e.buyables[23].total.mul(10)).add(player.e.ins).add(upgradeEffect("e",44).mul(hasUpgrade("e",44)+0))
+    //     player.e.infections = player.e.in.sub(player.e.spent)
+    //     let gain = tmp.e.UIgain
+    //     if (hasUpgrade("e",162) && hasUpgrade("e",46)) player.e.qt = player.e.qt.max(gain)
+    //     if (player.e.autob) {
+    //         if (hasMilestone("e",3)) {
+    //             player.e.buyables[11] = player.e.buyables[11].add(Decimal.log10(player.e.p.div(4e14).max(1)).div(Decimal.log10(5)).root(1.4).ceil().sub(player.e.buyables[11])).min(tmp.e.buyCap).max(player.e.buyables[11]).max(0)
+    //             player.e.buyables[12] = player.e.buyables[12].add(Decimal.log10(player.e.p.div(1e16).max(1)).div(Decimal.log10(100)).root(1.4).ceil().sub(player.e.buyables[12])).min(tmp.e.buyCap).max(player.e.buyables[12]).max(0)
+    //             player.e.buyables[13] = player.e.buyables[13].add(Decimal.log10(player.e.p.div(1e24).max(1)).div(Decimal.log10(1e5)).root(1.49).ceil().sub(player.e.buyables[13])).min(tmp.e.buyCap).max(player.e.buyables[13]).max(0)
+    //             if (hasUpgrade("e",146)) {
+    //                 player.e.buyables[21] = player.e.buyables[21].add(Decimal.log10(player.e.p.div(Decimal.pow(10,48054).mul(3)).max(1)).div(Decimal.log10(1e50)).root(1.45).ceil().sub(player.e.buyables[21])).min(tmp.e.buyCap).max(player.e.buyables[21]).max(0)
+    //                 player.e.buyables[22] = player.e.buyables[22].add(Decimal.log10(player.e.p.div(Decimal.pow(10,55618)).max(1)).div(Decimal.log10(1e120)).root(1.45).ceil().sub(player.e.buyables[22])).min(tmp.e.buyCap).max(player.e.buyables[22]).max(0)
+    //                 player.e.buyables[23] = player.e.buyables[23].add(Decimal.log10(player.e.p.div(Decimal.pow(10,74304).mul(1.337)).max(1)).div(Decimal.log10(1e250)).root(1.53).ceil().sub(player.e.buyables[23])).min(tmp.e.buyCap).max(player.e.buyables[23]).max(0)
+    //             }
+    //         } else {
+    //         layers.e.buyables[11].buyMax()
+    //         layers.e.buyables[12].buyMax()
+    //         layers.e.buyables[13].buyMax()
+    //         if (hasUpgrade("e",146)) {
+    //         layers.e.buyables[21].buyMax()
+    //         layers.e.buyables[22].buyMax()
+    //         layers.e.buyables[23].buyMax()
+    //         }
+    //     }
+    //     }
+    //     if (player.e.autoq) {
+    //         layers.e.buyables[51].buyMax()
+    //         layers.e.buyables[52].buyMax()
+    //         layers.e.buyables[53].buyMax()
+    //         if (hasUpgrade("e",106)) {
+    //         layers.e.buyables[61].buyMax()
+    //         layers.e.buyables[62].buyMax()
+    //         layers.e.buyables[63].buyMax()
+    //         }
+    //     }
+    //     if (player.e.autoa) {
+    //         layers.e.buyables[71].buyMax()
+    //         layers.e.buyables[72].buyMax()
+    //         if (hasUpgrade("e",226)) {
+    //         layers.e.buyables[81].buyMax()
+    //         layers.e.buyables[82].buyMax()
+    //         layers.e.buyables[83].buyMax()
+    //         layers.e.buyables[91].buyMax()
+    //         if (hasUpgrade("e",253)) layers.e.buyables[92].buyMax()
+    //         }
+    //     }
+    //     if (player.e.autod) {
+    //         layers.e.buyables[41].buyMax()
+    //         layers.e.buyables[42].buyMax()
+    //     }
+    //     if (player.e.autom) {
+    //         layers.e.buyables[93].buyMax()
+    //         if (hasUpgrade("e",293)) layers.e.buyables[94].buyMax()
+    //         if (hasUpgrade("e",305)) layers.e.buyables[95].buyMax()
+    //         if (hasUpgrade("e",313)) layers.e.buyables[101].buyMax()
+    //     }
+    //     if (player.e.automm) {
+    //         layers.e.buyables[102].buyMax()
+    //     }
+    //     if (player.e.automm2) {
+    //         layers.e.buyables[103].buyMax()
+    //         layers.e.buyables[104].buyMax()
+    //         layers.e.buyables[105].buyMax()
+    //     }
+    //     if (player.e.automax) {
+    //         layers.e.buyables[31].buyMax()
+    //     }
+    //     if (player.ct.autoc) {
+    //         layers.e.buyables[111].buyMax()
+    //         layers.e.buyables[112].buyMax()
+    //         layers.e.buyables[113].buyMax()
+    //         layers.e.buyables[121].buyMax()
+    //         layers.e.buyables[122].buyMax()
+    //         layers.e.buyables[123].buyMax()
+    //     }
+    //     if (player.ct.autom && !inChallenge("ct",32)) {
+    //         layers.e.clickables[31].onClick(true)
+    //         layers.e.clickables[32].onClick(true)
+    //     }
+    //     let t = 0.1
+    //     if (hasUpgrade("e",46)) t = 0.33
+    //     if (player.e.ct < t && (inChallenge("e", 11) || inChallenge("e", 12) || player.e.inC))player.e.ct += diff
+    //     if (player.e.ct >= t) {
+    //         player.v.upgrades = [11,12,13,21,22,23,31,32,33]
+    //     }
+    // if (hasUpgrade("e",403)) { 
+    //     let c = player.e.crna.div(tmp.e.crMult.pow(tmp.e.crmexp)).root(tmp.e.crexp)
+    //     let cg = slogadd(slogadd(c,tmp.e.crlog).add(tmp.e.crgain.times(diff)),tmp.e.crlog.neg()).pow(tmp.e.crexp).mul(tmp.e.crMult.pow(tmp.e.crmexp))
+    //     if (player.e.crna.gte(tet10(4))) player.e.Cr = cg.div(Decimal.max(diff,0.001))
+    //     else player.e.Cr = cg.sub(player.e.crna).div(Decimal.max(diff,0.001))
+    //     player.e.crna = cg
+    // }
+    },
+})
+
+
+
 addLayer("a", {
     name: "Achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
@@ -2722,6 +3244,23 @@ addLayer("a", {
                 "background"() {
                     let color = "#BF8F8F"
                     if (hasAchievement("a",41)) color = "#77BF5F"
+                    return color
+                }
+            },
+        },
+        42: {
+            name: "A rubber room...",
+            tooltip: "Gain 1 cell<br>Reward: 7 AP",
+            done() {
+                return player.c.points.gte(1)
+            },
+            onComplete() {
+                addPoints("a",7)
+            },
+            style: {"width":"90px","height":"90px",
+                "background"() {
+                    let color = "#BF8F8F"
+                    if (hasAchievement("a",42)) color = "#77BF5F"
                     return color
                 }
             },

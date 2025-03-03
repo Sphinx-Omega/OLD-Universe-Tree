@@ -66,10 +66,11 @@ function getPointGen() {
 	if (inChallenge("m",21)) { gain = gain.log10().pow(0.2)
 		if(hasUpgrade("r",13)) gain = gain.mul(upgradeEffect("r",13))
 		if(hasUpgrade("r",23)) gain = gain.mul(upgradeEffect("r",23))
-		if(hasUpgrade("m",41)) gainExp 
+		if(hasUpgrade("m",41)) gainExp = gainExp.add(0.05) 
 	}
 	if(hasUpgrade("m",23)) gainExp = gainExp.mul(upgradeEffect("m",23))
 	if(hasUpgrade("m",41)) gainExp = gainExp.add(upgradeEffect("m",41))
+	if(player.c.best > decimalZero) gainExp = gainExp.add(tmp.c.tisEffect)
 	return gain.pow(gainExp)
 
 }

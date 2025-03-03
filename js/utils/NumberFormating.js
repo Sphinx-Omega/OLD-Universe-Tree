@@ -5,8 +5,6 @@ function addCommas(s){
 	return s.slice(0, rem) + "," + addCommas(s.slice(rem))
 }
 
-
-
 function exponentialFormat(num, precision) {
 	let e = num.log10().floor()
 	if (player.notation == 'Engineering' || player.notation == 'Mixed Engineering') e = num.log10().div(3).floor().mul(3)
