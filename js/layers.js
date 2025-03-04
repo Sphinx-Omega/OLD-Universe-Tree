@@ -199,10 +199,13 @@ addLayer("p", {
     doReset(resettingLayer) {
         let keep = []
         if (hasMilestone("a", 0) && resettingLayer == "e") keep.push("upgrades")
-        if (hasMilestone("t", 0) && resettingLayer == "t") keep.push("upgrades")     
-        if (hasMilestone("m", 0) && resettingLayer == "m") keep.push('11','12','13','21','22')
-        if (hasMilestone("m", 1) && resettingLayer == "m") keep.push('23')
-        if (hasMilestone("m", 2) && resettingLayer == "m") keep.push('31','32','33') 
+        if (hasMilestone("t", 0) && resettingLayer == "t") keep.push("upgrades")
+        if (resettingLayer == "m" && !hasMilestone("m",0)) player.p.upgrades = player.p.upgrades.filter(x=>x<0)    
+        if (hasMilestone("m", 0) && resettingLayer == "m") {
+            if (hasMilestone("m", 1) && resettingLayer == "m") {
+                if (hasMilestone("m", 2) && resettingLayer == "m") player.p.upgrades = player.p.upgrades.filter(x=>x<9)
+                else player.p.upgrades = player.p.upgrades.filter(x=>x<6)}
+            else player.p.upgrades = player.p.upgrades.filter(x=>x<5)}
         if (layers[resettingLayer].row > this.row) {layerDataReset(this.layer, keep)}
     },
 })
@@ -277,7 +280,7 @@ addLayer("e", {
         let eff = player.e.points.add(1).max(1)
         eff = eff.pow(2)
         if (eff.gte(Decimal.pow(10,16))) eff = Decimal.pow(10,eff.div(Decimal.pow(10,5)).log10().pow(0.88)).mul(Decimal.pow(10,5))
-        if (eff.gte(Decimal.pow(10,1e250))) eff = eff.pow(0.1).log10()
+        // if (eff.gte(Decimal.pow(10,1e250))) eff = eff.pow(0.1).log10()
         if (player.t.total.gte(1)) eff = eff.mul(tmp.t.effect)
         if (hasUpgrade("t", 11)){
             eff = eff.mul(upgradeEffect('t',11).add(1).log10())}
@@ -316,6 +319,8 @@ addLayer("e", {
 
                 if (hasUpgrade("t", 12)) {eff = eff.mul(upgradeEffect('t',11).pow(1.33).div(2e3))}      
                 if (player.c.tis > decimalZero) {eff = eff.mul(tmp.c.tisEffect2)}
+                if (eff.gte("e1.0000e12")) eff.pow(0.5)
+                // if (player.p.points.gte("")) int = int.mul(Decimal.pow(inc,rep.div(start).log10().div(exp)))
                 return eff
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
@@ -384,7 +389,7 @@ addLayer("e", {
             title: "Supercollider",
             description: "Electrons boost 'Particle Collider' effect",
             cost: new Decimal("e3024495"),
-            unlocked() {return challengeCompletions("m",12) >= 1},
+            unlocked() {return (challengeCompletions("m",12) >= 1 || player.c.best.gte(1))},
 
             effect() {
                 let eff = player[this.layer].points.add(1).pow(0.52)
@@ -397,7 +402,7 @@ addLayer("e", {
             title: "Mania",
             description: "Electrons boost 'Positive energy' effect",
             cost: new Decimal("e6143395"),
-            unlocked() {return challengeCompletions("m",12) >= 2},
+            unlocked() {return (challengeCompletions("m",12) >= 2 || player.c.best.gte(1))},
 
             effect() {
                 let eff = player[this.layer].points.add(1).pow(100).pow(100).max(1).log10()
@@ -410,7 +415,7 @@ addLayer("e", {
             title: "Despair",
             description: "Electrons boost 'Negative energy' effect",
             cost: new Decimal("e2.200e10"),
-            unlocked() {return challengeCompletions("m",12) == 3},
+            unlocked() {return (challengeCompletions("m",12) == 3 || player.c.best.gte(1))},
 
             effect() {
                 return player[this.layer].points.add(1).pow(25).max(1).log10().max(1).pow(0.8)
@@ -520,6 +525,7 @@ addLayer("t", {
         let keep = []
         let keepMile = []
         if(player.t.best>0) keep.push(player.e.best)
+        if(!hasMilestone("m",5) && resettingLayer == "m") player.t.upgrades = []
         if(hasMilestone("m",5)) keepMile.push(0,1,2,3,4)
         if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
         if(hasMilestone("m",5)) player[this.layer].milestones = keepMile
@@ -2477,7 +2483,7 @@ addLayer("c", {
             "blank",
             ["raw-html",
             function() {
-            let a = "You have " + layerText("h2", "c", format(player.c.tis)) +  ' tissues, which boost particle gain by ^' + layerText("h2", "c", format(tmp.c.tisEffect)) + ", and  makes 'Charge' " + layerText("h2", "c", format(tmp.c.tisEffect2)) + "x stronger.<br>"
+            let a = "You have " + layerText("h2", "c", format(player.c.tis)) +  ' tissues, which boost particle gain by ' + layerText("h2", "c", format(tmp.c.tisEffect)) + "x, and  makes 'Charge' " + layerText("h2", "c", format(tmp.c.tisEffect2)) + "x stronger.<br>"
             return a}],
             "upgrades"
             ]
@@ -2572,7 +2578,7 @@ addLayer("c", {
     },
     tisEffect(){
         let eff = player.c.tis.add(1).max(1)
-        eff = Decimal.pow(10,eff.log10().pow(0.9999)).max(1)
+        eff = Decimal.pow(10,eff.log10().pow(0.1)).max(1)
         // if (hasUpgrade("e",31)) eff = eff.pow(upgradeEffect("e",31))
         // if (hasUpgrade("e",135)) eff = eff.pow(upgradeEffect("e",135))
         // if (hasUpgrade("e",106)) eff = Decimal.pow(10,eff.add(10).max(10).max(1).log10().pow(1.1))
@@ -2583,7 +2589,7 @@ addLayer("c", {
     },
     tisEffect2(){
         let eff = player.c.tis.add(1).max(1)
-        eff = Decimal.pow(10,eff.log10().pow(0.75)).max(1)
+        eff = Decimal.pow(10,eff.log10().pow(0.0001).pow(0.0001).mul(25))
         // if (hasUpgrade("e",103)) eff = eff.pow(upgradeEffect("e",103))
         // if (hasUpgrade("e",173)) eff = eff.pow(upgradeEffect("e",173))
         // if (hasUpgrade("e",183)) eff = eff.pow(upgradeEffect("e",183))
@@ -3288,7 +3294,7 @@ addLayer("a", {
         },
         2: {
             requirementDescription: "50 achievement particles",
-            effectDescription: "Keep Atom milestones",
+            effectDescription: "Keep Atom milestones on Cell reset",
             done() { return player.a.points.gte(50) }
         },
         3: {

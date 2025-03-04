@@ -70,7 +70,7 @@ function getPointGen() {
 	}
 	if(hasUpgrade("m",23)) gainExp = gainExp.mul(upgradeEffect("m",23))
 	if(hasUpgrade("m",41)) gainExp = gainExp.add(upgradeEffect("m",41))
-	if(player.c.best > decimalZero) gainExp = gainExp.add(tmp.c.tisEffect)
+	if(tmp.c.tisEffect > decimalZero) gain = gain.mul(tmp.c.tisEffect)
 	return gain.pow(gainExp)
 
 }
