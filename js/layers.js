@@ -59,155 +59,26 @@ addLayer("p", {
                 return true
             }
         },
-
-        12: {
-            title: "Unstable",
-            description: "Split particles split in half again, making twice as many particles.",
-            cost: new Decimal(5),
-            unlocked(){
-                return true
-            },
-        },
-
-        13: {
-            title: "Fusion",
-            description: "Some particles clump together into quarks. Quark gain is based on particles.",
-            cost: new Decimal(15),
-            unlocked(){
-                return true
-            },
-
-            effect() {
-                let eff = player.points.add(1).pow(0.5)
-                if(hasUpgrade("t",21) && !inChallenge("m",21)) eff = eff.mul(upgradeEffect("t",21))
-                return eff
-            },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
-        },
-
-        21: {
-            title: "Supercharged",
-            description: "Particle gain is increased based on quarks.",
-            cost: new Decimal(100),
-            unlocked(){
-                return true
-            },
-
-            effect() {
-                let eff = player[this.layer].points.add(1).pow(0.75)
-                if (player.m.best.gte(1)) eff = eff.mul(tmp.m.effect2)
-                if (inChallenge("m",21)) eff = eff.mul(tmp.m.challengesTotalEffect)
-                return eff
-            },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
-        },
-
-        22: {
-            title: "Overdrive",
-            description: "Particles split and fuse way faster. Quarks and particles boost each other more.",
-            cost: new Decimal(50000),
-            unlocked(){
-                return true
-            },
-
-            effect() {
-                let eff = player[this.layer].points.add(0.3).pow(0.05)
-                if (inChallenge("m",21)) eff = eff.mul(tmp.m.challengesTotalEffect)
-                return eff
-            },
-            effectDisplay() { return format(tmp.p.upgrades[22].effect)+"x"}, // Add formatting to the effect
-        },
-        23: {
-            title: "Limit Breaker",
-            description: "Quarks defy the known laws of physics to split impossibly fast!",
-            cost: new Decimal(1e60),
-            unlocked(){
-                return (hasMilestone('e',1) || hasMilestone('m',1))
-            },
-
-            effect() {
-                let eff = player[this.layer].points.add(1).pow(0.05)
-                if (inChallenge("m",21)) eff = eff.mul(tmp.m.challengesTotalEffect)
-                return eff
-            },
-            effectDisplay() { return format(tmp.p.upgrades[23].effect)+"x"}, // Add formatting to the effect
-        },
-        31: {
-            title: "Particle Collider",
-            description: "Particles weaken electron softcap",
-            cost: new Decimal("1.00e21800"),
-            unlocked(){
-                return (hasMilestone('e',2) || hasMilestone('m',2))
-            },
-
-            effect() {
-                let eff = player.points.add(1).max(1).pow(100).log10().pow(50).pow(3)
-                if (hasUpgrade("e", 31)) eff = eff.mul(upgradeEffect("e",31))
-                if (inChallenge("m", 11)) eff = decimalOne
-                if (inChallenge("m", 12)) eff = eff.pow(0.25)
-                if (inChallenge("m", 12) && hasMilestone("m",7)) eff = eff.add(1).pow(5.275)
-                if (inChallenge("m", 21)) eff = decimalOne
-                return eff
-            },
-            effectDisplay() { return format(tmp.p.upgrades[31].effect)+"x"}, // Add formatting to the effect
-        },
-        32: {
-            title: "Positive energy",
-            description: "Quarks boost atom buyables amount",
-            cost: new Decimal("1.00e28000"),
-            unlocked(){
-                return (hasMilestone('e',2) || hasMilestone('m',2))
-            },
-
-            effect() {
-                let eff = player.p.points.add(1).max(1).log10().div(1e4).max(1)
-                if (hasUpgrade("e", 32)) eff = eff.mul(upgradeEffect("e",32)).pow(2.5)
-                if (inChallenge("m", 11)) eff = decimalOne
-                if (inChallenge("m", 12)) eff = eff.pow(0.25)
-                if (inChallenge("m", 12) && hasMilestone("m",7)) eff = eff.add(1).pow(5.275)
-                if (inChallenge("m", 21)) eff = decimalOne
-                return eff
-            },
-            effectDisplay() { return format(tmp.p.upgrades[32].effect)+"x"}, // Add formatting to the effect
-        },
-        33: {
-            title: "Negative energy",
-            description: "Quarks boost 'Double negative' effect",
-            cost: new Decimal("1.00e52065"),
-            unlocked(){
-                return (hasMilestone('e',2) || hasMilestone('m',2))
-            },
-
-            effect() {
-                let eff = player.p.points.add(1).max(1).pow(160).log10().pow(404)
-                if (inChallenge("m", 11)) eff = decimalOne
-                if (inChallenge("m", 12)) eff = eff.pow(0.2)
-                if (inChallenge("m", 12) && hasMilestone("m",7)) eff = eff.add(1).pow(5.275)
-                if (inChallenge("m", 21)) eff = decimalOne
-                return eff
-            },
-            effectDisplay() { return format(tmp.p.upgrades[33].effect)+"x"}, // Add formatting to the effect
-        },
     },
 
-    passiveGeneration(){
-        let passive = new Decimal(0)
-        if (hasMilestone('e', 0)) passive = passive.add(1) //100% Prestige Points depending on Reset
-        return passive
-        },
+    // passiveGeneration(){
+    //     let passive = new Decimal(0)
+    //     if (hasMilestone('e', 0)) passive = passive.add(1) //100% Prestige Points depending on Reset
+    //     return passive
+    //     },
 
-    doReset(resettingLayer) {
-        let keep = []
-        if (hasMilestone("a", 0) && resettingLayer == "e") keep.push("upgrades")
-        if (hasMilestone("t", 0) && resettingLayer == "t") keep.push("upgrades")
-        if (resettingLayer == "m" && !hasMilestone("m",0)) player.p.upgrades = player.p.upgrades.filter(x=>x<0)    
-        if (hasMilestone("m", 0) && resettingLayer == "m") {
-            if (hasMilestone("m", 1) && resettingLayer == "m") {
-                if (hasMilestone("m", 2) && resettingLayer == "m") player.p.upgrades = player.p.upgrades.filter(x=>x<9)
-                else player.p.upgrades = player.p.upgrades.filter(x=>x<6)}
-            else player.p.upgrades = player.p.upgrades.filter(x=>x<5)}
-        if (layers[resettingLayer].row > this.row) {layerDataReset(this.layer, keep)}
-    },
+    // doReset(resettingLayer) {
+    //     let keep = []
+    //     if (hasMilestone("a", 0) && resettingLayer == "e") keep.push("upgrades")
+    //     if (hasMilestone("t", 0) && resettingLayer == "t") keep.push("upgrades")
+    //     if (resettingLayer == "m" && !hasMilestone("m",0)) player.p.upgrades = player.p.upgrades.filter(x=>x<0)    
+    //     if (hasMilestone("m", 0) && resettingLayer == "m") {
+    //         if (hasMilestone("m", 1) && resettingLayer == "m") {
+    //             if (hasMilestone("m", 2) && resettingLayer == "m") player.p.upgrades = player.p.upgrades.filter(x=>x<9)
+    //             else player.p.upgrades = player.p.upgrades.filter(x=>x<6)}
+    //         else player.p.upgrades = player.p.upgrades.filter(x=>x<5)}
+    //     if (layers[resettingLayer].row > this.row) {layerDataReset(this.layer, keep)}
+    // },
 })
 
 

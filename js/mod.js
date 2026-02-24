@@ -2,7 +2,7 @@ let modInfo = {
 	name: "The Universe Tree",
 	author: "Sphinx-Omega",
 	pointsName: "particles",
-	modFiles: ["layers.js", "tree.js"],
+	modFiles: ["layers.js", "tree.js","qu.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -55,22 +55,9 @@ function getPointGen() {
 
 	let gain = new Decimal(1)
 	let gainExp = new Decimal(1)
-	gain = gain.mul(tmp.a.effect).mul(tmp.e.effect)
-	if (hasUpgrade('p', 11)) gain = gain.times(2)
-	if (hasUpgrade('p', 12)) gain = gain.times(2)
-	if (hasUpgrade('p', 21)) gain = gain.times(upgradeEffect('p', 21))
-	if (hasUpgrade('p', 22)) gain = gain.times(upgradeEffect('p', 22))
-	if (hasUpgrade('e', 11)) gain = gain.times(upgradeEffect('e', 11))
-	if (hasUpgrade('e', 21)) gain = gain.times(upgradeEffect('e', 21))
-	if (hasUpgrade('m', 21)) gain = gain.mul(upgradeEffect('m', 21))
-	if (inChallenge("m",21)) { gain = gain.log10().pow(0.2)
-		if(hasUpgrade("r",13)) gain = gain.mul(upgradeEffect("r",13))
-		if(hasUpgrade("r",23)) gain = gain.mul(upgradeEffect("r",23))
-		if(hasUpgrade("m",41)) gainExp = gainExp.add(0.05) 
-	}
-	if(hasUpgrade("m",23)) gainExp = gainExp.mul(upgradeEffect("m",23))
-	if(hasUpgrade("m",41)) gainExp = gainExp.add(upgradeEffect("m",41))
-	if(tmp.c.tisEffect > decimalZero) gain = gain.mul(tmp.c.tisEffect)
+
+	gain = gain.mul(tmp.a.effect)
+
 	return gain.pow(gainExp)
 
 }
